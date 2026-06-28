@@ -16,22 +16,15 @@ create table if not exists public.board_posts (
 
 alter table public.board_posts enable row level security;
 
-grant usage on schema public to anon;
-grant select, insert, update, delete on public.board_posts to anon;
-
-drop policy if exists "board_select" on public.board_posts;
 create policy "board_select" on public.board_posts
   for select using (true);
 
-drop policy if exists "board_insert" on public.board_posts;
 create policy "board_insert" on public.board_posts
   for insert with check (true);
 
-drop policy if exists "board_update" on public.board_posts;
 create policy "board_update" on public.board_posts
   for update using (true);
 
-drop policy if exists "board_delete" on public.board_posts;
 create policy "board_delete" on public.board_posts
   for delete using (true);
 
@@ -49,15 +42,9 @@ create table if not exists public.am_meetings (
 
 alter table public.am_meetings enable row level security;
 
-grant select, insert, update, delete on public.am_meetings to anon;
-
-drop policy if exists "meetings_select" on public.am_meetings;
 create policy "meetings_select" on public.am_meetings for select using (true);
-drop policy if exists "meetings_insert" on public.am_meetings;
 create policy "meetings_insert" on public.am_meetings for insert with check (true);
-drop policy if exists "meetings_update" on public.am_meetings;
 create policy "meetings_update" on public.am_meetings for update using (true);
-drop policy if exists "meetings_delete" on public.am_meetings;
 create policy "meetings_delete" on public.am_meetings for delete using (true);
 
 -- ── 3. 일정 투표 ──────────────────────────────────────
@@ -71,15 +58,9 @@ create table if not exists public.am_votes (
 
 alter table public.am_votes enable row level security;
 
-grant select, insert, update, delete on public.am_votes to anon;
-
-drop policy if exists "votes_select" on public.am_votes;
 create policy "votes_select" on public.am_votes for select using (true);
-drop policy if exists "votes_insert" on public.am_votes;
 create policy "votes_insert" on public.am_votes for insert with check (true);
-drop policy if exists "votes_update" on public.am_votes;
 create policy "votes_update" on public.am_votes for update using (true);
-drop policy if exists "votes_delete" on public.am_votes;
 create policy "votes_delete" on public.am_votes for delete using (true);
 
 -- ── 4. 조합원 가용시간 ─────────────────────────────────
@@ -94,13 +75,7 @@ create table if not exists public.am_availability (
 
 alter table public.am_availability enable row level security;
 
-grant select, insert, update, delete on public.am_availability to anon;
-
-drop policy if exists "avail_select" on public.am_availability;
 create policy "avail_select" on public.am_availability for select using (true);
-drop policy if exists "avail_insert" on public.am_availability;
 create policy "avail_insert" on public.am_availability for insert with check (true);
-drop policy if exists "avail_update" on public.am_availability;
 create policy "avail_update" on public.am_availability for update using (true);
-drop policy if exists "avail_delete" on public.am_availability;
 create policy "avail_delete" on public.am_availability for delete using (true);
