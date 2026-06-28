@@ -383,7 +383,7 @@ body {
       <button class="member-btn" onclick="selectMember(this,'김종금')">김종금</button>
     </div>
     <div class="pw-area" id="pwArea">
-      <div class="pw-hint">발기인 대표 전용 — 비밀번호를 입력해주세요</div>
+      <div class="pw-hint">담당자 전용 — 비밀번호를 입력해주세요</div>
       <input class="pw-input" type="password" id="pwInput" placeholder="비밀번호"
         onkeydown="if(event.key==='Enter')doLogin()">
     </div>
@@ -431,7 +431,9 @@ body {
       <div class="panel-title">이번 주 불가능한 시간 표시</div>
       <div class="info-box">
         기본값은 전부 <strong>가능</strong>입니다.<br>
-        다른 일정이 있어 <strong>안 되는 시간</strong>만 터치해서 회색으로 표시한 뒤 저장해주세요.
+        다른 일정이 있어 <strong>안 되는 시간</strong>만 터치해서 회색으로 표시한 뒤 저장해주세요.<br><br>
+        · 가용시간 등록 — 매월 말일 전까지 다음 달의 불가능한 시간을 등록해주세요.<br>
+        · 상담과 강의 배정은 요청이 들어오는 시간에 활동이 가능하신 분께 순차적으로 배정될 예정입니다.
       </div>
       <div class="date-row">
         <button class="date-nav" onclick="prevWeek()"><i class="ti ti-chevron-left"></i></button>
@@ -827,7 +829,7 @@ function renderVoteModal(m) {
 
   const adminSection = isAdmin ? `
     <div style="margin-top:20px; padding-top:14px; border-top:0.5px solid var(--am-pale);">
-      <div style="font-size:10px;color:var(--am-muted);margin-bottom:10px;">일정 확정 <span class="admin-badge">대표 전용</span></div>
+      <div style="font-size:10px;color:var(--am-muted);margin-bottom:10px;">일정 확정 <span class="admin-badge">담당자 전용</span></div>
       ${candidates.map(c=>`
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px;">
           <span style="font-size:11px;color:var(--am-gray);flex:1;">${esc(c.label)}</span>
