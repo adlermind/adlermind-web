@@ -709,20 +709,23 @@ function showToast(msg) {
 // ── 문의 관리 ──
 const catColor = { '상담문의':'var(--am-rose)', '교육문의':'var(--am-blue)', '조합가입':'var(--am-sage)', '기타':'var(--am-muted)' };
 
+let allContacts = [];
+
 async function loadContacts() {
   const el = document.getElementById('contactList');
   try {
     const res = await fetch(`${SB_URL}/rest/v1/contact_messages?order=created_at.desc`, { headers: hdrs });
-    const rows = await res.json();
-    if (!Array.isArray(rows) || !rows.length) {
+    allContacts = await res.json();
+    if (!Array.isArray(allContacts) || !allContacts.length) {
       el.innerHTML = '<div class="board-empty"><i class="ti ti-inbox"></i>접수된 문의가 없습니다.</div>'; return;
     }
-    el.innerHTML = rows.map(r => {
+    el.innerHTML = allContacts.map(r => {
       const date = new Date(r.created_at).toLocaleDateString('ko-KR', { month:'long', day:'numeric' });
       const color = catColor[r.category] || 'var(--am-muted)';
-      return `<div class="board-item" onclick="openContact(${JSON.stringify(JSON.stringify(r))})">
+      const preview = esc(r.message).slice(0, 40) + (r.message.length > 40 ? '…' : '');
+      return `<div class="board-item" onclick="openContact('${r.id}')">
         <span class="board-cat-badge" style="background:rgba(0,0,0,0.04);color:${color}">${esc(r.category)}</span>
-        <div class="board-title">${esc(r.name)} — ${esc(r.message).slice(0,40)}${r.message.length>40?'…':''}</div>
+        <div class="board-title">${esc(r.name)} — ${preview}</div>
         <div class="board-meta">${date}</div>
       </div>`;
     }).join('');
@@ -731,8 +734,8 @@ async function loadContacts() {
   }
 }
 
-function openContact(json) {
-  const r = JSON.parse(json);
+function openContact(id) {
+  const r = allContacts.find(x => x.id === id); if (!r) return;
   const date = new Date(r.created_at).toLocaleDateString('ko-KR', { year:'numeric', month:'long', day:'numeric', hour:'2-digit', minute:'2-digit' });
   document.getElementById('viewTitle').textContent = `[${r.category}] ${r.name}`;
   document.getElementById('viewCatBadge').innerHTML = '';
