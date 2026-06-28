@@ -310,12 +310,6 @@ body {
 }
 .modal-body img { max-width: 100%; height: auto; margin: 8px 0; border-radius: 2px; }
 .modal-body iframe { max-width: 100%; }
-.modal-body-frame {
-  width: 100%;
-  border: none;
-  min-height: 400px;
-  display: block;
-}
 .modal-body h1 { font-size: 20px; font-family: 'Noto Serif KR', serif; font-weight: 400; margin: 16px 0 8px; }
 .modal-body h2 { font-size: 17px; font-family: 'Noto Serif KR', serif; font-weight: 400; margin: 14px 0 8px; }
 .modal-body h3 { font-size: 15px; font-weight: 400; margin: 12px 0 6px; }
@@ -1046,7 +1040,7 @@ function openView(id) {
   document.getElementById('viewMeta').textContent =
     `${p.author} · ` + new Date(p.created_at).toLocaleDateString('ko-KR', { year:'numeric', month:'long', day:'numeric', hour:'2-digit', minute:'2-digit' });
 
-  renderPostBody(document.getElementById('viewBody'), p.content || '');
+  document.getElementById('viewBody').innerHTML = p.content || '';
 
   const attachments = p.attachments || [];
   if (attachments.length) {
@@ -1236,29 +1230,6 @@ function closePdf() {
 // ── 유틸 ──
 function esc(s) {
   return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-function hasHtmlTag(content) {
-  return /<\/?[a-z][\s\S]*>/i.test(String(content || ''));
-}
-function renderPostBody(target, content) {
-  target.innerHTML = '';
-  if (!hasHtmlTag(content)) {
-    target.textContent = content || '';
-    return;
-  }
-
-  const frame = document.createElement('iframe');
-  frame.className = 'modal-body-frame';
-  frame.setAttribute('sandbox', 'allow-same-origin');
-  frame.onload = function() {
-    try {
-      const doc = frame.contentDocument;
-      const body = doc && doc.body;
-      if (body) frame.style.height = body.scrollHeight + 'px';
-    } catch(e) {}
-  };
-  frame.srcdoc = String(content || '');
-  target.appendChild(frame);
 }
 function showToast(msg) {
   const t = document.getElementById('toast');
