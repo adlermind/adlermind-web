@@ -98,7 +98,7 @@ body {
   position: sticky; top: 0; z-index: 100; flex-shrink: 0;
 }
 .header-top { padding: 10px 16px; display: flex; align-items: center; gap: 10px; }
-.header-logo img { height: 28px; }
+.header-logo img { height: 31px; margin-top: 3px; }
 .header-info { flex: 1; }
 .header-info h1 { font-size: 12px; font-weight: 300; color: var(--am-gray); }
 .header-sub { font-size: 9px; color: var(--am-muted); font-family: 'Raleway', sans-serif; letter-spacing: 0.08em; }
@@ -394,10 +394,10 @@ body {
 <div class="app" id="app">
   <div class="app-header">
     <div class="header-top">
-      <div class="header-logo">
+      <a class="header-logo" href="../index.html" style="text-decoration:none;">
         <img src="../image/adlermind_logo.svg" alt="ADLER MIND 협동조합 로고"
              onerror="this.src='../image/adlermind_logo.png'">
-      </div>
+      </a>
       <div class="header-info">
         <h1>일정 조율</h1>
         <div class="header-sub">ADLER MIND 협동조합</div>
