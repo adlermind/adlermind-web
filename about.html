@@ -8,6 +8,7 @@
 <link rel="icon" type="image/webp" href="image/favicon.webp">
 <title>협동조합 소개 · ADLER MIND 협동조합</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400&family=Noto+Sans+KR:wght@300;400&family=Raleway:wght@200;300;400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root {
   --am-rose: #E8929A; --am-sage: #8FBFB8; --am-gray: #6B6B6B;
@@ -24,8 +25,15 @@ nav {
 .nav-links { display: flex; align-items: center; gap: 24px; flex: 1; }
 .nav-links a { font-size: 13px; color: var(--am-gray); text-decoration: none; transition: color 0.15s; }
 .nav-links a:hover, .nav-links a.active { color: var(--am-sage); }
+.nav-login-link {
+  margin-left: auto; font-size: 12px; color: var(--am-muted);
+  text-decoration: none; letter-spacing: 0.04em;
+  transition: color 0.15s; white-space: nowrap;
+}
+.nav-login-link:hover { color: var(--am-sage); }
+.nav-login-mobile { display: none; }
 .nav-member-btn {
-  margin-left: auto; padding: 7px 18px; background: var(--am-sage); color: #fff;
+  padding: 7px 18px; background: var(--am-sage); color: #fff;
   border: none; border-radius: 2px; font-size: 12px; font-family: 'Noto Sans KR', sans-serif;
   font-weight: 300; cursor: pointer; text-decoration: none; transition: background 0.15s; white-space: nowrap;
 }
@@ -60,6 +68,8 @@ nav {
   .nav-links { display: none; }
   .nav-links.open { display: flex; flex-direction: column; position: fixed; top: 60px; left: 0; right: 0; background: var(--am-white); border-bottom: 0.5px solid var(--am-border); padding: 20px; gap: 16px; z-index: 99; }
   .nav-ham { display: block; margin-left: auto; }
+  .nav-login-link { display: none; }
+  .nav-login-mobile { display: block !important; }
 }
 </style>
 </head>
@@ -72,7 +82,9 @@ nav {
     <a href="education.html">교육·연수</a>
     <a href="news.html">소식</a>
     <a href="contact.html">문의</a>
+    <a id="navLoginMobile" class="nav-login-mobile" href="login.html">로그인</a>
   </div>
+  <a id="navLoginLink" class="nav-login-link" href="login.html">로그인</a>
   <a class="nav-member-btn" href="members.html">조합원 로그인</a>
   <button class="nav-ham" id="navHam">&#9776;</button>
 </nav>
@@ -88,9 +100,28 @@ nav {
   <a class="back-link" href="index.html">&larr; 홈으로 돌아가기</a>
 </div>
 <script>
+const SB_URL = 'https://jboceiacgczkqkhqcmqu.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impib2NlaWFjZ2N6a3FraHFjbXF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI1OTg1MTYsImV4cCI6MjA5ODE3NDUxNn0.9jHLNB8PVDrWlSc5CDGz5j6ZF9yaKwrnzICvvvsFbvA';
+
 document.getElementById('navHam').addEventListener('click', () => {
   document.getElementById('navLinks').classList.toggle('open');
 });
+
+(async () => {
+  const _sbNav = supabase.createClient(SB_URL, SB_KEY);
+  const { data: { session } } = await _sbNav.auth.getSession();
+  if (!session) return;
+  const res = await fetch(
+    `${SB_URL}/rest/v1/site_users?user_id=eq.${session.user.id}&select=nickname`,
+    { headers: { apikey: SB_KEY, Authorization: `Bearer ${session.access_token}` } }
+  );
+  const [u] = await res.json();
+  if (!u) return;
+  ['navLoginLink','navLoginMobile'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.textContent = u.nickname; el.href = 'mypage.html'; }
+  });
+})();
 </script>
 </body>
 </html>

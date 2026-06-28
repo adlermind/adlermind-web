@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<title>마이페이지 · ADLER MIND 협동조합</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400&family=Noto+Sans+KR:wght@300;400&family=Raleway:wght@200;300;400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root {
+  --am-rose:   #E8929A;
+  --am-sage:   #8FBFB8;
+  --am-mauve:  #C48DA0;
+  --am-blue:   #8FAFD4;
+  --am-gray:   #6B6B6B;
+  --am-pale:   #D8D8DC;
+  --am-bg:     #FAFAF8;
+  --am-muted:  #9a9490;
+  --am-border: #e8e4e0;
+  --am-white:  #ffffff;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 300;
+  color: var(--am-gray);
+  background: var(--am-bg);
+  line-height: 1.7;
+  min-height: 100vh;
+}
+
+/* ── 네비게이션 ── */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--am-white);
+  border-bottom: 0.5px solid var(--am-border);
+  padding: 0 32px;
+  display: flex; align-items: center; gap: 32px;
+  height: 60px;
+}
+.nav-logo img { height: 40px; display: block; margin-top: 4px; }
+.nav-links { display: flex; align-items: center; gap: 24px; flex: 1; }
+.nav-links a {
+  font-size: 13px; color: var(--am-gray); text-decoration: none;
+  letter-spacing: 0.02em; transition: color 0.15s;
+}
+.nav-links a:hover, .nav-links a.active { color: var(--am-sage); }
+.nav-right { display: flex; align-items: center; gap: 12px; margin-left: auto; }
+.nav-nick {
+  font-size: 12px; color: var(--am-sage);
+  letter-spacing: 0.04em; font-weight: 400;
+}
+.nav-logout-btn {
+  padding: 6px 14px;
+  background: none; color: var(--am-muted);
+  border: 0.5px solid var(--am-border); border-radius: 2px;
+  font-size: 12px; font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 300; cursor: pointer; letter-spacing: 0.04em;
+  transition: all 0.15s;
+}
+.nav-logout-btn:hover { border-color: var(--am-rose); color: var(--am-rose); }
+.nav-ham { display: none; border: none; background: none; cursor: pointer; font-size: 22px; color: var(--am-gray); margin-left: auto; }
+
+/* ── 메인 ── */
+.page-wrap { max-width: 860px; margin: 0 auto; padding: 56px 32px 80px; }
+
+.greeting-label {
+  font-family: 'Raleway', sans-serif;
+  font-size: 10px; font-weight: 200;
+  letter-spacing: 0.28em; color: var(--am-rose);
+  text-transform: uppercase; margin-bottom: 12px;
+}
+.greeting-title {
+  font-family: 'Noto Serif KR', serif;
+  font-size: clamp(22px, 4vw, 32px);
+  font-weight: 300; color: var(--am-gray);
+  margin-bottom: 10px;
+}
+.greeting-title span { color: var(--am-sage); }
+.greeting-desc {
+  font-size: 14px; color: var(--am-muted);
+  margin-bottom: 48px; line-height: 1.9;
+}
+
+hr.divider {
+  border: none; border-top: 0.5px solid var(--am-border);
+  margin: 0 0 48px;
+}
+
+/* ── 카드 그리드 ── */
+.section-label {
+  font-family: 'Raleway', sans-serif;
+  font-size: 10px; font-weight: 300;
+  letter-spacing: 0.22em; color: var(--am-muted);
+  text-transform: uppercase; margin-bottom: 20px;
+}
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+  margin-bottom: 56px;
+}
+.card {
+  background: var(--am-white);
+  border: 0.5px solid var(--am-border);
+  padding: 28px 24px;
+  position: relative;
+}
+.card-tag {
+  font-family: 'Raleway', sans-serif;
+  font-size: 9px; font-weight: 300;
+  letter-spacing: 0.2em; color: var(--am-muted);
+  text-transform: uppercase; margin-bottom: 10px;
+}
+.card-title {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 15px; color: var(--am-gray);
+  margin-bottom: 8px;
+}
+.card-desc {
+  font-size: 12.5px; color: var(--am-muted);
+  line-height: 1.8;
+}
+.card-badge {
+  display: inline-block;
+  margin-top: 16px;
+  font-size: 10px; letter-spacing: 0.12em;
+  color: var(--am-pale);
+  border: 0.5px solid var(--am-pale);
+  padding: 3px 10px;
+  text-transform: uppercase;
+}
+.card-badge.soon { color: var(--am-muted); border-color: var(--am-border); }
+
+/* ── 반응형 ── */
+@media (max-width: 640px) {
+  nav { padding: 0 16px; gap: 12px; }
+  .page-wrap { padding: 36px 16px 60px; }
+  .nav-links { display: none; }
+  .nav-links.open {
+    display: flex; flex-direction: column;
+    position: fixed; top: 60px; left: 0; right: 0;
+    background: var(--am-white); border-bottom: 0.5px solid var(--am-border);
+    padding: 20px; gap: 16px; z-index: 99;
+  }
+  .nav-right { display: none; }
+  .nav-ham { display: block; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">
+    <img src="image/adlermind_logo.png" alt="ADLER MIND 협동조합 로고">
+  </a>
+  <div class="nav-links" id="navLinks">
+    <a href="about.html">협동조합 소개</a>
+    <a href="counseling.html">심리상담</a>
+    <a href="education.html">교육·연수</a>
+    <a href="news.html">소식</a>
+    <a href="contact.html">문의</a>
+    <a class="active" href="mypage.html">마이페이지</a>
+  </div>
+  <div class="nav-right">
+    <span class="nav-nick" id="navNick"></span>
+    <button class="nav-logout-btn" onclick="doLogout()">로그아웃</button>
+  </div>
+  <button class="nav-ham" id="navHam" aria-label="메뉴">&#9776;</button>
+</nav>
+
+<div class="page-wrap">
+
+  <div class="greeting-label">MY PAGE</div>
+  <h1 class="greeting-title">안녕하세요, <span id="nickDisplay">···</span>님</h1>
+  <p class="greeting-desc">
+    아들러 심리학을 기반으로 한 자기탐색 활동들을 이곳에서 확인하고 기록할 수 있습니다.
+  </p>
+  <hr class="divider">
+
+  <div class="section-label">MY ACTIVITIES</div>
+  <div class="card-grid">
+
+    <div class="card">
+      <div class="card-tag">Self Exploration</div>
+      <div class="card-title">자기탐색 웹앱</div>
+      <div class="card-desc">
+        나의 생활양식과 초기 기억을 탐색하는<br>
+        인터랙티브 활동입니다.
+      </div>
+      <div class="card-badge soon">준비 중</div>
+    </div>
+
+    <div class="card">
+      <div class="card-tag">Activity Sheet</div>
+      <div class="card-title">활동지</div>
+      <div class="card-desc">
+        강의·상담 과정에서 작성한 활동지를<br>
+        저장하고 다시 확인할 수 있습니다.
+      </div>
+      <div class="card-badge soon">준비 중</div>
+    </div>
+
+    <div class="card">
+      <div class="card-tag">My Record</div>
+      <div class="card-title">나의 기록</div>
+      <div class="card-desc">
+        활동 참여 이력과 소감을<br>
+        시간순으로 모아 볼 수 있습니다.
+      </div>
+      <div class="card-badge soon">준비 중</div>
+    </div>
+
+  </div>
+
+  <div class="section-label">ACCOUNT</div>
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-tag">Password</div>
+      <div class="card-title">비밀번호 변경</div>
+      <div class="card-desc">
+        별칭은 변경할 수 없습니다.<br>
+        비밀번호만 변경 가능합니다.
+      </div>
+      <div class="card-badge soon">준비 중</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const SB_URL = 'https://jboceiacgczkqkhqcmqu.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impib2NlaWFjZ2N6a3FraHFjbXF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI1OTg1MTYsImV4cCI6MjA5ODE3NDUxNn0.9jHLNB8PVDrWlSc5CDGz5j6ZF9yaKwrnzICvvvsFbvA';
+const _sb = supabase.createClient(SB_URL, SB_KEY);
+
+// 햄버거
+document.getElementById('navHam').addEventListener('click', () => {
+  document.getElementById('navLinks').classList.toggle('open');
+});
+
+// 세션 확인 및 닉네임 표시
+(async () => {
+  const { data: { session } } = await _sb.auth.getSession();
+  if (!session) { window.location.href = 'login.html'; return; }
+
+  const res = await fetch(
+    `${SB_URL}/rest/v1/site_users?user_id=eq.${session.user.id}&select=nickname`,
+    { headers: { apikey: SB_KEY, Authorization: `Bearer ${session.access_token}` } }
+  );
+  const [u] = await res.json();
+  const nick = u?.nickname || '회원';
+  document.getElementById('nickDisplay').textContent = nick;
+  document.getElementById('navNick').textContent = nick + '님';
+})();
+
+async function doLogout() {
+  await _sb.auth.signOut();
+  window.location.href = 'index.html';
+}
+</script>
+</body>
+</html>
