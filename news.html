@@ -98,8 +98,32 @@ nav {
 .modal-meta { font-size: 11px; color: var(--am-muted); margin-bottom: 18px; }
 .modal-content {
   font-size: 14px; color: var(--am-gray); line-height: 1.9;
-  white-space: pre-wrap; border-top: 0.5px solid var(--am-border); padding-top: 18px;
+  border-top: 0.5px solid var(--am-border); padding-top: 18px;
 }
+.modal-content img { max-width: 100%; height: auto; margin: 8px 0; border-radius: 2px; }
+.modal-content iframe { max-width: 100%; }
+.modal-content h1 { font-size: 20px; font-family: 'Noto Serif KR', serif; font-weight: 400; margin: 16px 0 8px; }
+.modal-content h2 { font-size: 17px; font-family: 'Noto Serif KR', serif; font-weight: 400; margin: 14px 0 8px; }
+.modal-content h3 { font-size: 15px; font-weight: 400; margin: 12px 0 6px; }
+.modal-content p { margin: 0 0 8px; }
+.modal-content ul, .modal-content ol { padding-left: 20px; margin-bottom: 8px; }
+.modal-content blockquote { border-left: 3px solid #e8e4e0; padding-left: 14px; color: var(--am-muted); margin: 8px 0; }
+.modal-content a { color: var(--am-blue); }
+.modal-attachments { margin-top: 18px; border-top: 0.5px solid var(--am-border); padding-top: 14px; }
+.modal-attachments-label { font-size: 11px; color: var(--am-muted); margin-bottom: 8px; }
+.attach-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 12px; border: 0.5px solid var(--am-border);
+  margin-bottom: 6px; background: var(--am-bg);
+}
+.attach-item-name { flex: 1; font-size: 12px; color: var(--am-gray); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.attach-dl {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 11px; color: var(--am-blue); text-decoration: none;
+  padding: 4px 10px; border: 0.5px solid rgba(143,175,212,0.3);
+  transition: background 0.15s; flex-shrink: 0;
+}
+.attach-dl:hover { background: rgba(143,175,212,0.08); }
 
 footer {
   background: var(--am-bg); border-top: 0.5px solid var(--am-border); padding: 48px 32px;
@@ -166,6 +190,7 @@ footer {
     </div>
     <div class="modal-meta" id="mMeta"></div>
     <div class="modal-content" id="mContent"></div>
+    <div id="mAttachments"></div>
   </div>
 </div>
 
@@ -200,7 +225,7 @@ let currentCat = '전체';
 
 async function loadPosts() {
   try {
-    const res = await fetch(`${SB_URL}/rest/v1/board_posts?order=created_at.desc`, { headers: hdrs });
+    const res = await fetch(`${SB_URL}/rest/v1/board_posts?order=is_pinned.desc,created_at.desc`, { headers: hdrs });
     allPosts = await res.json();
     if (!Array.isArray(allPosts)) allPosts = [];
     render();
@@ -235,7 +260,21 @@ function openModal(id) {
   document.getElementById('mTitle').textContent = p.title;
   const date = new Date(p.created_at).toLocaleDateString('ko-KR', { year:'numeric', month:'long', day:'numeric' });
   document.getElementById('mMeta').textContent = `${p.category} · ${p.author} · ${date}`;
-  document.getElementById('mContent').textContent = p.content || '';
+  document.getElementById('mContent').innerHTML = p.content || '';
+  const attachments = p.attachments || [];
+  if (attachments.length) {
+    document.getElementById('mAttachments').innerHTML = `
+      <div class="modal-attachments">
+        <div class="modal-attachments-label">첨부파일 ${attachments.length}개</div>
+        ${attachments.map(f => `
+          <div class="attach-item">
+            <span class="attach-item-name">${esc(f.name)}</span>
+            <a class="attach-dl" href="${esc(f.url)}" download="${esc(f.name)}" target="_blank">다운로드</a>
+          </div>`).join('')}
+      </div>`;
+  } else {
+    document.getElementById('mAttachments').innerHTML = '';
+  }
   document.getElementById('modal').classList.add('open');
 }
 function closeModal() { document.getElementById('modal').classList.remove('open'); }
