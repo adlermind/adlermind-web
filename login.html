@@ -218,7 +218,7 @@ async function doLogin() {
   const btn = document.getElementById('loginBtn');
   btn.disabled = true; btn.textContent = '로그인 중...';
 
-  const email = `${nick}@adlermind.local`;
+  const email = `${nick}@adlermind.co.kr`;
   const { error } = await _sb.auth.signInWithPassword({ email, password: pw });
 
   btn.disabled = false; btn.textContent = '로그인';
@@ -257,7 +257,7 @@ async function doSignup() {
   const btn = document.getElementById('signupBtn');
   btn.disabled = true; btn.textContent = '가입 처리 중...';
 
-  const email = `${nick}@adlermind.local`;
+  const email = `${nick}@adlermind.co.kr`;
   const { data, error } = await _sb.auth.signUp({ email, password: pw });
 
   if (error) {
