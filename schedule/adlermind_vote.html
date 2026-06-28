@@ -189,53 +189,52 @@ body {
 }
 .leg-item { display: flex; align-items: center; gap: 5px; font-size: 10px; color: var(--am-muted); }
 .leg-dot { width: 12px; height: 12px; border-radius: 3px; border: 0.5px solid; }
-.status-week {
-  display: flex; align-items: center; gap: 8px; margin-bottom: 14px;
-}
-.week-grid {
+.heatmap-wrap { overflow-x: auto; }
+.heatmap-grid {
   display: grid;
-  grid-template-columns: 52px repeat(7, 1fr);
-  gap: 2px; overflow-x: auto; min-width: 340px;
+  grid-template-columns: 40px repeat(7, 1fr);
+  gap: 3px; min-width: 320px;
 }
-.wg-head {
+.hm-head {
   text-align: center; font-size: 9px; color: var(--am-muted);
-  padding: 3px 0; font-family: 'Raleway', sans-serif;
+  padding: 4px 2px; font-family: 'Raleway', sans-serif; line-height: 1.4;
 }
-.wg-head.today { color: var(--am-rose); }
-.wg-name { font-size: 10px; color: var(--am-muted); padding: 3px 0; display: flex; align-items: center; }
-.wg-cell {
-  height: 20px; border-radius: 3px;
-  border: 0.5px solid var(--am-border); background: var(--am-white);
+.hm-head.today { color: var(--am-rose); }
+.hm-time {
+  font-size: 9px; color: var(--am-muted); text-align: right;
+  padding-right: 5px; display: flex; align-items: center; justify-content: flex-end;
+  height: 34px;
 }
-.wg-cell.on { background: rgba(143,191,184,0.5); border-color: var(--am-sage); }
-.wg-cell.off { background: rgba(216,216,220,0.2); }
-.wg-sum {
-  height: 20px; border-radius: 3px; font-size: 8px;
+.hm-cell {
+  height: 34px; border-radius: 5px; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  color: var(--am-sage); font-weight: 400;
+  font-size: 12px; font-weight: 400; color: rgba(255,255,255,0.9);
+  border: 0.5px solid transparent; transition: transform 0.1s, box-shadow 0.1s;
+  position: relative;
 }
-.time-detail {
-  margin-top: 16px; border: 0.5px solid var(--am-border);
-  border-radius: 8px; overflow: hidden;
+.hm-cell:hover { transform: scale(1.06); box-shadow: 0 1px 6px rgba(0,0,0,0.1); }
+.hm-cell.selected { box-shadow: 0 0 0 2px var(--am-sage); }
+.hm-cell.zero { background: rgba(216,216,220,0.25); border-color: var(--am-border); color: transparent; cursor: default; }
+.hm-cell.zero:hover { transform: none; box-shadow: none; }
+.hm-info {
+  margin-top: 10px; padding: 10px 14px;
+  background: var(--am-white); border: 0.5px solid var(--am-border);
+  border-radius: 8px; font-size: 11px; color: var(--am-gray); line-height: 1.7;
+  display: none;
 }
-.td-head {
-  padding: 9px 12px; background: var(--am-bg);
-  font-size: 11px; color: var(--am-muted);
-  border-bottom: 0.5px solid var(--am-pale);
-  font-family: 'Raleway', sans-serif; letter-spacing: 0.08em;
+.hm-info.visible { display: block; }
+.hm-info-time { font-size: 10px; color: var(--am-muted); margin-bottom: 3px; }
+.hm-info-names { color: var(--am-gray); }
+.hm-legend {
+  display: flex; align-items: center; gap: 6px; margin-top: 10px;
+  font-size: 9px; color: var(--am-muted);
 }
-.td-row {
-  display: flex; align-items: center; gap: 8px;
-  padding: 7px 12px; border-bottom: 0.5px solid var(--am-pale);
+.hm-legend-bar {
+  display: flex; gap: 2px;
 }
-.td-row:last-child { border-bottom: none; }
-.td-time { font-size: 10px; color: var(--am-muted); min-width: 40px; }
-.td-names { flex: 1; font-size: 11px; color: var(--am-gray); }
-.td-count {
-  font-size: 10px; padding: 2px 8px; border-radius: 10px;
-  background: rgba(143,191,184,0.18); color: #5a9990;
+.hm-legend-cell {
+  width: 16px; height: 10px; border-radius: 2px;
 }
-.td-count.high { background: rgba(143,191,184,0.45); color: #3a8078; font-weight: 400; }
 .meeting-card {
   background: var(--am-white); border: 0.5px solid var(--am-border);
   border-radius: 10px; padding: 16px 18px; margin-bottom: 10px;
@@ -460,12 +459,17 @@ body {
         <div class="date-label" id="weekLabelStatus">-</div>
         <button class="date-nav" onclick="nextWeekStatus()"><i class="ti ti-chevron-right"></i></button>
       </div>
-      <div style="overflow-x:auto;">
-        <div class="week-grid" id="statusGrid"></div>
+      <div class="heatmap-wrap">
+        <div class="heatmap-grid" id="heatmapGrid"></div>
       </div>
-      <div class="time-detail" id="timeDetail" style="display:none;">
-        <div class="td-head">시간대별 상세</div>
-        <div id="timeDetailBody"></div>
+      <div class="hm-legend">
+        <span>적음</span>
+        <div class="hm-legend-bar" id="hmLegendBar"></div>
+        <span>많음</span>
+      </div>
+      <div class="hm-info" id="hmInfo">
+        <div class="hm-info-time" id="hmInfoTime"></div>
+        <div class="hm-info-names" id="hmInfoNames"></div>
       </div>
     </div>
 
@@ -698,63 +702,65 @@ async function loadStatusData() {
   renderStatusGrid();
 }
 
+function cellColor(count) {
+  if (count === 0) return null;
+  const steps = [
+    'rgba(143,191,184,0.20)',
+    'rgba(143,191,184,0.38)',
+    'rgba(143,191,184,0.54)',
+    'rgba(143,191,184,0.70)',
+    'rgba(90,160,152,0.82)',
+    'rgba(55,130,122,0.92)',
+  ];
+  return steps[Math.min(count - 1, steps.length - 1)];
+}
+
 function renderStatusGrid() {
   const days = Array.from({length:7}, (_,i) => {
     const d = new Date(statusWeekStart); d.setDate(statusWeekStart.getDate()+i); return d;
   });
-  let html = '<div class="wg-head"></div>';
+
+  let html = '<div></div>';
   days.forEach(d => {
-    html += `<div class="wg-head${isToday(d)?' today':''}">${DAYS_KR[d.getDay()]}<br><span style="font-size:9px;">${d.getDate()}</span></div>`;
+    html += `<div class="hm-head${isToday(d)?' today':''}">${DAYS_KR[d.getDay()]}<br><span style="font-size:9px;">${d.getDate()}</span></div>`;
   });
-  MEMBERS.forEach(name => {
-    const memberData = allAvailData.find(r => r.member_name === name);
-    const blocked = new Set(memberData?.slots || []);
-    const hasResponded = !!memberData;
-    html += `<div class="wg-name">${name}</div>`;
+
+  HOURS.forEach(h => {
+    html += `<div class="hm-time">${h}:00</div>`;
     days.forEach(d => {
-      const dateStr  = fmtDate(d);
-      const anyAvail = hasResponded && HOURS.some(h => !blocked.has(slotKey(dateStr, h)));
-      html += `<div class="wg-cell${anyAvail?' on':hasResponded?' off':''}" title="${hasResponded?'':'미응답'}"></div>`;
+      const dateStr = fmtDate(d);
+      const key     = slotKey(dateStr, h);
+      const avail   = allAvailData.filter(r => !(r.slots||[]).includes(key));
+      const count   = avail.length;
+      const color   = cellColor(count);
+      const label   = `${parseInt(dateStr.split('-')[1])}/${parseInt(dateStr.split('-')[2])}(${DAYS_KR[d.getDay()]}) ${h}:00`;
+      if (count === 0) {
+        html += `<div class="hm-cell zero"></div>`;
+      } else {
+        html += `<div class="hm-cell" style="background:${color};" onclick="selectHmCell(this,'${label}','${avail.map(r=>r.member_name).join('·')}')">${count}</div>`;
+      }
     });
   });
-  html += '<div class="wg-name" style="color:var(--am-sage);font-size:9px;">가능</div>';
-  days.forEach(d => {
-    const dateStr = fmtDate(d);
-    const count = allAvailData.filter(r => {
-      const blocked = new Set(r.slots || []);
-      return HOURS.some(h => !blocked.has(slotKey(dateStr, h)));
-    }).length;
-    const opacity = count === 0 ? 0 : 0.15 + (count/MEMBERS.length)*0.5;
-    html += `<div class="wg-sum" style="background:rgba(143,191,184,${opacity.toFixed(2)}); border-radius:3px;">${count>0?count:''}</div>`;
-  });
-  document.getElementById('statusGrid').innerHTML = html;
-  renderTimeDetail(days);
+
+  document.getElementById('heatmapGrid').innerHTML = html;
+
+  // 범례
+  const legendBar = document.getElementById('hmLegendBar');
+  legendBar.innerHTML = Array.from({length:6},(_,i) => {
+    const c = cellColor(i+1);
+    return `<div class="hm-legend-cell" style="background:${c};"></div>`;
+  }).join('');
+
+  document.getElementById('hmInfo').classList.remove('visible');
 }
 
-function renderTimeDetail(days) {
-  const detail = document.getElementById('timeDetail');
-  const body   = document.getElementById('timeDetailBody');
-  const slots = [];
-  days.forEach(d => {
-    const dateStr = fmtDate(d);
-    HOURS.forEach(h => {
-      const key   = slotKey(dateStr, h);
-      const avail = allAvailData.filter(r => !(r.slots||[]).includes(key));
-      if (avail.length >= 1) slots.push({ dateStr, h, count: avail.length, names: avail.map(r=>r.member_name) });
-    });
-  });
-  if (!slots.length) { detail.style.display = 'none'; return; }
-  detail.style.display = 'block';
-  const maxCount = Math.max(...slots.map(s => s.count));
-  body.innerHTML = slots.map(s => {
-    const dayLabel = `${parseInt(s.dateStr.split('-')[1])}/${parseInt(s.dateStr.split('-')[2])}(${DAYS_KR[new Date(s.dateStr).getDay()]})`;
-    const isHigh   = s.count === maxCount && maxCount >= 2;
-    return `<div class="td-row" ${isHigh?'style="background:rgba(143,191,184,0.06);"':''}>
-      <div class="td-time">${dayLabel} ${s.h}:00</div>
-      <div class="td-names">${s.names.join(' · ')}</div>
-      <div class="td-count${isHigh?' high':''}">${s.count}명</div>
-    </div>`;
-  }).join('');
+function selectHmCell(el, timeLabel, namesStr) {
+  document.querySelectorAll('.hm-cell.selected').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  const names = namesStr.split('·');
+  document.getElementById('hmInfoTime').textContent = timeLabel + ' — ' + names.length + '명 가능';
+  document.getElementById('hmInfoNames').textContent = names.join(' · ');
+  document.getElementById('hmInfo').classList.add('visible');
 }
 
 async function loadMeetings() {
