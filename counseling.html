@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>심리상담 · ADLER MIND 협동조합</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400&family=Noto+Sans+KR:wght@300;400&family=Raleway:wght@200;300;400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --am-rose: #E8929A; --am-sage: #8FBFB8; --am-gray: #6B6B6B;
+  --am-bg: #FAFAF8; --am-muted: #9a9490; --am-border: #e8e4e0; --am-white: #ffffff;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Noto Sans KR', sans-serif; font-weight: 300; color: var(--am-gray); background: var(--am-white); min-height: 100vh; display: flex; flex-direction: column; }
+nav {
+  position: sticky; top: 0; z-index: 100; background: var(--am-white);
+  border-bottom: 0.5px solid var(--am-border); padding: 0 32px;
+  display: flex; align-items: center; gap: 32px; height: 60px;
+}
+.nav-logo img { height: 36px; display: block; }
+.nav-links { display: flex; align-items: center; gap: 24px; flex: 1; }
+.nav-links a { font-size: 13px; color: var(--am-gray); text-decoration: none; transition: color 0.15s; }
+.nav-links a:hover, .nav-links a.active { color: var(--am-sage); }
+.nav-member-btn {
+  margin-left: auto; padding: 7px 18px; background: var(--am-sage); color: #fff;
+  border: none; border-radius: 2px; font-size: 12px; font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 300; cursor: pointer; text-decoration: none; transition: background 0.15s; white-space: nowrap;
+}
+.nav-member-btn:hover { background: #6fa8a0; }
+.nav-ham { display: none; border: none; background: none; cursor: pointer; font-size: 22px; color: var(--am-gray); }
+.coming-wrap {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 80px 32px; text-align: center; background: var(--am-bg);
+}
+.coming-label {
+  font-family: 'Raleway', sans-serif; font-size: 10px; font-weight: 200;
+  letter-spacing: 0.3em; color: var(--am-muted); text-transform: uppercase; margin-bottom: 28px;
+}
+.coming-line { width: 40px; height: 0.5px; background: var(--am-sage); margin: 0 auto 32px; }
+.coming-title {
+  font-family: 'Noto Serif KR', serif; font-size: 22px; font-weight: 300;
+  color: var(--am-gray); margin-bottom: 16px;
+}
+.coming-desc { font-size: 13px; color: var(--am-muted); line-height: 2; margin-bottom: 36px; }
+.coming-date {
+  font-family: 'Raleway', sans-serif; font-size: 11px; letter-spacing: 0.12em;
+  color: var(--am-sage); border: 0.5px solid rgba(143,191,184,0.4);
+  padding: 8px 20px; margin-bottom: 32px;
+}
+.back-link { font-size: 12px; color: var(--am-muted); text-decoration: none; }
+.back-link:hover { color: var(--am-sage); }
+@media (max-width: 720px) {
+  nav { padding: 0 20px; }
+  .nav-links { display: none; }
+  .nav-links.open { display: flex; flex-direction: column; position: fixed; top: 60px; left: 0; right: 0; background: var(--am-white); border-bottom: 0.5px solid var(--am-border); padding: 20px; gap: 16px; z-index: 99; }
+  .nav-ham { display: block; margin-left: auto; }
+}
+</style>
+</head>
+<body>
+<nav>
+  <a class="nav-logo" href="index.html"><img src="image/adlermind_logo.png" alt="ADLER MIND 협동조합"></a>
+  <div class="nav-links" id="navLinks">
+    <a href="about.html">협동조합 소개</a>
+    <a href="counseling.html" class="active">심리상담</a>
+    <a href="education.html">교육·연수</a>
+    <a href="news.html">소식</a>
+    <a href="contact.html">문의</a>
+  </div>
+  <a class="nav-member-btn" href="members.html">조합원 로그인</a>
+  <button class="nav-ham" id="navHam">&#9776;</button>
+</nav>
+<div class="coming-wrap">
+  <div class="coming-label">COUNSELING</div>
+  <div class="coming-line"></div>
+  <h1 class="coming-title">심리상담 페이지를 준비 중입니다</h1>
+  <p class="coming-desc">
+    아들러 개인심리학을 기반으로 한 심리상담 안내,<br>
+    상담사 소개, 예약 방법을 준비하고 있습니다.
+  </p>
+  <div class="coming-date">2026. 08. 15 창립총회 이후 공개 예정</div>
+  <a class="back-link" href="index.html">&larr; 홈으로 돌아가기</a>
+</div>
+<script>
+document.getElementById('navHam').addEventListener('click', () => {
+  document.getElementById('navLinks').classList.toggle('open');
+});
+</script>
+</body>
+</html>
