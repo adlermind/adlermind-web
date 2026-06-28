@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ADLER MIND — 일정 조율</title>
+<meta property="og:title" content="ADLER MIND 협동조합 · 일정 조율">
+<meta property="og:description" content="조합원 가용시간 및 모임 조율 · ADLER MIND 협동조합">
+<meta property="og:image" content="https://adlermind.co.kr/image/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400&family=Noto+Sans+KR:wght@300;400&family=Raleway:wght@200;300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root {
+  --am-rose:   #E8929A;
+  --am-sage:   #8FBFB8;
+  --am-mauve:  #C48DA0;
+  --am-blue:   #8FAFD4;
+  --am-peach:  #F2C4B8;
+  --am-gray:   #6B6B6B;
+  --am-pale:   #D8D8DC;
+  --am-bg:     #FAFAF8;
+  --am-muted:  #9a9490;
+  --am-border: #e8e4e0;
+  --am-white:  #ffffff;
+  --am-dark:   #3d3a36;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: var(--am-bg); color: var(--am-gray);
+  font-weight: 300; line-height: 1.7; min-height: 100vh;
+}
+.login-screen {
+  position: fixed; inset: 0; background: var(--am-bg);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 999; padding: 20px;
+}
+.login-box {
+  background: var(--am-white); border: 0.5px solid var(--am-border);
+  border-radius: 14px; padding: 28px 24px;
+  width: 100%; max-width: 360px;
+}
+.login-logo { text-align: center; margin-bottom: 18px; }
+.login-logo img { height: 54px; }
+.login-sub {
+  font-family: 'Raleway', sans-serif; font-size: 9px;
+  letter-spacing: 0.18em; color: var(--am-muted);
+  text-align: center; margin-bottom: 22px;
+}
+.login-label { font-size: 11px; color: var(--am-muted); margin-bottom: 7px; }
+.member-grid {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 6px; margin-bottom: 16px;
+}
+.member-btn {
+  padding: 10px 6px; font-size: 12px;
+  border: 0.5px solid var(--am-border); border-radius: 7px;
+  cursor: pointer; background: var(--am-white); color: var(--am-gray);
+  font-family: 'Noto Sans KR', sans-serif; font-weight: 300;
+  text-align: center; transition: all 0.15s;
+}
+.member-btn:hover { border-color: var(--am-sage); color: var(--am-sage); }
+.member-btn.selected {
+  border-color: var(--am-sage); background: rgba(143,191,184,0.12); color: var(--am-sage);
+}
+.pw-area { display: none; margin-bottom: 6px; }
+.pw-area.visible { display: block; }
+.pw-hint {
+  font-size: 10px; color: var(--am-muted); margin-bottom: 6px;
+  padding: 7px 10px; background: rgba(143,191,184,0.08);
+  border-radius: 6px; border-left: 2px solid var(--am-sage);
+}
+.pw-input {
+  width: 100%; border: 0.5px solid var(--am-border);
+  border-radius: 7px; padding: 9px 12px; font-size: 13px;
+  background: var(--am-bg); color: var(--am-gray); margin-bottom: 6px;
+  font-family: 'Noto Sans KR', sans-serif; font-weight: 300;
+}
+.pw-input:focus { outline: none; border-color: var(--am-sage); }
+.login-err { font-size: 11px; color: var(--am-rose); margin-bottom: 8px; display: none; }
+.login-btn {
+  width: 100%; padding: 11px; background: var(--am-sage); color: #fff;
+  border: none; border-radius: 8px; font-size: 13px; cursor: pointer;
+  font-family: 'Noto Sans KR', sans-serif; font-weight: 300; transition: background 0.15s;
+}
+.login-btn:hover { background: #6fa8a0; }
+.back-link {
+  display: block; text-align: center; margin-top: 14px;
+  font-size: 11px; color: var(--am-muted); text-decoration: none;
+}
+.back-link:hover { color: var(--am-sage); }
+.app { display: none; flex-direction: column; min-height: 100vh; }
+.app.visible { display: flex; }
+.app-header {
+  background: var(--am-white); border-bottom: 0.5px solid var(--am-border);
+  position: sticky; top: 0; z-index: 100; flex-shrink: 0;
+}
+.header-top { padding: 10px 16px; display: flex; align-items: center; gap: 10px; }
+.header-logo img { height: 28px; }
+.header-info { flex: 1; }
+.header-info h1 { font-size: 12px; font-weight: 300; color: var(--am-gray); }
+.header-sub { font-size: 9px; color: var(--am-muted); font-family: 'Raleway', sans-serif; letter-spacing: 0.08em; }
+.user-chip {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--am-bg); border: 0.5px solid var(--am-border);
+  border-radius: 20px; padding: 4px 10px 4px 5px;
+}
+.user-av {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: rgba(143,191,184,0.25); color: var(--am-sage);
+  display: flex; align-items: center; justify-content: center; font-size: 10px;
+}
+.user-chip span { font-size: 11px; color: var(--am-gray); }
+.logout-btn {
+  border: none; background: none; cursor: pointer;
+  color: var(--am-muted); padding: 0 0 0 4px; font-size: 14px;
+}
+.logout-btn:hover { color: var(--am-rose); }
+.header-tabs { display: flex; border-top: 0.5px solid var(--am-pale); }
+.htab {
+  flex: 1; padding: 9px 4px; border: none; background: none;
+  color: var(--am-muted); font-size: 10px; cursor: pointer;
+  font-family: 'Noto Sans KR', sans-serif; font-weight: 300;
+  display: flex; align-items: center; justify-content: center; gap: 3px;
+  border-bottom: 2px solid transparent; transition: all 0.15s;
+}
+.htab:hover { color: var(--am-sage); background: rgba(143,191,184,0.05); }
+.htab.active { color: var(--am-sage); border-bottom-color: var(--am-sage); }
+.htab i { font-size: 14px; }
+.main-panel { flex: 1; }
+.panel { display: none; padding: 16px; max-width: 680px; margin: 0 auto; padding-bottom: 40px; }
+.panel.active { display: block; }
+.panel-title {
+  font-family: 'Noto Serif KR', serif; font-size: 14px;
+  color: var(--am-gray); margin-bottom: 14px;
+}
+.date-row {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 14px;
+}
+.date-nav {
+  border: 0.5px solid var(--am-border); background: var(--am-white);
+  border-radius: 6px; padding: 5px 10px; cursor: pointer;
+  font-size: 13px; color: var(--am-gray);
+}
+.date-nav:hover { background: var(--am-bg); }
+.date-label {
+  flex: 1; text-align: center; font-size: 12px; color: var(--am-gray);
+  font-family: 'Noto Serif KR', serif;
+}
+.avail-wrap { overflow-x: auto; }
+.avail-grid {
+  display: grid;
+  grid-template-columns: 46px repeat(7, 1fr);
+  gap: 3px; min-width: 360px;
+}
+.ag-head {
+  text-align: center; font-size: 10px; color: var(--am-muted);
+  padding: 4px 0; font-family: 'Raleway', sans-serif;
+}
+.ag-head.today { color: var(--am-rose); font-weight: 400; }
+.ag-time {
+  font-size: 9px; color: var(--am-muted); text-align: right;
+  padding-right: 5px; display: flex; align-items: center; justify-content: flex-end;
+  height: 28px;
+}
+.ag-cell {
+  height: 28px; border-radius: 4px;
+  border: 0.5px solid rgba(143,191,184,0.4); background: rgba(143,191,184,0.18);
+  cursor: pointer; transition: all 0.12s;
+}
+.ag-cell:hover { opacity: 0.8; }
+.ag-cell.blocked { background: rgba(216,216,220,0.35); border-color: var(--am-border); }
+.ag-cell.past { background: var(--am-bg); border-color: var(--am-border); cursor: default; opacity: 0.4; }
+.save-avail-btn {
+  width: 100%; margin-top: 14px; padding: 11px;
+  background: var(--am-sage); color: #fff; border: none;
+  border-radius: 8px; font-size: 13px; cursor: pointer;
+  font-family: 'Noto Sans KR', sans-serif; font-weight: 300;
+  transition: background 0.15s;
+}
+.save-avail-btn:hover { background: #6fa8a0; }
+.avail-legend {
+  display: flex; gap: 12px; margin-top: 10px; flex-wrap: wrap;
+}
+.leg-item { display: flex; align-items: center; gap: 5px; font-size: 10px; color: var(--am-muted); }
+.leg-dot { width: 12px; height: 12px; border-radius: 3px; border: 0.5px solid; }
+.status-week {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 14px;
+}
+.week-grid {
+  display: grid;
+  grid-template-columns: 52px repeat(7, 1fr);
+  gap: 2px; overflow-x: auto; min-width: 340px;
+}
+.wg-head {
+  text-align: center; font-size: 9px; color: var(--am-muted);
+  padding: 3px 0; font-family: 'Raleway', sans-serif;
+}
+.wg-head.today { color: var(--am-rose); }
+.wg-name { font-size: 10px; color: var(--am-muted); padding: 3px 0; display: flex; align-items: center; }
+.wg-cell {
+  height: 20px; border-radius: 3px;
+  border: 0.5px solid var(--am-border); background: var(--am-white);
+}
+.wg-cell.on { background: rgba(143,191,184,0.5); border-color: var(--am-sage); }
+.wg-cell.off { background: rgba(216,216,220,0.2); }
+.wg-sum {
+  height: 20px; border-radius: 3px; font-size: 8px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--am-sage); font-weight: 400;
+}
+.time-detail {
+  margin-top: 16px; border: 0.5px solid var(--am-border);
+  border-radius: 8px; overflow: hidden;
+}
+.td-head {
+  padding: 9px 12px; background: var(--am-bg);
+  font-size: 11px; color: var(--am-muted);
+  border-bottom: 0.5px solid var(--am-pale);
+  font-family: 'Raleway', sans-serif; letter-spacing: 0.08em;
+}
+.td-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 12px; border-bottom: 0.5px solid var(--am-pale);
+}
+.td-row:last-child { border-bottom: none; }
+.td-time { font-size: 10px; color: var(--am-muted); min-width: 40px; }
+.td-names { flex: 1; font-size: 11px; color: var(--am-gray); }
+.td-count {
+  font-size: 10px; padding: 2px 8px; border-radius: 10px;
+  background: rgba(143,191,184,0.18); color: #5a9990;
+}
+.td-count.high { background: rgba(143,191,184,0.45); color: #3a8078; font-weight: 400; }
+.meeting-card {
+  background: var(--am-white); border: 0.5px solid var(--am-border);
+  border-radius: 10px; padding: 16px 18px; margin-bottom: 10px;
+  cursor: pointer; transition: border-color 0.15s;
+}
+.meeting-card:hover { border-color: var(--am-sage); }
+.meeting-card.open    { border-left: 2px solid var(--am-rose); }
+.meeting-card.decided { border-left: 2px solid var(--am-sage); cursor: default; }
+.mc-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 6px; }
+.mc-title { font-size: 13px; color: var(--am-gray); }
+.mc-badge {
+  font-size: 9px; padding: 2px 8px; border-radius: 10px;
+  font-family: 'Raleway', sans-serif; flex-shrink: 0; margin-left: 8px;
+}
+.badge-open    { background: rgba(232,146,154,0.12); color: var(--am-rose); }
+.badge-decided { background: rgba(143,191,184,0.18); color: #5a9990; }
+.mc-date { font-size: 10px; color: var(--am-muted); margin-bottom: 10px; }
+.mc-votes { display: flex; flex-direction: column; gap: 5px; }
+.mv-row { display: flex; align-items: center; gap: 8px; }
+.mv-label { font-size: 10px; color: var(--am-gray); min-width: 130px; flex-shrink: 0; }
+.mv-bar-bg { flex: 1; height: 5px; border-radius: 3px; background: var(--am-pale); overflow: hidden; }
+.mv-bar-fill { height: 100%; border-radius: 3px; background: var(--am-sage); }
+.mv-bar-fill.top { background: var(--am-rose); }
+.mv-count { font-size: 10px; color: var(--am-muted); min-width: 32px; text-align: right; }
+.mc-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; }
+.mc-resp { font-size: 10px; color: var(--am-muted); }
+.new-btn {
+  display: flex; align-items: center; gap: 4px;
+  padding: 6px 12px; background: var(--am-sage); color: #fff;
+  border: none; border-radius: 6px; font-size: 11px; cursor: pointer;
+  font-family: 'Noto Sans KR', sans-serif; font-weight: 300; transition: background 0.15s;
+}
+.new-btn:hover { background: #6fa8a0; }
+.panel-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(60,55,50,0.45); z-index: 500;
+  align-items: flex-end; justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+@media (min-width: 560px) { .modal-overlay { align-items: center; } }
+.modal-box {
+  background: var(--am-white); border-radius: 14px 14px 0 0;
+  width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto;
+  padding: 20px 20px 28px;
+}
+@media (min-width: 560px) { .modal-box { border-radius: 14px; } }
+.modal-hd {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px; padding-bottom: 12px; border-bottom: 0.5px solid var(--am-pale);
+}
+.modal-title { font-family: 'Noto Serif KR', serif; font-size: 14px; color: var(--am-gray); }
+.modal-close { border: none; background: none; cursor: pointer; color: var(--am-muted); font-size: 18px; }
+.modal-close:hover { color: var(--am-gray); }
+.vote-option {
+  border: 0.5px solid var(--am-border); border-radius: 8px;
+  padding: 12px 14px; margin-bottom: 8px; cursor: pointer;
+  transition: all 0.15s; background: var(--am-white);
+}
+.vote-option:hover { border-color: var(--am-sage); }
+.vote-option.yes { border-color: var(--am-sage); background: rgba(143,191,184,0.08); }
+.vo-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.vo-label { font-size: 12px; color: var(--am-gray); }
+.vo-bar-row { display: flex; align-items: center; gap: 6px; }
+.vo-bar-bg { flex: 1; height: 4px; border-radius: 2px; background: var(--am-pale); overflow: hidden; }
+.vo-bar-fill { height: 100%; border-radius: 2px; background: var(--am-sage); }
+.vo-count { font-size: 10px; color: var(--am-muted); }
+.vo-names { font-size: 10px; color: var(--am-muted); margin-top: 4px; }
+.submit-btn {
+  width: 100%; padding: 12px; background: var(--am-sage); color: #fff;
+  border: none; border-radius: 8px; font-size: 13px; cursor: pointer;
+  font-family: 'Noto Sans KR', sans-serif; font-weight: 300; margin-top: 16px;
+}
+.submit-btn:hover { background: #6fa8a0; }
+.decide-btn {
+  padding: 5px 12px; border: 0.5px solid var(--am-sage);
+  border-radius: 6px; background: none; color: var(--am-sage);
+  font-size: 11px; cursor: pointer; font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 300; transition: all 0.15s;
+}
+.decide-btn:hover { background: var(--am-sage); color: #fff; }
+.form-label { font-size: 11px; color: var(--am-muted); margin-bottom: 5px; margin-top: 12px; }
+.form-input {
+  width: 100%; border: 0.5px solid var(--am-border); border-radius: 7px;
+  padding: 9px 12px; font-size: 12px; background: var(--am-bg); color: var(--am-gray);
+  font-family: 'Noto Sans KR', sans-serif; font-weight: 300;
+}
+.form-input:focus { outline: none; border-color: var(--am-sage); }
+.candidate-row { display: flex; gap: 6px; margin-bottom: 6px; align-items: center; }
+.candidate-row .form-input { flex: 1; }
+.remove-btn { border: none; background: none; cursor: pointer; color: var(--am-pale); font-size: 16px; }
+.remove-btn:hover { color: var(--am-rose); }
+.add-candidate-btn {
+  font-size: 11px; color: var(--am-sage); border: 0.5px solid var(--am-sage);
+  background: none; border-radius: 6px; padding: 5px 10px;
+  cursor: pointer; font-family: 'Noto Sans KR', sans-serif; margin-top: 2px;
+}
+.add-candidate-btn:hover { background: rgba(143,191,184,0.1); }
+.admin-badge {
+  font-size: 9px; padding: 1px 6px; border-radius: 8px;
+  background: rgba(232,146,154,0.12); color: var(--am-rose);
+  font-family: 'Raleway', sans-serif; margin-left: 4px;
+}
+.info-box {
+  background: rgba(143,191,184,0.08); border: 0.5px solid rgba(143,191,184,0.4);
+  border-radius: 8px; padding: 11px 13px; margin-bottom: 12px;
+  font-size: 11px; color: var(--am-gray); line-height: 1.7;
+}
+.hist-card {
+  background: var(--am-white); border: 0.5px solid var(--am-border);
+  border-left: 2px solid var(--am-sage);
+  border-radius: 10px; padding: 14px 16px; margin-bottom: 8px;
+}
+.hist-title { font-size: 12px; color: var(--am-gray); margin-bottom: 4px; }
+.hist-meta { font-size: 10px; color: var(--am-muted); }
+.toast {
+  position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+  background: var(--am-dark); color: #fff; padding: 9px 20px;
+  border-radius: 20px; font-size: 12px; z-index: 9999;
+  display: none; white-space: nowrap;
+}
+.toast.show { display: block; }
+.empty-state {
+  text-align: center; padding: 40px 20px;
+  color: var(--am-muted); font-size: 12px; line-height: 1.8;
+}
+.empty-state i { font-size: 28px; color: var(--am-pale); display: block; margin-bottom: 10px; }
+</style>
+</head>
+<body>
+
+<div class="login-screen" id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">
+      <img src="../image/adlermind_logo.svg" alt="ADLER MIND 협동조합 로고"
+           onerror="this.src='../image/adlermind_logo.png'">
+    </div>
+    <div class="login-sub">COOPERATIVE SCHEDULE · 일정 조율</div>
+    <div class="login-label">이름을 선택해주세요</div>
+    <div class="member-grid">
+      <button class="member-btn" onclick="selectMember(this,'이경숙')">이경숙</button>
+      <button class="member-btn" onclick="selectMember(this,'고미경')">고미경</button>
+      <button class="member-btn" onclick="selectMember(this,'신옥선')">신옥선</button>
+      <button class="member-btn" onclick="selectMember(this,'박정연')">박정연</button>
+      <button class="member-btn" onclick="selectMember(this,'김이수')">김이수</button>
+      <button class="member-btn" onclick="selectMember(this,'김종금')">김종금</button>
+    </div>
+    <div class="pw-area" id="pwArea">
+      <div class="pw-hint">발기인 대표 전용 — 비밀번호를 입력해주세요</div>
+      <input class="pw-input" type="password" id="pwInput" placeholder="비밀번호"
+        onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <div class="login-err" id="loginErr"></div>
+    <button class="login-btn" onclick="doLogin()">입장하기</button>
+    <a class="back-link" href="../members-home.html">&larr; 조합원 공간으로</a>
+  </div>
+</div>
+
+<div class="app" id="app">
+  <div class="app-header">
+    <div class="header-top">
+      <div class="header-logo">
+        <img src="../image/adlermind_logo.svg" alt="ADLER MIND 협동조합 로고"
+             onerror="this.src='../image/adlermind_logo.png'">
+      </div>
+      <div class="header-info">
+        <h1>일정 조율</h1>
+        <div class="header-sub">ADLER MIND 협동조합</div>
+      </div>
+      <div class="user-chip">
+        <div class="user-av" id="userAv">-</div>
+        <span id="userNameDisplay">-</span>
+        <button class="logout-btn" onclick="doLogout()" title="나가기"><i class="ti ti-logout"></i></button>
+      </div>
+    </div>
+    <div class="header-tabs">
+      <button class="htab active" onclick="switchTab('avail')" id="tabAvail">
+        <i class="ti ti-clock"></i>가용시간
+      </button>
+      <button class="htab" onclick="switchTab('status')" id="tabStatus">
+        <i class="ti ti-layout-grid"></i>현황
+      </button>
+      <button class="htab" onclick="switchTab('meeting')" id="tabMeeting" style="display:none;">
+        <i class="ti ti-calendar-event"></i>모임 확정
+      </button>
+      <button class="htab" onclick="switchTab('history')" id="tabHistory">
+        <i class="ti ti-clock-hour-4"></i>이력
+      </button>
+    </div>
+  </div>
+
+  <div class="main-panel">
+    <div class="panel active" id="panelAvail">
+      <div class="panel-title">이번 주 불가능한 시간 표시</div>
+      <div class="info-box">
+        기본값은 전부 <strong>가능</strong>입니다.<br>
+        다른 일정이 있어 <strong>안 되는 시간</strong>만 터치해서 회색으로 표시한 뒤 저장해주세요.
+      </div>
+      <div class="date-row">
+        <button class="date-nav" onclick="prevWeek()"><i class="ti ti-chevron-left"></i></button>
+        <div class="date-label" id="weekLabel">-</div>
+        <button class="date-nav" onclick="nextWeek()"><i class="ti ti-chevron-right"></i></button>
+      </div>
+      <div class="avail-wrap">
+        <div class="avail-grid" id="availGrid"></div>
+      </div>
+      <div class="avail-legend">
+        <div class="leg-item">
+          <div class="leg-dot" style="background:rgba(143,191,184,0.18); border-color:rgba(143,191,184,0.4);"></div>가능
+        </div>
+        <div class="leg-item">
+          <div class="leg-dot" style="background:rgba(216,216,220,0.35); border-color:var(--am-border);"></div>불가
+        </div>
+      </div>
+      <button class="save-avail-btn" onclick="saveAvailability()">저장</button>
+    </div>
+
+    <div class="panel" id="panelStatus">
+      <div class="panel-title">조합원 가용시간 현황</div>
+      <div class="date-row">
+        <button class="date-nav" onclick="prevWeekStatus()"><i class="ti ti-chevron-left"></i></button>
+        <div class="date-label" id="weekLabelStatus">-</div>
+        <button class="date-nav" onclick="nextWeekStatus()"><i class="ti ti-chevron-right"></i></button>
+      </div>
+      <div style="overflow-x:auto;">
+        <div class="week-grid" id="statusGrid"></div>
+      </div>
+      <div class="time-detail" id="timeDetail" style="display:none;">
+        <div class="td-head">시간대별 상세</div>
+        <div id="timeDetailBody"></div>
+      </div>
+    </div>
+
+    <div class="panel" id="panelMeeting">
+      <div class="panel-hd">
+        <div class="panel-title">모임 확정</div>
+        <button class="new-btn" onclick="openNewMeetingModal()">
+          <i class="ti ti-plus"></i>새 모임 제안
+        </button>
+      </div>
+      <div id="meetingList">
+        <div class="empty-state">
+          <i class="ti ti-calendar-off"></i>진행 중인 모임 조율이 없습니다.
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" id="panelHistory">
+      <div class="panel-title">결정 이력</div>
+      <div id="historyList">
+        <div class="empty-state"><i class="ti ti-history"></i>확정된 모임이 여기에 기록됩니다.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="voteModal">
+  <div class="modal-box">
+    <div class="modal-hd">
+      <div class="modal-title" id="voteModalTitle">모임 조율</div>
+      <button class="modal-close" onclick="closeVoteModal()"><i class="ti ti-x"></i></button>
+    </div>
+    <div id="voteModalBody"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="newMeetingModal">
+  <div class="modal-box">
+    <div class="modal-hd">
+      <div class="modal-title">새 모임 제안</div>
+      <button class="modal-close" onclick="closeNewMeetingModal()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="form-label" style="margin-top:0;">모임 이름</div>
+    <input class="form-input" type="text" id="meetingTitle" placeholder="예) 창립총회 준비 모임">
+    <div class="form-label">후보 일시 <span style="font-size:10px;color:var(--am-muted);">(최소 1개·최대 4개)</span></div>
+    <div id="candidateInputs">
+      <div class="candidate-row">
+        <input class="form-input" type="text" placeholder="예) 7월 10일(목) 오후 2시">
+        <button class="remove-btn" onclick="removeCandidate(this)"><i class="ti ti-x"></i></button>
+      </div>
+      <div class="candidate-row">
+        <input class="form-input" type="text" placeholder="예) 7월 11일(금) 오전 10시">
+        <button class="remove-btn" onclick="removeCandidate(this)"><i class="ti ti-x"></i></button>
+      </div>
+    </div>
+    <button class="add-candidate-btn" onclick="addCandidate()"><i class="ti ti-plus"></i> 후보 추가</button>
+    <button class="submit-btn" onclick="submitNewMeeting()">제안 등록하기</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SUPABASE_URL = 'https://jboceiacgczkqkhqcmqu.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impib2NlaWFjZ2N6a3FraHFjbXF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI1OTg1MTYsImV4cCI6MjA5ODE3NDUxNn0.9jHLNB8PVDrWlSc5CDGz5j6ZF9yaKwrnzICvvvsFbvA';
+
+const ADMIN_NAME = '김이수';
+const ADMIN_PW   = 'adler2026';
+
+const MEMBERS = ['이경숙','고미경','신옥선','박정연','김이수','김종금'];
+const HOURS   = [9,10,11,13,14,15,16,17];
+const DAYS_KR = ['일','월','화','수','목','금','토'];
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let currentUser    = null;
+let isAdmin        = false;
+let selectedMember = null;
+let availWeekStart = getMonday(new Date());
+let myBlocked      = new Set();
+let statusWeekStart = getMonday(new Date());
+let allAvailData    = [];
+let meetings = [];
+let votes    = [];
+let currentMeetingId = null;
+
+function getMonday(d) {
+  const date = new Date(d);
+  const day  = date.getDay();
+  const diff = day === 0 ? -6 : 1 - day;
+  date.setDate(date.getDate() + diff);
+  date.setHours(0,0,0,0);
+  return date;
+}
+function fmtDate(d) {
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function fmtWeekLabel(monday) {
+  const sun = new Date(monday); sun.setDate(monday.getDate() + 6);
+  return `${monday.getMonth()+1}월 ${monday.getDate()}일 — ${sun.getMonth()+1}월 ${sun.getDate()}일`;
+}
+function isToday(d) {
+  const t = new Date();
+  return d.getFullYear()===t.getFullYear() && d.getMonth()===t.getMonth() && d.getDate()===t.getDate();
+}
+function slotKey(dateStr, hour) { return `${dateStr}_${String(hour).padStart(2,'0')}`; }
+
+function selectMember(btn, name) {
+  document.querySelectorAll('.member-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedMember = name;
+  document.getElementById('pwArea').classList.toggle('visible', name === ADMIN_NAME);
+  document.getElementById('loginErr').style.display = 'none';
+}
+
+function doLogin() {
+  const err = document.getElementById('loginErr');
+  if (!selectedMember) {
+    err.style.display = 'block'; err.textContent = '이름을 선택해주세요.'; return;
+  }
+  if (selectedMember === ADMIN_NAME) {
+    const pw = document.getElementById('pwInput').value.trim();
+    if (!pw) { err.style.display = 'block'; err.textContent = '비밀번호를 입력해주세요.'; return; }
+    if (pw !== ADMIN_PW) { err.style.display = 'block'; err.textContent = '비밀번호가 맞지 않습니다.'; return; }
+    isAdmin = true;
+  } else {
+    isAdmin = false;
+  }
+  err.style.display = 'none';
+  currentUser = selectedMember;
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('app').classList.add('visible');
+  document.getElementById('userAv').textContent = currentUser.charAt(0);
+  document.getElementById('userNameDisplay').textContent = currentUser;
+  document.getElementById('tabMeeting').style.display = isAdmin ? 'flex' : 'none';
+  initApp();
+}
+
+function doLogout() {
+  currentUser = null; isAdmin = false; selectedMember = null;
+  myBlocked.clear();
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('app').classList.remove('visible');
+  document.getElementById('pwInput').value = '';
+  document.getElementById('pwArea').classList.remove('visible');
+  document.querySelectorAll('.member-btn').forEach(b => b.classList.remove('selected'));
+  switchTab('avail');
+}
+
+function switchTab(tab) {
+  const tabs   = ['avail','status','meeting','history'];
+  const panels = { avail:'panelAvail', status:'panelStatus', meeting:'panelMeeting', history:'panelHistory' };
+  const tabIds = { avail:'tabAvail', status:'tabStatus', meeting:'tabMeeting', history:'tabHistory' };
+  tabs.forEach(t => {
+    document.getElementById(tabIds[t])?.classList.remove('active');
+    document.getElementById(panels[t])?.classList.remove('active');
+  });
+  document.getElementById(tabIds[tab])?.classList.add('active');
+  document.getElementById(panels[tab])?.classList.add('active');
+  if (tab === 'status')  loadStatusData();
+  if (tab === 'meeting') loadMeetings();
+  if (tab === 'history') loadHistory();
+}
+
+async function initApp() {
+  availWeekStart  = getMonday(new Date());
+  statusWeekStart = getMonday(new Date());
+  renderAvailGrid();
+  await loadMyAvailability();
+}
+
+function renderAvailGrid() {
+  document.getElementById('weekLabel').textContent = fmtWeekLabel(availWeekStart);
+  const days = Array.from({length:7}, (_,i) => {
+    const d = new Date(availWeekStart); d.setDate(availWeekStart.getDate()+i); return d;
+  });
+  const grid = document.getElementById('availGrid');
+  let html = '<div class="ag-head"></div>';
+  days.forEach(d => {
+    html += `<div class="ag-head${isToday(d)?' today':''}">${DAYS_KR[d.getDay()]}<br><span style="font-size:11px;">${d.getDate()}</span></div>`;
+  });
+  HOURS.forEach(h => {
+    html += `<div class="ag-time">${h}:00</div>`;
+    days.forEach(d => {
+      const key = slotKey(fmtDate(d), h);
+      html += `<div class="ag-cell${myBlocked.has(key)?' blocked':''}" onclick="toggleSlot(this,'${key}')"></div>`;
+    });
+  });
+  grid.innerHTML = html;
+}
+
+function toggleSlot(el, key) {
+  if (myBlocked.has(key)) { myBlocked.delete(key); el.classList.remove('blocked'); }
+  else                     { myBlocked.add(key);    el.classList.add('blocked'); }
+}
+
+function prevWeek() { availWeekStart.setDate(availWeekStart.getDate()-7); renderAvailGrid(); loadMyAvailability(); }
+function nextWeek() { availWeekStart.setDate(availWeekStart.getDate()+7); renderAvailGrid(); loadMyAvailability(); }
+
+async function loadMyAvailability() {
+  const weekStr = fmtDate(availWeekStart);
+  const { data } = await sb.from('am_availability').select('slots').eq('member_name', currentUser).eq('week_start', weekStr).maybeSingle();
+  myBlocked.clear();
+  if (data?.slots) data.slots.forEach(s => myBlocked.add(s));
+  renderAvailGrid();
+}
+
+async function saveAvailability() {
+  const weekStr = fmtDate(availWeekStart);
+  const slots   = Array.from(myBlocked);
+  const { data: existing } = await sb.from('am_availability').select('id').eq('member_name', currentUser).eq('week_start', weekStr).maybeSingle();
+  let error;
+  if (existing) {
+    ({ error } = await sb.from('am_availability').update({ slots, updated_at: new Date().toISOString() }).eq('id', existing.id));
+  } else {
+    ({ error } = await sb.from('am_availability').insert({ member_name: currentUser, week_start: weekStr, slots }));
+  }
+  if (error) { showToast('저장 오류: ' + error.message); return; }
+  showToast('저장되었습니다.');
+}
+
+function prevWeekStatus() { statusWeekStart.setDate(statusWeekStart.getDate()-7); loadStatusData(); }
+function nextWeekStatus() { statusWeekStart.setDate(statusWeekStart.getDate()+7); loadStatusData(); }
+
+async function loadStatusData() {
+  document.getElementById('weekLabelStatus').textContent = fmtWeekLabel(statusWeekStart);
+  const weekStr = fmtDate(statusWeekStart);
+  const { data } = await sb.from('am_availability').select('member_name, slots').eq('week_start', weekStr);
+  allAvailData = data || [];
+  renderStatusGrid();
+}
+
+function renderStatusGrid() {
+  const days = Array.from({length:7}, (_,i) => {
+    const d = new Date(statusWeekStart); d.setDate(statusWeekStart.getDate()+i); return d;
+  });
+  let html = '<div class="wg-head"></div>';
+  days.forEach(d => {
+    html += `<div class="wg-head${isToday(d)?' today':''}">${DAYS_KR[d.getDay()]}<br><span style="font-size:9px;">${d.getDate()}</span></div>`;
+  });
+  MEMBERS.forEach(name => {
+    const memberData = allAvailData.find(r => r.member_name === name);
+    const blocked = new Set(memberData?.slots || []);
+    const hasResponded = !!memberData;
+    html += `<div class="wg-name">${name}</div>`;
+    days.forEach(d => {
+      const dateStr  = fmtDate(d);
+      const anyAvail = hasResponded && HOURS.some(h => !blocked.has(slotKey(dateStr, h)));
+      html += `<div class="wg-cell${anyAvail?' on':hasResponded?' off':''}" title="${hasResponded?'':'미응답'}"></div>`;
+    });
+  });
+  html += '<div class="wg-name" style="color:var(--am-sage);font-size:9px;">가능</div>';
+  days.forEach(d => {
+    const dateStr = fmtDate(d);
+    const count = allAvailData.filter(r => {
+      const blocked = new Set(r.slots || []);
+      return HOURS.some(h => !blocked.has(slotKey(dateStr, h)));
+    }).length;
+    const opacity = count === 0 ? 0 : 0.15 + (count/MEMBERS.length)*0.5;
+    html += `<div class="wg-sum" style="background:rgba(143,191,184,${opacity.toFixed(2)}); border-radius:3px;">${count>0?count:''}</div>`;
+  });
+  document.getElementById('statusGrid').innerHTML = html;
+  renderTimeDetail(days);
+}
+
+function renderTimeDetail(days) {
+  const detail = document.getElementById('timeDetail');
+  const body   = document.getElementById('timeDetailBody');
+  const slots = [];
+  days.forEach(d => {
+    const dateStr = fmtDate(d);
+    HOURS.forEach(h => {
+      const key   = slotKey(dateStr, h);
+      const avail = allAvailData.filter(r => !(r.slots||[]).includes(key));
+      if (avail.length >= 1) slots.push({ dateStr, h, count: avail.length, names: avail.map(r=>r.member_name) });
+    });
+  });
+  if (!slots.length) { detail.style.display = 'none'; return; }
+  detail.style.display = 'block';
+  const maxCount = Math.max(...slots.map(s => s.count));
+  body.innerHTML = slots.map(s => {
+    const dayLabel = `${parseInt(s.dateStr.split('-')[1])}/${parseInt(s.dateStr.split('-')[2])}(${DAYS_KR[new Date(s.dateStr).getDay()]})`;
+    const isHigh   = s.count === maxCount && maxCount >= 2;
+    return `<div class="td-row" ${isHigh?'style="background:rgba(143,191,184,0.06);"':''}>
+      <div class="td-time">${dayLabel} ${s.h}:00</div>
+      <div class="td-names">${s.names.join(' · ')}</div>
+      <div class="td-count${isHigh?' high':''}">${s.count}명</div>
+    </div>`;
+  }).join('');
+}
+
+async function loadMeetings() {
+  const { data } = await sb.from('am_meetings').select('*').eq('status','open').order('created_at',{ascending:false});
+  meetings = data || [];
+  const { data: vd } = await sb.from('am_votes').select('*');
+  votes = vd || [];
+  renderMeetings();
+}
+
+function renderMeetings() {
+  const el = document.getElementById('meetingList');
+  if (!meetings.length) {
+    el.innerHTML = '<div class="empty-state"><i class="ti ti-calendar-off"></i>진행 중인 모임 조율이 없습니다.</div>'; return;
+  }
+  el.innerHTML = meetings.map(m => {
+    const totalVotes = votes.filter(v => v.meeting_id === m.id);
+    const candidates = m.candidates || [];
+    const rows = candidates.map(c => {
+      const yes = totalVotes.filter(v => v.answers?.[c.datetime]===true).length;
+      const pct = Math.round(yes/MEMBERS.length*100);
+      const isTop = yes === Math.max(...candidates.map(cc => totalVotes.filter(v=>v.answers?.[cc.datetime]===true).length)) && yes > 0;
+      return `<div class="mv-row">
+        <div class="mv-label">${esc(c.label)}</div>
+        <div class="mv-bar-bg"><div class="mv-bar-fill${isTop?' top':''}" style="width:${pct}%;"></div></div>
+        <div class="mv-count">${yes}/${MEMBERS.length}</div>
+      </div>`;
+    }).join('');
+    return `<div class="meeting-card open" onclick="openVoteModal('${m.id}')">
+      <div class="mc-top"><div class="mc-title">${esc(m.title)}</div><span class="mc-badge badge-open">진행 중</span></div>
+      <div class="mc-date">제안: ${esc(m.proposed_by)} · ${formatDate(m.created_at)}</div>
+      <div class="mc-votes">${rows}</div>
+      <div class="mc-footer">
+        <div class="mc-resp">${totalVotes.length}명 응답</div>
+        <div style="font-size:11px;color:var(--am-sage);">상세 보기 <i class="ti ti-chevron-right" style="font-size:12px;"></i></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openVoteModal(meetingId) {
+  const m = meetings.find(x => x.id === meetingId); if (!m) return;
+  currentMeetingId = meetingId;
+  document.getElementById('voteModalTitle').textContent = m.title;
+  renderVoteModal(m);
+  document.getElementById('voteModal').classList.add('open');
+}
+
+function renderVoteModal(m) {
+  const totalVotes = votes.filter(v => v.meeting_id === m.id);
+  const candidates = m.candidates || [];
+  const opts = candidates.map(c => {
+    const yesVoters = totalVotes.filter(v => v.answers?.[c.datetime]===true).map(v=>v.member_name);
+    const pct = Math.round(yesVoters.length/MEMBERS.length*100);
+    return `<div class="vote-option">
+      <div class="vo-top"><div class="vo-label">${esc(c.label)}</div></div>
+      <div class="vo-bar-row">
+        <div class="vo-bar-bg"><div class="vo-bar-fill" style="width:${pct}%;"></div></div>
+        <div class="vo-count">${yesVoters.length}/${MEMBERS.length}명 가능</div>
+      </div>
+      ${yesVoters.length ? `<div class="vo-names">${yesVoters.join(' · ')}</div>` : ''}
+    </div>`;
+  }).join('');
+
+  const adminSection = isAdmin ? `
+    <div style="margin-top:20px; padding-top:14px; border-top:0.5px solid var(--am-pale);">
+      <div style="font-size:10px;color:var(--am-muted);margin-bottom:10px;">일정 확정 <span class="admin-badge">대표 전용</span></div>
+      ${candidates.map(c=>`
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px;">
+          <span style="font-size:11px;color:var(--am-gray);flex:1;">${esc(c.label)}</span>
+          <button class="decide-btn" onclick="decideMeeting('${m.id}','${c.datetime}','${esc(c.label)}')">이 일시로 확정</button>
+        </div>`).join('')}
+    </div>` : '';
+  document.getElementById('voteModalBody').innerHTML = opts + adminSection;
+}
+
+async function decideMeeting(meetingId, datetime, label) {
+  if (!confirm(`"${label}" 로 확정하시겠습니까?`)) return;
+  const { error } = await sb.from('am_meetings').update({
+    status:'decided', decided_label:label, decided_at:new Date().toISOString()
+  }).eq('id', meetingId);
+  if (error) { showToast('오류: '+error.message); return; }
+  showToast('일정이 확정되었습니다.');
+  closeVoteModal(); loadMeetings();
+}
+
+function closeVoteModal() { document.getElementById('voteModal').classList.remove('open'); }
+
+function openNewMeetingModal() {
+  document.getElementById('meetingTitle').value = '';
+  document.getElementById('candidateInputs').innerHTML = `
+    <div class="candidate-row"><input class="form-input" type="text" placeholder="예) 7월 10일(목) 오후 2시"><button class="remove-btn" onclick="removeCandidate(this)"><i class="ti ti-x"></i></button></div>
+    <div class="candidate-row"><input class="form-input" type="text" placeholder="예) 7월 11일(금) 오전 10시"><button class="remove-btn" onclick="removeCandidate(this)"><i class="ti ti-x"></i></button></div>`;
+  document.getElementById('newMeetingModal').classList.add('open');
+}
+function closeNewMeetingModal() { document.getElementById('newMeetingModal').classList.remove('open'); }
+function addCandidate() {
+  const el = document.getElementById('candidateInputs');
+  if (el.children.length >= 4) { showToast('최대 4개입니다.'); return; }
+  const row = document.createElement('div'); row.className = 'candidate-row';
+  row.innerHTML = `<input class="form-input" type="text" placeholder="후보 일시"><button class="remove-btn" onclick="removeCandidate(this)"><i class="ti ti-x"></i></button>`;
+  el.appendChild(row);
+}
+function removeCandidate(btn) {
+  if (document.getElementById('candidateInputs').children.length <= 1) { showToast('최소 1개 필요합니다.'); return; }
+  btn.parentElement.remove();
+}
+async function submitNewMeeting() {
+  const title = document.getElementById('meetingTitle').value.trim();
+  if (!title) { showToast('모임 이름을 입력해주세요.'); return; }
+  const rows = document.querySelectorAll('#candidateInputs .candidate-row input');
+  const candidates = Array.from(rows).map((inp,i) => ({ label:inp.value.trim(), datetime:'cand_'+Date.now()+'_'+i })).filter(c=>c.label);
+  if (!candidates.length) { showToast('후보 일시를 입력해주세요.'); return; }
+  const { error } = await sb.from('am_meetings').insert({ title, proposed_by:currentUser, candidates, status:'open' });
+  if (error) { showToast('오류: '+error.message); return; }
+  showToast('모임이 제안되었습니다.');
+  closeNewMeetingModal(); loadMeetings();
+}
+
+async function loadHistory() {
+  const { data } = await sb.from('am_meetings').select('*').eq('status','decided').order('decided_at',{ascending:false});
+  const el = document.getElementById('historyList');
+  if (!data?.length) { el.innerHTML = '<div class="empty-state"><i class="ti ti-history"></i>확정된 모임이 아직 없습니다.</div>'; return; }
+  el.innerHTML = data.map(m => `
+    <div class="hist-card">
+      <div class="hist-title">${esc(m.title)}</div>
+      <div class="hist-meta">확정 일시: <strong style="font-weight:400;color:var(--am-gray);">${esc(m.decided_label||'-')}</strong> · 제안: ${esc(m.proposed_by)} · ${formatDate(m.decided_at)}</div>
+    </div>`).join('');
+}
+
+function esc(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function formatDate(iso) {
+  if (!iso) return '';
+  return new Date(iso).toLocaleDateString('ko-KR',{month:'long',day:'numeric'});
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+document.getElementById('voteModal').addEventListener('click', e => { if (e.target===document.getElementById('voteModal')) closeVoteModal(); });
+document.getElementById('newMeetingModal').addEventListener('click', e => { if (e.target===document.getElementById('newMeetingModal')) closeNewMeetingModal(); });
+</script>
+</body>
+</html>

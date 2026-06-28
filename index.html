@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ADLER MIND 협동조합</title>
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:title" content="ADLER MIND 협동조합">
+<meta property="og:description" content="아들러 개인심리학을 기반으로 심리상담과 교육을 실천하는 협동조합입니다.">
+<meta property="og:image" content="https://adlermind.co.kr/image/og-image.png">
+<meta property="og:url" content="https://adlermind.co.kr">
+<meta name="twitter:card" content="summary_large_image">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400&family=Noto+Sans+KR:wght@300;400&family=Raleway:wght@200;300;400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root {
+  --am-rose:   #E8929A;
+  --am-sage:   #8FBFB8;
+  --am-mauve:  #C48DA0;
+  --am-blue:   #8FAFD4;
+  --am-peach:  #F2C4B8;
+  --am-gray:   #6B6B6B;
+  --am-pale:   #D8D8DC;
+  --am-bg:     #FAFAF8;
+  --am-muted:  #9a9490;
+  --am-border: #e8e4e0;
+  --am-white:  #ffffff;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 300;
+  color: var(--am-gray);
+  background: var(--am-white);
+  line-height: 1.7;
+}
+
+/* ── 네비게이션 ── */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--am-white);
+  border-bottom: 0.5px solid var(--am-border);
+  padding: 0 32px;
+  display: flex; align-items: center; gap: 32px;
+  height: 60px;
+}
+.nav-logo img { height: 36px; display: block; }
+.nav-links { display: flex; align-items: center; gap: 24px; flex: 1; }
+.nav-links a {
+  font-size: 13px; color: var(--am-gray); text-decoration: none;
+  letter-spacing: 0.02em; transition: color 0.15s;
+}
+.nav-links a:hover { color: var(--am-sage); }
+.nav-member-btn {
+  margin-left: auto;
+  padding: 7px 18px;
+  background: var(--am-sage); color: #fff;
+  border: none; border-radius: 2px;
+  font-size: 12px; font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 300; cursor: pointer; text-decoration: none;
+  letter-spacing: 0.04em; transition: background 0.15s;
+  white-space: nowrap;
+}
+.nav-member-btn:hover { background: #6fa8a0; }
+.nav-ham { display: none; border: none; background: none; cursor: pointer; font-size: 22px; color: var(--am-gray); }
+
+/* ── 히어로 ── */
+.hero {
+  min-height: calc(100vh - 60px);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 80px 32px;
+  background: var(--am-bg);
+  text-align: center;
+}
+.hero-sub {
+  font-family: 'Raleway', sans-serif;
+  font-size: 11px; font-weight: 200;
+  letter-spacing: 0.28em;
+  color: var(--am-muted);
+  text-transform: uppercase;
+  margin-bottom: 28px;
+}
+.hero-title {
+  font-family: 'Noto Serif KR', serif;
+  font-size: clamp(28px, 5vw, 48px);
+  font-weight: 300;
+  color: var(--am-gray);
+  line-height: 1.5;
+  margin-bottom: 20px;
+  letter-spacing: -0.01em;
+}
+.hero-title em {
+  font-style: normal;
+  color: var(--am-rose);
+}
+.hero-desc {
+  font-size: 14px; color: var(--am-muted);
+  max-width: 480px; line-height: 1.9;
+  margin-bottom: 40px;
+}
+.hero-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.btn-primary {
+  padding: 12px 32px;
+  background: var(--am-sage); color: #fff;
+  border: none; border-radius: 2px;
+  font-size: 13px; font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 300; cursor: pointer; text-decoration: none;
+  letter-spacing: 0.04em; transition: background 0.15s;
+}
+.btn-primary:hover { background: #6fa8a0; }
+.btn-outline {
+  padding: 12px 32px;
+  background: none; color: var(--am-gray);
+  border: 0.5px solid var(--am-border); border-radius: 2px;
+  font-size: 13px; font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 300; cursor: pointer; text-decoration: none;
+  letter-spacing: 0.04em; transition: all 0.15s;
+}
+.btn-outline:hover { border-color: var(--am-sage); color: var(--am-sage); }
+
+/* ── 섹션 공통 ── */
+section { padding: 88px 32px; }
+.section-inner { max-width: 900px; margin: 0 auto; }
+.section-label {
+  font-family: 'Raleway', sans-serif;
+  font-size: 10px; font-weight: 300;
+  letter-spacing: 0.22em; color: var(--am-rose);
+  text-transform: uppercase; margin-bottom: 14px;
+}
+.section-title {
+  font-family: 'Noto Serif KR', serif;
+  font-size: clamp(20px, 3vw, 28px);
+  font-weight: 400; color: var(--am-gray);
+  margin-bottom: 16px; line-height: 1.5;
+}
+.section-desc {
+  font-size: 14px; color: var(--am-muted);
+  max-width: 600px; line-height: 1.9;
+  margin-bottom: 40px;
+}
+.divider-sage {
+  border: none;
+  border-top: 0.5px solid var(--am-sage);
+  opacity: 0.3;
+  margin: 0;
+}
+
+/* ── 아들러 섹션 ── */
+#adler { background: var(--am-white); }
+.adler-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 24px;
+  margin-top: 8px;
+}
+.adler-card {
+  border: 0.5px solid var(--am-border);
+  padding: 28px 24px;
+}
+.adler-card-num {
+  font-family: 'Raleway', sans-serif;
+  font-size: 10px; color: var(--am-sage);
+  letter-spacing: 0.12em; margin-bottom: 10px;
+}
+.adler-card-title {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 15px; color: var(--am-gray);
+  margin-bottom: 8px;
+}
+.adler-card-desc {
+  font-size: 12.5px; color: var(--am-muted);
+  line-height: 1.8;
+}
+
+/* ── 조합원 섹션 ── */
+#member-section { background: var(--am-bg); }
+.member-box {
+  border: 0.5px solid var(--am-border);
+  background: var(--am-white);
+  padding: 40px 48px;
+  max-width: 560px;
+}
+.member-box ul {
+  list-style: none;
+  margin-bottom: 32px;
+}
+.member-box ul li {
+  font-size: 13px; color: var(--am-gray);
+  padding: 9px 0;
+  border-bottom: 0.5px solid var(--am-bg);
+  display: flex; align-items: center; gap: 10px;
+}
+.member-box ul li::before {
+  content: '';
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: var(--am-sage);
+  flex-shrink: 0;
+}
+
+/* ── 소식 섹션 ── */
+#news { background: var(--am-white); }
+.news-list { display: flex; flex-direction: column; gap: 0; }
+.news-item {
+  display: flex; align-items: flex-start; gap: 20px;
+  padding: 18px 0;
+  border-bottom: 0.5px solid var(--am-border);
+  text-decoration: none; color: inherit;
+  transition: opacity 0.15s;
+}
+.news-item:first-child { border-top: 0.5px solid var(--am-border); }
+.news-item:hover { opacity: 0.7; }
+.news-cat {
+  font-family: 'Raleway', sans-serif;
+  font-size: 10px; color: var(--am-rose);
+  letter-spacing: 0.1em;
+  min-width: 56px; padding-top: 2px;
+}
+.news-title { font-size: 14px; color: var(--am-gray); flex: 1; }
+.news-date {
+  font-size: 11px; color: var(--am-muted);
+  font-family: 'Raleway', sans-serif;
+  white-space: nowrap; padding-top: 2px;
+}
+.news-empty { font-size: 13px; color: var(--am-muted); padding: 24px 0; }
+
+/* ── 푸터 ── */
+footer {
+  background: var(--am-bg);
+  border-top: 0.5px solid var(--am-border);
+  padding: 48px 32px;
+}
+.footer-inner {
+  max-width: 900px; margin: 0 auto;
+  display: flex; flex-wrap: wrap; gap: 32px;
+  justify-content: space-between;
+}
+.footer-logo img { height: 36px; margin-bottom: 12px; }
+.footer-info { font-size: 12px; color: var(--am-muted); line-height: 2; }
+.footer-nav { display: flex; flex-direction: column; gap: 8px; }
+.footer-nav a { font-size: 12px; color: var(--am-muted); text-decoration: none; }
+.footer-nav a:hover { color: var(--am-sage); }
+.footer-copy {
+  max-width: 900px; margin: 32px auto 0;
+  font-size: 11px; color: var(--am-muted);
+  font-family: 'Raleway', sans-serif; letter-spacing: 0.04em;
+  border-top: 0.5px solid var(--am-border); padding-top: 20px;
+}
+
+@media (max-width: 720px) {
+  nav { padding: 0 20px; }
+  .nav-links { display: none; }
+  .nav-links.open { display: flex; flex-direction: column; position: fixed; top: 60px; left: 0; right: 0; background: var(--am-white); border-bottom: 0.5px solid var(--am-border); padding: 20px; gap: 16px; z-index: 99; }
+  .nav-ham { display: block; margin-left: auto; }
+  .nav-member-btn { display: none; }
+  .nav-member-mobile { display: block !important; }
+  section { padding: 60px 20px; }
+  .hero { padding: 60px 20px; }
+  .member-box { padding: 28px 24px; }
+}
+.nav-member-mobile { display: none; }
+</style>
+</head>
+<body>
+
+<!-- 네비게이션 -->
+<nav>
+  <a class="nav-logo" href="index.html">
+    <img src="image/adlermind_logo.png" alt="ADLER MIND 협동조합 로고">
+  </a>
+  <div class="nav-links" id="navLinks">
+    <a href="about.html">협동조합 소개</a>
+    <a href="counseling.html">심리상담</a>
+    <a href="education.html">교육·연수</a>
+    <a href="#news">소식</a>
+    <a href="contact.html">문의</a>
+    <a class="nav-member-mobile" href="members.html">조합원 로그인</a>
+  </div>
+  <a class="nav-member-btn" href="members.html">조합원 로그인</a>
+  <button class="nav-ham" id="navHam" aria-label="메뉴">&#9776;</button>
+</nav>
+
+<!-- SECTION 01: 히어로 -->
+<section class="hero" id="home">
+  <div class="hero-sub">ADLER MIND COOPERATIVE · 2026</div>
+  <h1 class="hero-title">
+    나만의 <em>생활양식</em>을 찾는<br>심리상담 협동조합
+  </h1>
+  <p class="hero-desc">
+    아들러 개인심리학의 가치를 실천하는 협동조합입니다.<br>
+    사회적 관심과 공동체 감각을 바탕으로<br>
+    심리상담과 교육을 함께 만들어갑니다.
+  </p>
+  <div class="hero-btns">
+    <a class="btn-primary" href="counseling.html">상담 안내</a>
+    <a class="btn-outline" href="about.html">조합 소개</a>
+  </div>
+</section>
+
+<hr class="divider-sage">
+
+<!-- SECTION 02: 왜 아들러심리학인가 -->
+<section id="adler">
+  <div class="section-inner">
+    <div class="section-label">ADLERIAN PSYCHOLOGY</div>
+    <h2 class="section-title">왜 아들러심리학인가</h2>
+    <p class="section-desc">
+      아들러 개인심리학은 인간을 사회적 존재로 이해하고,<br>
+      공동체 속에서 의미 있는 삶을 구성하도록 돕습니다.
+    </p>
+    <div class="adler-grid">
+      <div class="adler-card">
+        <div class="adler-card-num">01</div>
+        <div class="adler-card-title">사회적 관심</div>
+        <div class="adler-card-desc">
+          Gemeinschaftsgefühl — 공동체 안에서 서로를 향한 진정한 관심. 개인의 성장은 관계 안에서 이루어집니다.
+        </div>
+      </div>
+      <div class="adler-card">
+        <div class="adler-card-num">02</div>
+        <div class="adler-card-title">생활양식 이해</div>
+        <div class="adler-card-desc">
+          각자의 독특한 생활양식을 탐구하고, 삶의 의미와 방향을 스스로 발견하는 과정을 함께합니다.
+        </div>
+      </div>
+      <div class="adler-card">
+        <div class="adler-card-num">03</div>
+        <div class="adler-card-title">격려와 성장</div>
+        <div class="adler-card-desc">
+          문제의 원인보다 가능성에 집중합니다. 격려를 통해 자신의 능력을 발견하고 용기를 키워갑니다.
+        </div>
+      </div>
+      <div class="adler-card">
+        <div class="adler-card-num">04</div>
+        <div class="adler-card-title">협동조합 방식</div>
+        <div class="adler-card-desc">
+          상담사와 내담자, 구성원 모두가 대등한 관계로 협력합니다. 함께 만드는 심리상담 공동체입니다.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider-sage">
+
+<!-- SECTION 03: 조합원 전용 -->
+<section id="member-section">
+  <div class="section-inner">
+    <div class="section-label">MEMBERS ONLY</div>
+    <h2 class="section-title">조합원 전용 공간</h2>
+    <p class="section-desc">
+      조합원 서류, 회의록, 일정 조율 시스템에 접근할 수 있습니다.
+    </p>
+    <div class="member-box">
+      <ul>
+        <li>설립 서류 — 정관, 사업계획서, 예산안</li>
+        <li>회의 안건 및 의사록 — 발기인 모임·이사회·총회</li>
+        <li>게시판 — 공지, 서류 공유, 조합원 소통</li>
+        <li>일정 조율 시스템 — 가용시간 등록 및 모임 확정</li>
+      </ul>
+      <a class="btn-primary" href="members.html">조합원 로그인</a>
+    </div>
+  </div>
+</section>
+
+<hr class="divider-sage">
+
+<!-- SECTION 04: 소식 -->
+<section id="news">
+  <div class="section-inner">
+    <div class="section-label">NEWS</div>
+    <h2 class="section-title">조합 소식</h2>
+    <div class="news-list" id="newsList">
+      <p class="news-empty">소식을 불러오는 중입니다...</p>
+    </div>
+  </div>
+</section>
+
+<!-- 푸터 -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-logo">
+        <img src="image/adlermind_logo.png" alt="ADLER MIND 협동조합">
+      </div>
+      <div class="footer-info">
+        ADLER MIND 협동조합 (일반협동조합)<br>
+        경기도 광주시 남종면 산수로 1652-16<br>
+        adlermindcoop@gmail.com
+      </div>
+    </div>
+    <nav class="footer-nav">
+      <a href="about.html">협동조합 소개</a>
+      <a href="counseling.html">심리상담</a>
+      <a href="education.html">교육·연수</a>
+      <a href="contact.html">문의</a>
+      <a href="members.html">조합원 로그인</a>
+    </nav>
+  </div>
+  <div class="footer-copy">
+    &copy; 2026 ADLER MIND 협동조합. All rights reserved.
+  </div>
+</footer>
+
+<script>
+const SB_URL = 'https://jboceiacgczkqkhqcmqu.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impib2NlaWFjZ2N6a3FraHFjbXF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI1OTg1MTYsImV4cCI6MjA5ODE3NDUxNn0.9jHLNB8PVDrWlSc5CDGz5j6ZF9yaKwrnzICvvvsFbvA';
+const hdrs = { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` };
+
+async function loadNews() {
+  const el = document.getElementById('newsList');
+  try {
+    const res = await fetch(`${SB_URL}/rest/v1/board_posts?category=eq.공지&order=created_at.desc&limit=5`, { headers: hdrs });
+    const rows = await res.json();
+    if (!Array.isArray(rows) || rows.length === 0) {
+      el.innerHTML = '<p class="news-empty">아직 등록된 소식이 없습니다.</p>'; return;
+    }
+    el.innerHTML = rows.map(r => {
+      const date = new Date(r.created_at).toLocaleDateString('ko-KR', { year:'numeric', month:'long', day:'numeric' });
+      return `<div class="news-item">
+        <div class="news-cat">${esc(r.category)}</div>
+        <div class="news-title">${esc(r.title)}</div>
+        <div class="news-date">${date}</div>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    el.innerHTML = '<p class="news-empty">소식을 불러올 수 없습니다.</p>';
+  }
+}
+
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+document.getElementById('navHam').addEventListener('click', () => {
+  document.getElementById('navLinks').classList.toggle('open');
+});
+
+loadNews();
+</script>
+</body>
+</html>

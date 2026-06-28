@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>조합원 공간 · ADLER MIND 협동조합</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400&family=Noto+Sans+KR:wght@300;400&family=Raleway:wght@200;300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root {
+  --am-rose:   #E8929A;
+  --am-sage:   #8FBFB8;
+  --am-mauve:  #C48DA0;
+  --am-blue:   #8FAFD4;
+  --am-peach:  #F2C4B8;
+  --am-gray:   #6B6B6B;
+  --am-pale:   #D8D8DC;
+  --am-bg:     #FAFAF8;
+  --am-muted:  #9a9490;
+  --am-border: #e8e4e0;
+  --am-white:  #ffffff;
+  --am-dark:   #3d3a36;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 300;
+  background: var(--am-bg);
+  color: var(--am-gray);
+  min-height: 100vh;
+}
+
+/* ── 헤더 ── */
+.app-header {
+  background: var(--am-white);
+  border-bottom: 0.5px solid var(--am-border);
+  position: sticky; top: 0; z-index: 100;
+}
+.header-top {
+  display: flex; align-items: center; gap: 14px;
+  padding: 10px 20px;
+}
+.header-logo img { height: 30px; display: block; }
+.header-info { flex: 1; }
+.header-title { font-size: 13px; color: var(--am-gray); }
+.header-sub {
+  font-family: 'Raleway', sans-serif;
+  font-size: 9px; letter-spacing: 0.1em;
+  color: var(--am-muted);
+}
+.logout-btn {
+  font-size: 12px; color: var(--am-muted);
+  background: none; border: 0.5px solid var(--am-border);
+  padding: 5px 12px; cursor: pointer;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 300; transition: all 0.15s;
+  text-decoration: none;
+}
+.logout-btn:hover { color: var(--am-rose); border-color: var(--am-rose); }
+
+/* ── 탭 ── */
+.header-tabs {
+  display: flex;
+  border-top: 0.5px solid var(--am-pale);
+  overflow-x: auto;
+}
+.htab {
+  flex: 1; min-width: 80px;
+  padding: 10px 4px;
+  border: none; background: none;
+  color: var(--am-muted); font-size: 11px;
+  cursor: pointer;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 300;
+  display: flex; align-items: center; justify-content: center; gap: 4px;
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s; white-space: nowrap;
+}
+.htab i { font-size: 15px; }
+.htab:hover { color: var(--am-sage); }
+.htab.active { color: var(--am-sage); border-bottom-color: var(--am-sage); }
+
+/* ── 패널 ── */
+.panel { display: none; padding: 20px; max-width: 760px; margin: 0 auto; padding-bottom: 60px; }
+.panel.active { display: block; }
+.panel-hd {
+  display: flex; align-items: center;
+  justify-content: space-between; margin-bottom: 16px;
+}
+.panel-title {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 15px; color: var(--am-gray);
+}
+
+/* ── 버튼 ── */
+.btn-sage {
+  display: flex; align-items: center; gap: 5px;
+  padding: 7px 14px;
+  background: var(--am-sage); color: #fff;
+  border: none; border-radius: 2px;
+  font-size: 12px; cursor: pointer;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 300; transition: background 0.15s;
+}
+.btn-sage:hover { background: #6fa8a0; }
+.btn-outline-sm {
+  padding: 5px 12px;
+  background: none; color: var(--am-muted);
+  border: 0.5px solid var(--am-border);
+  font-size: 11px; cursor: pointer;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 300; transition: all 0.15s;
+}
+.btn-outline-sm:hover { color: var(--am-sage); border-color: var(--am-sage); }
+.btn-danger {
+  padding: 5px 12px;
+  background: none; color: var(--am-muted);
+  border: 0.5px solid var(--am-border);
+  font-size: 11px; cursor: pointer;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 300; transition: all 0.15s;
+}
+.btn-danger:hover { color: var(--am-rose); border-color: var(--am-rose); }
+
+/* ── 카테고리 필터 ── */
+.cat-tabs {
+  display: flex; gap: 6px; margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.cat-tab {
+  padding: 5px 14px;
+  border: 0.5px solid var(--am-border);
+  background: var(--am-white);
+  font-size: 12px; color: var(--am-muted);
+  cursor: pointer; transition: all 0.15s;
+  font-family: 'Noto Sans KR', sans-serif; font-weight: 300;
+}
+.cat-tab:hover { border-color: var(--am-sage); color: var(--am-sage); }
+.cat-tab.active {
+  background: var(--am-sage); color: #fff;
+  border-color: var(--am-sage);
+}
+
+/* ── 게시판 목록 ── */
+.board-list { border-top: 0.5px solid var(--am-border); }
+.board-item {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 0;
+  border-bottom: 0.5px solid var(--am-border);
+  cursor: pointer; transition: opacity 0.15s;
+}
+.board-item:hover { opacity: 0.7; }
+.board-cat-badge {
+  font-family: 'Raleway', sans-serif;
+  font-size: 9px; letter-spacing: 0.08em;
+  padding: 3px 8px;
+  flex-shrink: 0;
+}
+.badge-공지 { background: rgba(232,146,154,0.1); color: var(--am-rose); }
+.badge-회의록 { background: rgba(143,191,184,0.12); color: #5a9990; }
+.badge-서류 { background: rgba(143,175,212,0.12); color: var(--am-blue); }
+.board-title { flex: 1; font-size: 13.5px; color: var(--am-gray); }
+.board-meta {
+  font-size: 11px; color: var(--am-muted);
+  white-space: nowrap;
+  font-family: 'Raleway', sans-serif;
+}
+.board-empty {
+  text-align: center; padding: 48px 0;
+  color: var(--am-muted); font-size: 13px;
+}
+.board-empty i { font-size: 28px; color: var(--am-pale); display: block; margin-bottom: 10px; }
+
+/* ── 서류 카드 ── */
+.doc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+.doc-card {
+  border: 0.5px solid var(--am-border);
+  background: var(--am-white);
+  padding: 20px 18px;
+  text-decoration: none; color: inherit;
+  transition: border-color 0.15s; display: block;
+}
+.doc-card:hover { border-color: var(--am-sage); }
+.doc-icon { font-size: 24px; color: var(--am-muted); margin-bottom: 10px; }
+.doc-name { font-size: 13px; color: var(--am-gray); margin-bottom: 4px; }
+.doc-size { font-size: 11px; color: var(--am-muted); }
+
+/* ── 일정 링크 카드 ── */
+.shortcut-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px; margin-bottom: 24px;
+}
+.shortcut-card {
+  border: 0.5px solid var(--am-border);
+  background: var(--am-white);
+  padding: 22px 20px;
+  text-decoration: none; color: inherit;
+  transition: border-color 0.15s; display: block;
+}
+.shortcut-card:hover { border-color: var(--am-sage); }
+.shortcut-icon { font-size: 22px; color: var(--am-sage); margin-bottom: 10px; }
+.shortcut-title { font-size: 13px; color: var(--am-gray); margin-bottom: 4px; }
+.shortcut-desc { font-size: 11.5px; color: var(--am-muted); line-height: 1.6; }
+
+/* ── 모달 ── */
+.modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(60,55,50,0.4); z-index: 500;
+  align-items: flex-end; justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+@media (min-width: 600px) { .modal-overlay { align-items: center; } }
+.modal-box {
+  background: var(--am-white);
+  width: 100%; max-width: 620px;
+  max-height: 90vh; overflow-y: auto;
+  padding: 24px 24px 32px;
+  border-radius: 12px 12px 0 0;
+}
+@media (min-width: 600px) { .modal-box { border-radius: 4px; } }
+.modal-hd {
+  display: flex; align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 0.5px solid var(--am-pale);
+}
+.modal-title {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 15px; color: var(--am-gray);
+}
+.modal-close {
+  border: none; background: none;
+  cursor: pointer; color: var(--am-muted);
+  font-size: 20px; padding: 0;
+}
+.modal-close:hover { color: var(--am-gray); }
+.modal-cat-badge {
+  font-family: 'Raleway', sans-serif;
+  font-size: 10px; letter-spacing: 0.08em;
+  padding: 3px 10px; margin-bottom: 8px; display: inline-block;
+}
+.modal-date { font-size: 11px; color: var(--am-muted); margin-bottom: 18px; }
+.modal-author { font-size: 12px; color: var(--am-muted); margin-bottom: 18px; }
+.modal-content {
+  font-size: 14px; color: var(--am-gray);
+  line-height: 1.9; white-space: pre-wrap;
+  border-top: 0.5px solid var(--am-pale);
+  padding-top: 18px;
+}
+.modal-file-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  margin-top: 20px;
+  font-size: 12px; color: var(--am-blue);
+  text-decoration: none; border: 0.5px solid rgba(143,175,212,0.4);
+  padding: 7px 14px; transition: all 0.15s;
+}
+.modal-file-link:hover { background: rgba(143,175,212,0.08); }
+.modal-actions { display: flex; gap: 8px; margin-top: 20px; justify-content: flex-end; }
+
+/* ── 쓰기 폼 ── */
+.form-group { margin-bottom: 14px; }
+.form-label { font-size: 11px; color: var(--am-muted); margin-bottom: 5px; }
+.form-select, .form-input, .form-textarea {
+  width: 100%;
+  border: 0.5px solid var(--am-border);
+  padding: 10px 12px;
+  font-size: 13px; color: var(--am-gray);
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 300; background: var(--am-bg);
+  transition: border-color 0.15s;
+}
+.form-select:focus, .form-input:focus, .form-textarea:focus {
+  outline: none; border-color: var(--am-sage);
+}
+.form-textarea { min-height: 160px; resize: vertical; }
+.form-submit {
+  width: 100%; padding: 12px;
+  background: var(--am-sage); color: #fff;
+  border: none;
+  font-size: 13px; cursor: pointer;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 300; transition: background 0.15s;
+  margin-top: 4px;
+}
+.form-submit:hover { background: #6fa8a0; }
+
+/* ── 토스트 ── */
+.toast {
+  position: fixed; bottom: 20px; left: 50%;
+  transform: translateX(-50%);
+  background: var(--am-dark); color: #fff;
+  padding: 9px 20px; font-size: 12px;
+  z-index: 9999; display: none; white-space: nowrap;
+  border-radius: 20px;
+}
+.toast.show { display: block; }
+
+@media (max-width: 600px) {
+  .panel { padding: 16px; }
+  .shortcut-grid { grid-template-columns: 1fr 1fr; }
+  .doc-grid { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- 헤더 -->
+<div class="app-header">
+  <div class="header-top">
+    <div class="header-logo">
+      <img src="image/adlermind_logo.png" alt="ADLER MIND 협동조합">
+    </div>
+    <div class="header-info">
+      <div class="header-title">조합원 공간</div>
+      <div class="header-sub">ADLER MIND COOPERATIVE</div>
+    </div>
+    <a class="logout-btn" href="members.html">나가기</a>
+  </div>
+  <div class="header-tabs">
+    <button class="htab active" onclick="switchTab('board')" id="tabBoard">
+      <i class="ti ti-clipboard-list"></i>게시판
+    </button>
+    <button class="htab" onclick="switchTab('schedule')" id="tabSchedule">
+      <i class="ti ti-calendar-event"></i>일정·모임
+    </button>
+    <button class="htab" onclick="switchTab('docs')" id="tabDocs">
+      <i class="ti ti-file-description"></i>서류
+    </button>
+  </div>
+</div>
+
+<!-- Tab 1: 게시판 -->
+<div class="panel active" id="panelBoard">
+  <div class="panel-hd">
+    <div class="panel-title">게시판</div>
+    <button class="btn-sage" onclick="openWriteModal()">
+      <i class="ti ti-pencil"></i>글쓰기
+    </button>
+  </div>
+  <div class="cat-tabs">
+    <button class="cat-tab active" onclick="filterCat('전체', this)">전체</button>
+    <button class="cat-tab" onclick="filterCat('공지', this)">공지</button>
+    <button class="cat-tab" onclick="filterCat('회의록', this)">회의록</button>
+    <button class="cat-tab" onclick="filterCat('서류', this)">서류</button>
+  </div>
+  <div class="board-list" id="boardList">
+    <div class="board-empty"><i class="ti ti-loader-2"></i>불러오는 중...</div>
+  </div>
+</div>
+
+<!-- Tab 2: 일정·모임 -->
+<div class="panel" id="panelSchedule">
+  <div class="panel-hd">
+    <div class="panel-title">일정·모임 관리</div>
+  </div>
+  <div class="shortcut-grid">
+    <a class="shortcut-card" href="schedule/adlermind_vote.html">
+      <div class="shortcut-icon"><i class="ti ti-clock-hour-4"></i></div>
+      <div class="shortcut-title">가용시간 등록</div>
+      <div class="shortcut-desc">이번 주 불가능한 시간을 등록하고 조합원 전체 현황을 확인합니다.</div>
+    </a>
+    <a class="shortcut-card" href="schedule/adlermind_vote.html#meeting">
+      <div class="shortcut-icon"><i class="ti ti-calendar-check"></i></div>
+      <div class="shortcut-title">모임 조율</div>
+      <div class="shortcut-desc">새 모임을 제안하고 후보 일정에 투표합니다. 확정 이력도 확인할 수 있습니다.</div>
+    </a>
+  </div>
+  <div style="border: 0.5px solid var(--am-border); background: var(--am-white); padding: 20px 24px;">
+    <div style="font-size: 12px; color: var(--am-muted); line-height: 1.9;">
+      <strong style="font-size: 13px; color: var(--am-gray); display: block; margin-bottom: 8px;">이용 안내</strong>
+      · 가용시간 등록 — 월요일마다 이번 주 불가능한 시간을 등록해 주세요.<br>
+      · 현황 탭에서 전체 조합원 가능 시간을 한눈에 확인할 수 있습니다.<br>
+      · 모임 확정 탭은 대표(김이수)만 접근 가능합니다.
+    </div>
+  </div>
+</div>
+
+<!-- Tab 3: 서류 -->
+<div class="panel" id="panelDocs">
+  <div class="panel-hd">
+    <div class="panel-title">설립 서류</div>
+  </div>
+  <div class="doc-grid">
+    <a class="doc-card" href="docs/02.pdf" target="_blank" download>
+      <div class="doc-icon"><i class="ti ti-file-type-pdf"></i></div>
+      <div class="doc-name">사업계획서</div>
+      <div class="doc-size">PDF</div>
+    </a>
+    <a class="doc-card" href="docs/03.pdf" target="_blank" download>
+      <div class="doc-icon"><i class="ti ti-file-type-pdf"></i></div>
+      <div class="doc-name">예산서</div>
+      <div class="doc-size">PDF</div>
+    </a>
+    <a class="doc-card" href="docs/06.pdf" target="_blank" download>
+      <div class="doc-icon"><i class="ti ti-file-type-pdf"></i></div>
+      <div class="doc-name">설립 서류 06</div>
+      <div class="doc-size">PDF</div>
+    </a>
+    <a class="doc-card" href="docs/07.pdf" target="_blank" download>
+      <div class="doc-icon"><i class="ti ti-file-type-pdf"></i></div>
+      <div class="doc-name">설립 서류 07</div>
+      <div class="doc-size">PDF</div>
+    </a>
+  </div>
+  <div style="margin-top: 16px; font-size: 12px; color: var(--am-muted); line-height: 1.8; border-left: 2px solid var(--am-sage); padding-left: 12px;">
+    정관 최종본(2026-06-20 확정)은 게시판 &gt; 서류 카테고리에서 확인할 수 있습니다.
+  </div>
+</div>
+
+<!-- 게시글 보기 모달 -->
+<div class="modal-overlay" id="viewModal">
+  <div class="modal-box">
+    <div class="modal-hd">
+      <div class="modal-title" id="viewTitle"></div>
+      <button class="modal-close" onclick="closeView()"><i class="ti ti-x"></i></button>
+    </div>
+    <div id="viewCatBadge"></div>
+    <div class="modal-author" id="viewAuthor"></div>
+    <div class="modal-date" id="viewDate"></div>
+    <div class="modal-content" id="viewContent"></div>
+    <div id="viewFileWrap"></div>
+    <div class="modal-actions" id="viewActions"></div>
+  </div>
+</div>
+
+<!-- 글쓰기 모달 -->
+<div class="modal-overlay" id="writeModal">
+  <div class="modal-box">
+    <div class="modal-hd">
+      <div class="modal-title" id="writeModalTitle">새 글 작성</div>
+      <button class="modal-close" onclick="closeWrite()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="form-group">
+      <div class="form-label">카테고리</div>
+      <select class="form-select" id="wCat">
+        <option value="공지">공지</option>
+        <option value="회의록">회의록</option>
+        <option value="서류">서류</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <div class="form-label">제목</div>
+      <input class="form-input" type="text" id="wTitle" placeholder="제목을 입력하세요">
+    </div>
+    <div class="form-group">
+      <div class="form-label">작성자</div>
+      <input class="form-input" type="text" id="wAuthor" placeholder="이름">
+    </div>
+    <div class="form-group">
+      <div class="form-label">내용</div>
+      <textarea class="form-textarea" id="wContent" placeholder="내용을 입력하세요"></textarea>
+    </div>
+    <div class="form-group">
+      <div class="form-label">파일 URL (선택 — Supabase Storage 또는 외부 링크)</div>
+      <input class="form-input" type="text" id="wFileUrl" placeholder="https://...">
+    </div>
+    <div class="form-group">
+      <div class="form-label">파일명 (선택)</div>
+      <input class="form-input" type="text" id="wFileName" placeholder="파일명.pdf">
+    </div>
+    <button class="form-submit" id="writeSubmitBtn" onclick="submitPost()">등록하기</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// 인증 확인
+if (!sessionStorage.getItem('am_member')) {
+  window.location.href = 'members.html';
+}
+
+const SB_URL = 'https://jboceiacgczkqkhqcmqu.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impib2NlaWFjZ2N6a3FraHFjbXF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI1OTg1MTYsImV4cCI6MjA5ODE3NDUxNn0.9jHLNB8PVDrWlSc5CDGz5j6ZF9yaKwrnzICvvvsFbvA';
+const hdrs = {
+  'apikey': SB_KEY,
+  'Authorization': `Bearer ${SB_KEY}`,
+  'Content-Type': 'application/json'
+};
+
+let allPosts = [];
+let currentCat = '전체';
+let editingId = null;
+
+// ── 탭 전환 ──
+function switchTab(tab) {
+  ['board','schedule','docs'].forEach(t => {
+    document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1)).classList.remove('active');
+    document.getElementById('panel' + t.charAt(0).toUpperCase() + t.slice(1)).classList.remove('active');
+  });
+  document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
+  document.getElementById('panel' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
+}
+
+// ── 게시판 ──
+async function loadBoard() {
+  const el = document.getElementById('boardList');
+  try {
+    const res = await fetch(`${SB_URL}/rest/v1/board_posts?order=created_at.desc`, { headers: hdrs });
+    allPosts = await res.json();
+    if (!Array.isArray(allPosts)) allPosts = [];
+    renderBoard();
+  } catch(e) {
+    el.innerHTML = '<div class="board-empty"><i class="ti ti-alert-circle"></i>불러오기 실패</div>';
+  }
+}
+
+function renderBoard() {
+  const el = document.getElementById('boardList');
+  const filtered = currentCat === '전체' ? allPosts : allPosts.filter(p => p.category === currentCat);
+  if (!filtered.length) {
+    el.innerHTML = '<div class="board-empty"><i class="ti ti-inbox"></i>게시물이 없습니다.</div>'; return;
+  }
+  el.innerHTML = filtered.map(p => {
+    const date = new Date(p.created_at).toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' });
+    return `<div class="board-item" onclick="openView('${p.id}')">
+      <span class="board-cat-badge badge-${p.category}">${esc(p.category)}</span>
+      <div class="board-title">${esc(p.title)}</div>
+      <div class="board-meta">${esc(p.author)} · ${date}</div>
+    </div>`;
+  }).join('');
+}
+
+function filterCat(cat, btn) {
+  currentCat = cat;
+  document.querySelectorAll('.cat-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderBoard();
+}
+
+// ── 보기 모달 ──
+function openView(id) {
+  const p = allPosts.find(x => x.id === id); if (!p) return;
+  document.getElementById('viewTitle').textContent = p.title;
+  const catMap = { '공지': 'badge-공지', '회의록': 'badge-회의록', '서류': 'badge-서류' };
+  document.getElementById('viewCatBadge').innerHTML =
+    `<span class="modal-cat-badge ${catMap[p.category]||''}">${esc(p.category)}</span>`;
+  document.getElementById('viewAuthor').textContent = `작성자: ${p.author}`;
+  document.getElementById('viewDate').textContent =
+    new Date(p.created_at).toLocaleDateString('ko-KR', { year:'numeric', month:'long', day:'numeric' });
+  document.getElementById('viewContent').textContent = p.content || '';
+  document.getElementById('viewFileWrap').innerHTML = p.file_url
+    ? `<a class="modal-file-link" href="${esc(p.file_url)}" target="_blank"><i class="ti ti-paperclip"></i>${esc(p.file_name || '첨부파일')}</a>`
+    : '';
+  document.getElementById('viewActions').innerHTML = `
+    <button class="btn-outline-sm" onclick="openEdit('${p.id}')"><i class="ti ti-pencil"></i> 수정</button>
+    <button class="btn-danger" onclick="deletePost('${p.id}')"><i class="ti ti-trash"></i> 삭제</button>`;
+  document.getElementById('viewModal').classList.add('open');
+}
+
+function closeView() { document.getElementById('viewModal').classList.remove('open'); }
+
+// ── 수정 ──
+function openEdit(id) {
+  closeView();
+  const p = allPosts.find(x => x.id === id); if (!p) return;
+  editingId = id;
+  document.getElementById('writeModalTitle').textContent = '글 수정';
+  document.getElementById('wCat').value = p.category;
+  document.getElementById('wTitle').value = p.title;
+  document.getElementById('wAuthor').value = p.author;
+  document.getElementById('wContent').value = p.content || '';
+  document.getElementById('wFileUrl').value = p.file_url || '';
+  document.getElementById('wFileName').value = p.file_name || '';
+  document.getElementById('writeSubmitBtn').textContent = '수정하기';
+  document.getElementById('writeModal').classList.add('open');
+}
+
+// ── 글쓰기 모달 ──
+function openWriteModal() {
+  editingId = null;
+  document.getElementById('writeModalTitle').textContent = '새 글 작성';
+  document.getElementById('wCat').value = '공지';
+  document.getElementById('wTitle').value = '';
+  document.getElementById('wAuthor').value = '';
+  document.getElementById('wContent').value = '';
+  document.getElementById('wFileUrl').value = '';
+  document.getElementById('wFileName').value = '';
+  document.getElementById('writeSubmitBtn').textContent = '등록하기';
+  document.getElementById('writeModal').classList.add('open');
+}
+function closeWrite() { document.getElementById('writeModal').classList.remove('open'); }
+
+async function submitPost() {
+  const cat    = document.getElementById('wCat').value;
+  const title  = document.getElementById('wTitle').value.trim();
+  const author = document.getElementById('wAuthor').value.trim();
+  const content= document.getElementById('wContent').value.trim();
+  const fileUrl= document.getElementById('wFileUrl').value.trim();
+  const fileName= document.getElementById('wFileName').value.trim();
+  if (!title || !author) { showToast('제목과 작성자를 입력해주세요.'); return; }
+
+  const btn = document.getElementById('writeSubmitBtn');
+  btn.disabled = true; btn.textContent = '저장 중...';
+
+  const body = { category: cat, title, author, content };
+  if (fileUrl) { body.file_url = fileUrl; body.file_name = fileName || fileUrl.split('/').pop(); }
+
+  try {
+    if (editingId) {
+      await fetch(`${SB_URL}/rest/v1/board_posts?id=eq.${editingId}`, {
+        method: 'PATCH', headers: { ...hdrs, 'Prefer': 'return=minimal' },
+        body: JSON.stringify(body)
+      });
+      showToast('수정되었습니다.');
+    } else {
+      await fetch(`${SB_URL}/rest/v1/board_posts`, {
+        method: 'POST', headers: { ...hdrs, 'Prefer': 'return=minimal' },
+        body: JSON.stringify(body)
+      });
+      showToast('등록되었습니다.');
+    }
+    closeWrite();
+    await loadBoard();
+  } catch(e) {
+    showToast('저장 오류가 발생했습니다.');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = editingId ? '수정하기' : '등록하기';
+  }
+}
+
+async function deletePost(id) {
+  if (!confirm('삭제하시겠습니까?')) return;
+  await fetch(`${SB_URL}/rest/v1/board_posts?id=eq.${id}`, {
+    method: 'DELETE', headers: hdrs
+  });
+  closeView();
+  showToast('삭제되었습니다.');
+  await loadBoard();
+}
+
+// ── 유틸 ──
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+// 모달 바깥 클릭 닫기
+document.getElementById('viewModal').addEventListener('click', e => {
+  if (e.target === document.getElementById('viewModal')) closeView();
+});
+document.getElementById('writeModal').addEventListener('click', e => {
+  if (e.target === document.getElementById('writeModal')) closeWrite();
+});
+
+loadBoard();
+</script>
+</body>
+</html>
