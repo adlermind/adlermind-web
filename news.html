@@ -240,7 +240,7 @@ let currentCat = '전체';
 
 async function loadPosts() {
   try {
-    const res = await fetch(`${SB_URL}/rest/v1/board_posts?order=is_pinned.desc,created_at.desc`, { headers: hdrs });
+    const res = await fetch(`${SB_URL}/rest/v1/board_posts?visibility=eq.public&order=is_pinned.desc,created_at.desc`, { headers: hdrs });
     allPosts = await res.json();
     if (!Array.isArray(allPosts)) allPosts = [];
     render();
