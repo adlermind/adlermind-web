@@ -218,8 +218,20 @@ async function doLogin() {
   const btn = document.getElementById('loginBtn');
   btn.disabled = true; btn.textContent = '로그인 중...';
 
-  const email = `${nick}@adlermind.co.kr`;
-  const { error } = await _sb.auth.signInWithPassword({ email, password: pw });
+  // 닉네임으로 내부 이메일 조회
+  const lookupRes = await fetch(
+    `${SB_URL}/rest/v1/site_users?nickname=eq.${encodeURIComponent(nick)}&select=email`,
+    { headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` } }
+  );
+  const [u] = await lookupRes.json();
+
+  if (!u || !u.email) {
+    btn.disabled = false; btn.textContent = '로그인';
+    showErr('loginErr', '별칭 또는 비밀번호가 맞지 않습니다.');
+    return;
+  }
+
+  const { error } = await _sb.auth.signInWithPassword({ email: u.email, password: pw });
 
   btn.disabled = false; btn.textContent = '로그인';
 
@@ -237,12 +249,8 @@ async function doSignup() {
   const pw2  = document.getElementById('signupPw2').value;
   clearSignupErr();
 
-  // 유효성 검사
   if (!nick) { showErr('nickErr', '별칭을 입력해주세요.'); return; }
   if (nick.length < 2) { showErr('nickErr', '별칭은 2자 이상이어야 합니다.'); return; }
-  if (!/^[가-힣a-zA-Z0-9_]+$/.test(nick)) {
-    showErr('nickErr', '한글·영문·숫자·밑줄(_)만 사용할 수 있습니다.'); return;
-  }
   if (!pw || pw.length < 6) { showErr('signupErr', '비밀번호는 6자 이상이어야 합니다.'); return; }
   if (pw !== pw2) { showErr('signupErr', '비밀번호가 일치하지 않습니다.'); return; }
 
@@ -257,7 +265,8 @@ async function doSignup() {
   const btn = document.getElementById('signupBtn');
   btn.disabled = true; btn.textContent = '가입 처리 중...';
 
-  const email = `${nick}@adlermind.co.kr`;
+  // 내부 이메일 자동 생성 (사용자에게 노출되지 않음)
+  const email = `u${Date.now()}${Math.random().toString(36).slice(2,6)}@adlermind.co.kr`;
   const { data, error } = await _sb.auth.signUp({ email, password: pw });
 
   if (error) {
@@ -267,10 +276,10 @@ async function doSignup() {
     return;
   }
 
-  // site_users에 닉네임 등록
+  // site_users에 닉네임 + 내부 이메일 등록
   const userId = data.user.id;
   const token  = data.session?.access_token || SB_KEY;
-  await fetch(`${SB_URL}/rest/v1/site_users`, {
+  const insertRes = await fetch(`${SB_URL}/rest/v1/site_users`, {
     method: 'POST',
     headers: {
       apikey: SB_KEY,
@@ -278,16 +287,18 @@ async function doSignup() {
       'Content-Type': 'application/json',
       Prefer: 'return=minimal'
     },
-    body: JSON.stringify({ user_id: userId, nickname: nick })
+    body: JSON.stringify({ user_id: userId, nickname: nick, email })
   });
 
   btn.disabled = false; btn.textContent = '가입하기';
 
+  if (!insertRes.ok) {
+    console.error('site_users insert failed:', await insertRes.text());
+  }
+
   if (data.session) {
-    // 이메일 확인 불필요 설정 시 — 즉시 로그인 상태
     window.location.href = 'mypage.html';
   } else {
-    // 이메일 확인 필요 설정 시 (이 사이트에서는 사용 안 함)
     const ok = document.getElementById('signupOk');
     ok.textContent = '가입이 완료되었습니다. 로그인 탭에서 입장해주세요.';
     ok.style.display = 'block';
