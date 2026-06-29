@@ -184,7 +184,7 @@ body {
   cursor: pointer; transition: all 0.12s;
 }
 .ag-cell:hover { opacity: 0.75; }
-.ag-cell.blocked { background: rgba(232,146,154,0.45); border-color: rgba(232,146,154,0.6); }
+.ag-cell.blocked { background: rgba(143,175,212,0.50); border-color: rgba(143,175,212,0.65); }
 .ag-cell.past { background: var(--am-bg); border-color: var(--am-border); cursor: default; opacity: 0.4; }
 .save-avail-btn {
   width: 100%; margin-top: 14px; padding: 11px;
@@ -461,7 +461,7 @@ body {
           <div class="leg-dot" style="background:rgba(143,191,184,0.45); border-color:rgba(143,191,184,0.6);"></div>가능
         </div>
         <div class="leg-item">
-          <div class="leg-dot" style="background:rgba(232,146,154,0.45); border-color:rgba(232,146,154,0.6);"></div>불가
+          <div class="leg-dot" style="background:rgba(143,175,212,0.50); border-color:rgba(143,175,212,0.65);"></div>불가
         </div>
       </div>
       <button class="save-avail-btn" onclick="saveAvailability()">저장</button>
@@ -727,15 +727,10 @@ async function loadStatusData() {
 
 function cellColor(count) {
   if (count === 0) return null;
-  const steps = [
-    'rgba(232,146,154,0.55)',  // 1명 — rose
-    'rgba(196,141,160,0.60)',  // 2명 — mauve
-    'rgba(143,175,212,0.65)',  // 3명 — blue
-    'rgba(143,191,184,0.70)',  // 4명 — sage
-    'rgba(90,160,152,0.85)',   // 5명 — sage 진하게
-    'rgba(55,130,122,0.95)',   // 6명 — sage 최진하
-  ];
-  return steps[Math.min(count - 1, steps.length - 1)];
+  if (count <= 3) return 'rgba(143,191,184,0.40)';  // 1~3명 — 연한 sage (성원 미달)
+  if (count === 4) return 'rgba(143,175,212,0.60)';  // 4명 — 청색
+  if (count === 5) return 'rgba(100,145,195,0.78)';  // 5명 — 청색 진하게
+  return 'rgba(65,115,175,0.92)';                    // 6명 — 청색 최진하
 }
 
 function renderStatusGrid() {
