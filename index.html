@@ -462,13 +462,13 @@ loadNews();
   if (!session) return;
   const res = await fetch(
     `${SB_URL}/rest/v1/site_users?user_id=eq.${session.user.id}&select=nickname`,
-    { headers: { apikey: SB_KEY, Authorization: `Bearer ${session.access_token}` } }
+    { headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` } }
   );
   const [u] = await res.json();
   if (!u) return;
   ['navLoginLink','navLoginMobile'].forEach(id => {
     const el = document.getElementById(id);
-    if (el) { el.textContent = u.nickname; el.href = 'mypage.html'; }
+    if (el) { el.textContent = u.nickname + '님의 Life Style'; el.href = 'mypage.html'; }
   });
 })();
 </script>
