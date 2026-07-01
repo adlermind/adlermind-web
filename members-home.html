@@ -1418,6 +1418,8 @@ async function loadBoard() {
     allPosts = await res.json();
     if (!Array.isArray(allPosts)) allPosts = [];
     renderBoard();
+    const postId = new URLSearchParams(window.location.search).get('post');
+    if (postId && allPosts.some(p => p.id === postId)) openView(postId);
   } catch(e) {
     el.innerHTML = '<div class="board-empty"><i class="ti ti-alert-circle"></i>불러오기 실패</div>';
   }
@@ -1454,6 +1456,7 @@ function filterCat(cat, btn) {
 // ── 보기 모달 ──
 function openView(id) {
   const p = allPosts.find(x => x.id === id); if (!p) return;
+  history.pushState({}, '', `members-home.html?post=${id}`);
   document.getElementById('viewTitle').textContent = p.title;
 
   const catMap = { '공지':'badge-공지', '회의록':'badge-회의록', '서류':'badge-서류' };
@@ -1476,7 +1479,7 @@ function openView(id) {
             <i class="ti ti-paperclip" style="font-size:13px;color:var(--am-muted);flex-shrink:0;"></i>
             <span class="attach-item-name">${esc(f.name)}</span>
             <span style="font-size:10px;color:var(--am-muted);font-family:Raleway,sans-serif;flex-shrink:0;margin-right:6px;">${formatSize(f.size||0)}</span>
-            <a class="attach-dl" href="${esc(f.url)}" download="${esc(f.name)}" target="_blank">
+            <a class="attach-dl" href="${esc(f.url)}?download=${encodeURIComponent(f.name)}" download="${esc(f.name)}" target="_blank">
               <i class="ti ti-download"></i>다운로드
             </a>
           </div>`).join('')}
@@ -1486,13 +1489,22 @@ function openView(id) {
   }
 
   document.getElementById('viewActions').innerHTML = `
+    <button class="btn-outline-sm" onclick="copyPostLink('${p.id}')"><i class="ti ti-link"></i>링크 복사</button>
     <button class="btn-outline-sm" onclick="openEdit('${p.id}')"><i class="ti ti-pencil"></i>수정</button>
     <button class="btn-danger" onclick="deletePost('${p.id}')"><i class="ti ti-trash"></i>삭제</button>`;
 
   loadComments(p.id);
   document.getElementById('viewModal').classList.add('open');
 }
-function closeView() { document.getElementById('viewModal').classList.remove('open'); }
+function closeView() {
+  document.getElementById('viewModal').classList.remove('open');
+  history.pushState({}, '', 'members-home.html');
+}
+function copyPostLink(id) {
+  const url = `${window.location.origin}/members-home.html?post=${id}`;
+  navigator.clipboard.writeText(url);
+  showToast('링크가 복사되었습니다.');
+}
 
 // ── 글쓰기 페이지 ──
 function openWritePage() {
@@ -1531,7 +1543,7 @@ function openEdit(id) {
   document.getElementById('htmlTextarea').value = p.content || '';
   pendingFiles = (p.attachments || []).map(f => ({ ...f }));
   renderFileList();
-  setEditorMode('normal');
+  setEditorMode('html');
   document.getElementById('writePage').classList.add('open');
   document.getElementById('writePage').scrollTop = 0;
 }

@@ -296,7 +296,7 @@ function openModal(id) {
         ${attachments.map(f => `
           <div class="attach-item">
             <span class="attach-item-name">${esc(f.name)}</span>
-            <a class="attach-dl" href="${esc(f.url)}" download="${esc(f.name)}" target="_blank">다운로드</a>
+            <a class="attach-dl" href="${esc(f.url)}?download=${encodeURIComponent(f.name)}" download="${esc(f.name)}" target="_blank">다운로드</a>
           </div>`).join('')}
       </div>`;
   } else {
