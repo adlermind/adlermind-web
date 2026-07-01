@@ -204,7 +204,6 @@ footer {
       <button class="modal-close" onclick="closeModal()">&#10005;</button>
     </div>
     <div class="modal-meta" id="mMeta"></div>
-    <button class="modal-copy-link" id="mCopyLink" style="font-size:12px;color:var(--am-sage);background:none;border:1px solid var(--am-sage);border-radius:3px;padding:4px 12px;cursor:pointer;margin-bottom:14px;">게시물 링크 복사</button>
     <div class="modal-content" id="mContent"></div>
     <div id="mAttachments"></div>
   </div>
@@ -245,8 +244,6 @@ async function loadPosts() {
     allPosts = await res.json();
     if (!Array.isArray(allPosts)) allPosts = [];
     render();
-    const postId = new URLSearchParams(window.location.search).get('post');
-    if (postId && allPosts.some(p => p.id === postId)) openModal(postId);
   } catch(e) {
     document.getElementById('boardList').innerHTML = '<div class="board-empty">소식을 불러올 수 없습니다.</div>';
   }
@@ -275,8 +272,6 @@ function filterCat(cat, btn) {
 
 function openModal(id) {
   const p = allPosts.find(x => x.id === id); if (!p) return;
-  history.pushState({}, '', `news.html?post=${id}`);
-  document.getElementById('mCopyLink').onclick = () => copyPostLink(id);
   document.getElementById('mTitle').textContent = p.title;
   const date = new Date(p.created_at).toLocaleDateString('ko-KR', { year:'numeric', month:'long', day:'numeric' });
   document.getElementById('mMeta').textContent = `${p.category} · ${p.author} · ${date}`;
@@ -297,17 +292,8 @@ function openModal(id) {
   }
   document.getElementById('modal').classList.add('open');
 }
-function closeModal() {
-  document.getElementById('modal').classList.remove('open');
-  history.pushState({}, '', 'news.html');
-}
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
 document.getElementById('modal').addEventListener('click', e => { if (e.target === document.getElementById('modal')) closeModal(); });
-
-function copyPostLink(id) {
-  const url = `${window.location.origin}/news.html?post=${id}`;
-  navigator.clipboard.writeText(url);
-  alert('링크가 복사되었습니다');
-}
 
 function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
