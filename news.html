@@ -127,6 +127,7 @@ nav {
 .modal-content ul, .modal-content ol { padding-left: 20px; margin-bottom: 8px; }
 .modal-content blockquote { border-left: 3px solid #e8e4e0; padding-left: 14px; color: var(--am-muted); margin: 8px 0; }
 .modal-content a { color: var(--am-blue); }
+.modal-content-frame { width: 100%; border: none; min-height: 400px; display: block; }
 .modal-attachments { margin-top: 18px; border-top: 0.5px solid var(--am-border); padding-top: 14px; }
 .modal-attachments-label { font-size: 11px; color: var(--am-muted); margin-bottom: 8px; }
 .attach-item {
@@ -287,7 +288,7 @@ function openModal(id) {
   document.getElementById('mTitle').textContent = p.title;
   const date = new Date(p.created_at).toLocaleDateString('ko-KR', { year:'numeric', month:'long', day:'numeric' });
   document.getElementById('mMeta').textContent = `${p.category} · ${p.author} · ${date}`;
-  document.getElementById('mContent').innerHTML = p.content || '';
+  renderPostBody(document.getElementById('mContent'), p.content || '');
   const attachments = p.attachments || [];
   if (attachments.length) {
     document.getElementById('mAttachments').innerHTML = `
@@ -317,6 +318,29 @@ function copyPostLink(id) {
 }
 
 function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function hasHtmlTag(content) {
+  return /<\/?[a-z][\s\S]*>/i.test(String(content || ''));
+}
+function renderPostBody(target, content) {
+  target.innerHTML = '';
+  if (!hasHtmlTag(content)) {
+    target.textContent = content || '';
+    return;
+  }
+  const frame = document.createElement('iframe');
+  frame.className = 'modal-content-frame';
+  frame.setAttribute('sandbox', 'allow-same-origin');
+  frame.onload = function() {
+    try {
+      const doc = frame.contentDocument;
+      const body = doc && doc.body;
+      if (body) frame.style.height = body.scrollHeight + 'px';
+    } catch(e) {}
+  };
+  frame.srcdoc = String(content || '');
+  target.appendChild(frame);
+}
 
 document.getElementById('navHam').addEventListener('click', () => {
   document.getElementById('navLinks').classList.toggle('open');
