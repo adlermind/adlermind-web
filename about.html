@@ -7,15 +7,17 @@
 <link rel="icon" type="image/png" href="image/favicon.png">
 <link rel="icon" type="image/webp" href="image/favicon.webp">
 <title>협동조합 소개 · ADLER MIND 협동조합</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400&family=Noto+Sans+KR:wght@300;400&family=Raleway:wght@200;300;400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500&family=Noto+Sans+KR:wght@300;400&family=Raleway:wght@200;300;400&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root {
-  --am-rose: #E8929A; --am-sage: #8FBFB8; --am-gray: #6B6B6B;
+  --am-rose: #E8929A; --am-sage: #8FBFB8; --am-gray: #6B6B6B; --am-mauve: #C48DA0;
   --am-bg: #FAFAF8; --am-muted: #9a9490; --am-border: #e8e4e0; --am-white: #ffffff;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
 body { font-family: 'Noto Sans KR', sans-serif; font-weight: 300; color: var(--am-gray); background: var(--am-white); min-height: 100vh; display: flex; flex-direction: column; }
+
 nav {
   position: sticky; top: 0; z-index: 100; background: var(--am-white);
   border-bottom: 0.5px solid var(--am-border); padding: 0 32px;
@@ -39,30 +41,89 @@ nav {
 }
 .nav-member-btn:hover { background: #6fa8a0; }
 .nav-ham { display: none; border: none; background: none; cursor: pointer; font-size: 22px; color: var(--am-gray); }
-.coming-wrap {
-  flex: 1; display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  padding: 80px 32px; text-align: center; background: var(--am-bg);
+
+/* 섹션 pill 서브 내비게이션 */
+.ab-pillnav {
+  position: sticky; top: 60px; z-index: 90; background: rgba(250,250,248,0.96);
+  backdrop-filter: blur(4px); border-bottom: 0.5px solid var(--am-border);
+  display: flex; gap: 8px; padding: 12px 24px; overflow-x: auto;
+  scrollbar-width: none;
 }
-.coming-label {
-  font-family: 'Raleway', sans-serif; font-size: 10px; font-weight: 200;
-  letter-spacing: 0.3em; color: var(--am-muted); text-transform: uppercase; margin-bottom: 28px;
+.ab-pillnav::-webkit-scrollbar { display: none; }
+.ab-pillnav a {
+  flex: none; font-size: 12px; letter-spacing: 0.02em; color: var(--am-muted);
+  text-decoration: none; padding: 7px 16px; border: 0.5px solid var(--am-border);
+  border-radius: 999px; white-space: nowrap; transition: color 0.15s, border-color 0.15s, background 0.15s;
 }
-.coming-line {
-  width: 40px; height: 0.5px; background: var(--am-sage); margin: 0 auto 32px;
+.ab-pillnav a:hover { color: var(--am-sage); border-color: var(--am-sage); }
+.ab-pillnav a.active { color: #fff; background: var(--am-sage); border-color: var(--am-sage); }
+
+main { flex: 1; background: var(--am-white); }
+
+.ab-section { max-width: 760px; margin: 0 auto; padding: 80px 24px; scroll-margin-top: 116px; }
+.ab-section + .ab-section { border-top: 0.5px solid var(--am-border); }
+.ab-section h2 {
+  font-family: 'Noto Serif KR', serif; font-weight: 400; font-size: 22px;
+  color: var(--am-gray); letter-spacing: 0.04em; text-align: center; margin-bottom: 8px;
 }
-.coming-title {
-  font-family: 'Noto Serif KR', serif; font-size: 22px; font-weight: 300;
-  color: var(--am-gray); margin-bottom: 16px;
+.ab-eyebrow {
+  display: block; text-align: center; font-family: 'Raleway', sans-serif;
+  font-size: 10px; font-weight: 200; letter-spacing: 0.3em; color: var(--am-mauve);
+  text-transform: uppercase; margin-bottom: 14px;
 }
-.coming-desc { font-size: 13px; color: var(--am-muted); line-height: 2; margin-bottom: 36px; }
-.coming-date {
-  font-family: 'Raleway', sans-serif; font-size: 11px; letter-spacing: 0.12em;
-  color: var(--am-sage); border: 0.5px solid rgba(143,191,184,0.4);
-  padding: 8px 20px; margin-bottom: 32px;
+.ab-divider { width: 36px; height: 0.5px; background: var(--am-sage); margin: 16px auto 32px; }
+
+/* 히어로 — 시 단독 배치 */
+.ab-hero {
+  scroll-margin-top: 116px; background: var(--am-bg);
+  padding: 100px 24px; display: flex; justify-content: center;
 }
-.back-link { font-size: 12px; color: var(--am-muted); text-decoration: none; }
-.back-link:hover { color: var(--am-sage); }
+.ab-poem {
+  font-family: 'Noto Serif KR', serif; font-weight: 300; font-size: 16.5px;
+  line-height: 2.15; color: #55524f; letter-spacing: 0.01em; text-align: center;
+  max-width: 560px;
+}
+.ab-poem .stanza { margin-bottom: 11mm; }
+.ab-poem .stanza:last-of-type { margin-bottom: 0; }
+
+/* 협동조합은 — 인용 */
+.ab-quote {
+  font-family: 'Noto Serif KR', serif; font-weight: 300; font-size: 15.5px;
+  line-height: 2.05; color: #4a4a4a; text-align: left;
+  border-left: 2px solid var(--am-sage); padding-left: 24px;
+}
+
+/* 약속 목록 */
+.ab-promise-list { list-style: none; counter-reset: promise; }
+.ab-promise-list li {
+  counter-increment: promise; display: flex; gap: 18px; align-items: flex-start;
+  font-size: 14px; line-height: 1.8; color: #4a4a4a; padding: 14px 0;
+}
+.ab-promise-list li + li { border-top: 0.5px solid var(--am-border); }
+.ab-promise-list li::before {
+  content: counter(promise, decimal-leading-zero);
+  flex: none; font-family: 'Raleway', sans-serif; font-size: 13px; letter-spacing: 0.05em;
+  color: var(--am-sage); padding-top: 1px;
+}
+
+.ab-lead {
+  text-align: center; font-size: 14px; line-height: 1.9; color: var(--am-muted);
+  max-width: 560px; margin: 0 auto 40px;
+}
+
+/* 보류 섹션 플레이스홀더 */
+.ab-placeholder-text {
+  text-align: center; font-size: 13px; color: var(--am-muted); line-height: 1.9;
+}
+
+/* 오시는 길 */
+.ab-address { text-align: center; font-size: 14px; color: #4a4a4a; line-height: 1.9; margin-bottom: 20px; }
+.ab-map-placeholder {
+  border: 0.5px dashed var(--am-border); border-radius: 4px; height: 220px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; color: var(--am-muted); background: var(--am-bg);
+}
+
 @media (max-width: 720px) {
   nav { padding: 0 20px; }
   .nav-links { display: none; }
@@ -70,6 +131,8 @@ nav {
   .nav-ham { display: block; margin-left: auto; }
   .nav-login-link { display: none; }
   .nav-login-mobile { display: block !important; }
+  .ab-section { padding: 56px 20px; }
+  .ab-hero { padding: 64px 20px; }
 }
 </style>
 </head>
@@ -88,17 +151,225 @@ nav {
   <a class="nav-member-btn" href="members.html">조합원 마당</a>
   <button class="nav-ham" id="navHam">&#9776;</button>
 </nav>
-<div class="coming-wrap">
-  <div class="coming-label">ABOUT US</div>
-  <div class="coming-line"></div>
-  <h1 class="coming-title">협동조합 소개 페이지를 준비 중입니다</h1>
-  <p class="coming-desc">
-    ADLER MIND 협동조합의 설립 철학, 조직 구성,<br>
-    활동 방향을 소개하는 페이지를 만들고 있습니다.
-  </p>
-  <div class="coming-date">2026. 08. 15 창립총회 이후 공개 예정</div>
-  <a class="back-link" href="index.html">&larr; 홈으로 돌아가기</a>
-</div>
+
+<nav class="ab-pillnav" id="abPillNav">
+  <a href="#hero">히어로</a>
+  <a href="#greeting">명예고문 인사말</a>
+  <a href="#philosophy">아들러마인드 협동조합은</a>
+  <a href="#promise">아들러마인드의 약속</a>
+  <a href="#people">아들러마인드의 사람들</a>
+  <a href="#work">하는 일</a>
+  <a href="#location">오시는 길</a>
+</nav>
+
+<main>
+
+  <section id="hero" class="ab-hero">
+    <div class="ab-poem">
+      <div class="stanza">
+        지나온 과거와 미지의 내일은<br>
+        이 짧은 찰나의 순간으로 흘러들어<br>
+        우리가 함께 딛고 선 이 순간이<br>
+        영원이 머무는 유일한 정원입니다
+      </div>
+      <div class="stanza">
+        수많은 질문을 안고 떠나는 길<br>
+        모든 답은 저 먼 곳에 있지 않고<br>
+        내가 마주하는 바람, 스치는 인연<br>
+        그 평범함 속에 우주가 숨을 쉽니다
+      </div>
+      <div class="stanza">
+        내가 나를 온전히 사랑하는 일이<br>
+        세상을 사랑하는 일임을 압니다<br>
+        하여 존재하는 그 자체만으로<br>
+        지금 여기 우리는 온전한 우주입니다
+      </div>
+    </div>
+  </section>
+
+  <section id="greeting" class="ab-section">
+    <span class="ab-eyebrow">GREETING</span>
+    <h2>명예고문 인사말</h2>
+    <div class="ab-divider"></div>
+    <p class="ab-placeholder-text">이 자리는 명예고문님의 인사말로 채워질 예정입니다.<br>준비되는 대로 안내해 드리겠습니다.</p>
+  </section>
+
+  <section id="philosophy" class="ab-section">
+    <span class="ab-eyebrow">WHY A COOPERATIVE</span>
+    <h2>아들러마인드 협동조합은</h2>
+    <div class="ab-divider"></div>
+    <p class="ab-quote">
+      우리는 각자 다른 곳에서, 다른 방식으로 상담하고 가르쳐온 사람들입니다.
+      그런 우리가 아들러를 만나 협동조합을 선택한 이유는 하나입니다 —
+      아들러 심리학은 상담이론에 그치지 않는, 살아가는 삶의 태도를 요청하기 때문입니다.
+      경쟁 대신 협력을, 소유 대신 기여를, 결과보다는 과정을, 불완전함을 수용하며
+      현재의 우리를 격려하며 온전함으로 나아가는 삶의 태도를 배우는 곳 —
+      아들러마인드 협동조합은 그 실천의 장입니다.
+    </p>
+  </section>
+
+  <section id="promise" class="ab-section">
+    <span class="ab-eyebrow">OUR PROMISE</span>
+    <h2>아들러마인드의 약속</h2>
+    <div class="ab-divider"></div>
+    <ol class="ab-promise-list">
+      <li>우리는 인간의 불완전함이 그를 성장으로 이끄는 원동력이 됨을 믿습니다.</li>
+      <li>우리는 모든 이들이 자신만의 독특한 창조성으로 삶을 선택하고 있음을 이해합니다.</li>
+      <li>우리가 만나는 모든 사람들과 평등한 관계 속에서 민주적인 상담을 위해 노력합니다.</li>
+      <li>우리의 활동이 나와 공동체와 사회의 건강함에 기여할 수 있도록 노력할 것입니다.</li>
+      <li>우리의 다름은 다양성과 온전함을 더하는 창조의 기회로 받아들입니다.</li>
+      <li>우리는 서로를 격려하며 함께하는 협력의 삶을 통해 아들러리안의 정신을 살아갑니다.</li>
+    </ol>
+  </section>
+
+  <section id="people" class="ab-section">
+    <span class="ab-eyebrow">OUR PEOPLE</span>
+    <h2>아들러마인드의 사람들</h2>
+    <div class="ab-divider"></div>
+    <p class="ab-lead">아들러마인드의 사람들은 사회적 평등과 사회적 관심을 꿈꾸었던 아들러의 비전으로 함께합니다.</p>
+
+    <div class="am-card-grid" id="am-card-grid"></div>
+
+    <div class="am-modal-bg" id="am-modal-bg">
+      <div class="am-modal" id="am-modal-content"></div>
+    </div>
+  </section>
+
+  <section id="work" class="ab-section">
+    <span class="ab-eyebrow">WHAT WE DO</span>
+    <h2>하는 일</h2>
+    <div class="ab-divider"></div>
+    <p class="ab-placeholder-text">협동조합이 하는 일은 아직 정리 중입니다.<br>곧 자세히 소개해 드리겠습니다.</p>
+  </section>
+
+  <section id="location" class="ab-section">
+    <span class="ab-eyebrow">LOCATION</span>
+    <h2>오시는 길</h2>
+    <div class="ab-divider"></div>
+    <p class="ab-address">경기도 광주시 남종면 산수로 1652-16</p>
+    <div class="ab-map-placeholder">지도가 준비 중입니다</div>
+  </section>
+
+</main>
+
+<style>
+  /* 조합원 카드 (about_instructor_cards.html 재사용) */
+  .am-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 20px;
+  }
+  .am-card {
+    background: #fff;
+    border: 1px solid var(--am-border, #e8e4e0);
+    border-radius: 14px;
+    padding: 24px 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .am-card:hover {
+    box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+    transform: translateY(-2px);
+  }
+  .am-avatar {
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    margin: 0 auto 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 500;
+    color: #fff;
+    object-fit: cover;
+  }
+  .am-card .am-name {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 16px;
+    color: #333;
+    margin: 0 0 2px;
+  }
+  .am-card .am-role {
+    font-size: 12px;
+    color: var(--am-mauve, #C48DA0);
+    margin: 0 0 12px;
+  }
+  .am-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+    margin-bottom: 10px;
+  }
+  .am-tag {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: #f5f0ee;
+    color: var(--am-gray, #6B6B6B);
+  }
+  .am-more {
+    font-size: 11px;
+    color: var(--am-pale, #b8b4ae);
+  }
+
+  .am-modal-bg {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 999;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .am-modal-bg.open { display: flex; }
+  .am-modal {
+    background: #fff;
+    border-radius: 16px;
+    max-width: 380px;
+    width: 100%;
+    padding: 28px 24px;
+    position: relative;
+  }
+  .am-modal-close {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    cursor: pointer;
+    font-size: 18px;
+    color: var(--am-gray, #6B6B6B);
+    background: none;
+    border: none;
+  }
+  .am-modal .am-avatar {
+    width: 84px;
+    height: 84px;
+    font-size: 18px;
+  }
+  .am-modal .am-name { font-size: 19px; }
+  .am-modal-section {
+    border-top: 1px solid var(--am-border, #e8e4e0);
+    padding-top: 12px;
+    margin-top: 14px;
+    text-align: left;
+  }
+  .am-modal-section h4 {
+    font-size: 12px;
+    color: var(--am-sage, #8FBFB8);
+    letter-spacing: 0.05em;
+    margin: 0 0 8px;
+  }
+  .am-modal-section p {
+    font-size: 13px;
+    color: #444;
+    margin: 0 0 6px;
+    line-height: 1.5;
+  }
+</style>
+
 <script>
 const SB_URL = 'https://jboceiacgczkqkhqcmqu.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impib2NlaWFjZ2N6a3FraHFjbXF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI1OTg1MTYsImV4cCI6MjA5ODE3NDUxNn0.9jHLNB8PVDrWlSc5CDGz5j6ZF9yaKwrnzICvvvsFbvA';
@@ -122,6 +393,158 @@ document.getElementById('navHam').addEventListener('click', () => {
     if (el) { el.textContent = u.nickname + '님의 Life Style'; el.href = 'mypage.html'; }
   });
 })();
+
+/* pill 서브 내비게이션 — 현재 섹션 강조 */
+(() => {
+  const links = Array.from(document.querySelectorAll('#abPillNav a'));
+  const sections = links
+    .map(a => document.querySelector(a.getAttribute('href')))
+    .filter(Boolean);
+  const setActive = (id) => {
+    links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + id));
+  };
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) setActive(entry.target.id);
+    });
+  }, { rootMargin: '-45% 0px -50% 0px', threshold: 0 });
+  sections.forEach(sec => observer.observe(sec));
+})();
+
+/* 조합원 카드 데이터 및 렌더링 (about_instructor_cards.html) */
+const AM_MEMBERS = [
+  {
+    id: "lks", name: "이경숙", role: "이사장", color: "#E8929A",
+    tags: ["가족상담", "부부상담", "청소년상담", "아들러상담"],
+    career: [
+      "마음씨앗 심리상담소 소장 (2017.10~현재)",
+      "여주청소년상담복지센터 객원상담사 (2026.03~)",
+      "동부보호관찰소 특별보호관찰위원 (2022.10~)"
+    ],
+    certs: [
+      "아들러상담전문가 2급 — 한국아들러상담학회 (2025)",
+      "가족심리상담사 1급 — 한국심리상담협회 (2024)"
+    ]
+  },
+  {
+    id: "gmg", name: "고미경", role: "이사", color: "#8FBFB8",
+    tags: ["중독상담", "가족상담", "청소년상담", "미술심리상담"],
+    career: [
+      "백석대학교 천안 학생생활상담센터 (2019.03~2024.06)",
+      "동부보호관찰소 소년부 보호관찰위원 (2020.03~)",
+      "광주하남교육지원청 학교폭력조사관 (2024.04~)"
+    ],
+    certs: [
+      "중독전문가 1급 — 한국중독전문가협회 (2025)",
+      "가족심리상담사 1급 — 한국교정상담심리학회 (2025)"
+    ]
+  },
+  {
+    id: "syo", name: "신옥선", role: "이사", color: "#8FAFD4",
+    tags: ["명상", "미술치료", "분노조절", "학교폭력예방"],
+    career: [
+      "서울시립고양정신병원 미술치료 (2014.03~2015.02)",
+      "하남청소년상담복지센터 집단상담프로그램 (2017)",
+      "세움특수학교 재직중 (2024.03~현재)"
+    ],
+    certs: [
+      "미술심리상담사 — 가천대학교 (2024)",
+      "부모교육상담사 — 한국미술치료상담학회 (2024)"
+    ]
+  },
+  {
+    id: "pjy", name: "박정연", role: "감사", color: "#C48DA0",
+    tags: ["감정코칭", "아로마테라피", "부모교육", "펫테라피"],
+    career: [
+      "몸앤맘힐러상담소 소장 · AI아로마테라피 상담 앱 개발",
+      "한국아로마교육원 자격증·감정코칭 강의 (2024~현재)",
+      "광주정신건강복지센터 부모성장교실 (2026)"
+    ],
+    certs: [
+      "아로마전문관리사 1급 (2023)",
+      "HDAP 부모교육강사 (2020)"
+    ]
+  },
+  {
+    id: "kis", name: "김이수", role: "발기인 대표", color: "#F2C4B8",
+    tags: ["아들러상담", "부모교육", "타로상담", "미술상담"],
+    career: [
+      "심리상담연구소 心地 소장 — 연리지 34회기 진행",
+      "광주하남교육지원청 Wee센터 전문상담사 (2010~2016)",
+      "아동보호전문기관 부모양육코칭 (2024~현재)"
+    ],
+    certs: [
+      "아들러상담전문가 1급 — 한국아들러상담학회 (2024)",
+      "부모교육·집단상담 전문가 (2024)"
+    ]
+  },
+  {
+    id: "kjg", name: "김종금", role: "조합원", color: "#9a4e68",
+    tags: ["놀이치료", "임상심리", "청소년상담", "가족상담"],
+    career: [
+      "광주시가족센터 전문상담원 (2024.10~현재)",
+      "경기도재난심리회복지원센터 재난심리활동가 (2024.04~)",
+      "365드림의원 심리발달클리닉 놀이치료사 (2023.05~)"
+    ],
+    certs: [
+      "임상심리사 2급 — 보건복지부 (2021)",
+      "사회복지사 1급 — 보건복지부 (2021)"
+    ]
+  }
+];
+
+function renderCards() {
+  const grid = document.getElementById('am-card-grid');
+  grid.innerHTML = AM_MEMBERS.map(m => `
+    <div class="am-card" onclick="openMemberModal('${m.id}')">
+      <div class="am-avatar" style="background:${m.color}">${m.name}</div>
+      <p class="am-name">${m.name}</p>
+      <p class="am-role">${m.role}</p>
+      <div class="am-tags">
+        ${m.tags.slice(0,3).map(t => `<span class="am-tag">${t}</span>`).join('')}
+      </div>
+      <p class="am-more">자세히 보기 ↗</p>
+    </div>
+  `).join('');
+}
+
+function openMemberModal(id) {
+  const m = AM_MEMBERS.find(x => x.id === id);
+  if (!m) return;
+  document.getElementById('am-modal-content').innerHTML = `
+    <button class="am-modal-close" onclick="closeMemberModal()">&times;</button>
+    <div style="text-align:center;">
+      <div class="am-avatar" style="background:${m.color}">${m.name}</div>
+      <p class="am-name">${m.name}</p>
+      <p class="am-role">${m.role}</p>
+    </div>
+    <div class="am-modal-section">
+      <h4>전문분야</h4>
+      <div class="am-tags" style="justify-content:flex-start;">
+        ${m.tags.map(t => `<span class="am-tag">${t}</span>`).join('')}
+      </div>
+    </div>
+    <div class="am-modal-section">
+      <h4>주요 경력</h4>
+      ${m.career.map(c => `<p>· ${c}</p>`).join('')}
+    </div>
+    <div class="am-modal-section">
+      <h4>자격증</h4>
+      ${m.certs.map(c => `<p>· ${c}</p>`).join('')}
+    </div>
+  `;
+  document.getElementById('am-modal-bg').classList.add('open');
+}
+
+function closeMemberModal() {
+  document.getElementById('am-modal-bg').classList.remove('open');
+}
+
+document.getElementById('am-modal-bg').addEventListener('click', function(e) {
+  if (e.target === this) closeMemberModal();
+});
+
+renderCards();
 </script>
 </body>
 </html>
