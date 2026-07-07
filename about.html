@@ -13,6 +13,8 @@
 :root {
   --am-rose: #E8929A; --am-sage: #8FBFB8; --am-gray: #6B6B6B; --am-mauve: #C48DA0;
   --am-bg: #FAFAF8; --am-muted: #9a9490; --am-border: #e8e4e0; --am-white: #ffffff;
+  --rb-red: #FBF2F1; --rb-orange: #FBF6EE; --rb-yellow: #FAF9EA; --rb-green: #F0F7F1;
+  --rb-blue: #EEF3F8; --rb-indigo: #EFF0F8; --rb-violet: #F6EFF8;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
@@ -60,8 +62,9 @@ nav {
 
 main { flex: 1; background: var(--am-white); }
 
-.ab-section { max-width: 760px; margin: 0 auto; padding: 80px 24px; scroll-margin-top: 116px; }
+.ab-section { padding: 80px 0; scroll-margin-top: 116px; }
 .ab-section + .ab-section { border-top: 0.5px solid var(--am-border); }
+.ab-inner { max-width: 760px; margin: 0 auto; padding: 0 24px; }
 .ab-section h2 {
   font-family: 'Noto Serif KR', serif; font-weight: 400; font-size: 22px;
   color: var(--am-gray); letter-spacing: 0.04em; text-align: center; margin-bottom: 8px;
@@ -75,7 +78,7 @@ main { flex: 1; background: var(--am-white); }
 
 /* 히어로 — 시 단독 배치 */
 .ab-hero {
-  scroll-margin-top: 116px; background: var(--am-bg);
+  scroll-margin-top: 116px; background: var(--rb-red);
   padding: 100px 24px; display: flex; justify-content: center;
 }
 .ab-poem {
@@ -85,6 +88,14 @@ main { flex: 1; background: var(--am-white); }
 }
 .ab-poem .stanza { margin-bottom: 11mm; }
 .ab-poem .stanza:last-of-type { margin-bottom: 0; }
+
+/* 섹션별 파스텔 무지개 배경 (탭 순서: 빨주노초파남보) */
+#greeting { background: var(--rb-orange); }
+#philosophy { background: var(--rb-yellow); }
+#promise { background: var(--rb-green); }
+#people { background: var(--rb-blue); }
+#work { background: var(--rb-indigo); }
+#location { background: var(--rb-violet); }
 
 /* 협동조합은 — 인용 */
 .ab-quote {
@@ -131,7 +142,8 @@ main { flex: 1; background: var(--am-white); }
   .nav-ham { display: block; margin-left: auto; }
   .nav-login-link { display: none; }
   .nav-login-mobile { display: block !important; }
-  .ab-section { padding: 56px 20px; }
+  .ab-section { padding: 56px 0; }
+  .ab-inner { padding: 0 20px; }
   .ab-hero { padding: 64px 20px; }
 }
 </style>
@@ -153,7 +165,7 @@ main { flex: 1; background: var(--am-white); }
 </nav>
 
 <nav class="ab-pillnav" id="abPillNav">
-  <a href="#hero">히어로</a>
+  <a href="#hero">아들러마인드</a>
   <a href="#greeting">명예고문 인사말</a>
   <a href="#philosophy">아들러마인드 협동조합은</a>
   <a href="#promise">아들러마인드의 약속</a>
@@ -188,41 +200,52 @@ main { flex: 1; background: var(--am-white); }
   </section>
 
   <section id="greeting" class="ab-section">
+   <div class="ab-inner">
     <span class="ab-eyebrow">GREETING</span>
     <h2>명예고문 인사말</h2>
     <div class="ab-divider"></div>
     <p class="ab-placeholder-text">이 자리는 명예고문님의 인사말로 채워질 예정입니다.<br>준비되는 대로 안내해 드리겠습니다.</p>
+   </div>
   </section>
 
   <section id="philosophy" class="ab-section">
+   <div class="ab-inner">
     <span class="ab-eyebrow">WHY A COOPERATIVE</span>
     <h2>아들러마인드 협동조합은</h2>
     <div class="ab-divider"></div>
     <p class="ab-quote">
-      우리는 각자 다른 곳에서, 다른 방식으로 상담하고 가르쳐온 사람들입니다.
-      그런 우리가 아들러를 만나 협동조합을 선택한 이유는 하나입니다 —
-      아들러 심리학은 상담이론에 그치지 않는, 살아가는 삶의 태도를 요청하기 때문입니다.
-      경쟁 대신 협력을, 소유 대신 기여를, 결과보다는 과정을, 불완전함을 수용하며
-      현재의 우리를 격려하며 온전함으로 나아가는 삶의 태도를 배우는 곳 —
-      아들러마인드 협동조합은 그 실천의 장입니다.
+      우리는 각자 다른 곳에서, 다른 방식으로 상담하고 가르쳐온 사람들입니다.<br>
+      그런 우리가 아들러를 만나 협동조합을 선택한 이유는 하나입니다<br>
+      — 아들러 심리학은 상담이론에 그치지 않는, 살아가는 삶의 태도를 요청하기 때문입니다.
+      <br><br>
+      경쟁 대신 협력을, 소유 대신 기여를,<br>
+      결과보다는 과정을, 불완전함을 수용하며<br>
+      현재의 우리를 격려하며 온전함으로 나아가는<br>
+      삶의 태도를 배우는 곳<br>
+      — 아들러마인드 협동조합은 그 실천의 장입니다.
     </p>
+   </div>
   </section>
 
   <section id="promise" class="ab-section">
+   <div class="ab-inner">
     <span class="ab-eyebrow">OUR PROMISE</span>
-    <h2>아들러마인드의 약속</h2>
+    <h2>아들러마인드의 7가지 약속</h2>
     <div class="ab-divider"></div>
     <ol class="ab-promise-list">
       <li>우리는 인간의 불완전함이 그를 성장으로 이끄는 원동력이 됨을 믿습니다.</li>
+      <li>우리의 다름은 다양성과 온전함을 더하는 창조의 기회로 받아들입니다.</li>
       <li>우리는 모든 이들이 자신만의 독특한 창조성으로 삶을 선택하고 있음을 이해합니다.</li>
       <li>우리가 만나는 모든 사람들과 평등한 관계 속에서 민주적인 상담을 위해 노력합니다.</li>
+      <li>우리는 한국아들러상담학회를 통해 지속적인 전문성을 갖추도록 노력하여<br>변화하는 사회에 실천적이고 건강한 대안을 찾아갈 것입니다.</li>
       <li>우리의 활동이 나와 공동체와 사회의 건강함에 기여할 수 있도록 노력할 것입니다.</li>
-      <li>우리의 다름은 다양성과 온전함을 더하는 창조의 기회로 받아들입니다.</li>
       <li>우리는 서로를 격려하며 함께하는 협력의 삶을 통해 아들러리안의 정신을 살아갑니다.</li>
     </ol>
+   </div>
   </section>
 
   <section id="people" class="ab-section">
+   <div class="ab-inner">
     <span class="ab-eyebrow">OUR PEOPLE</span>
     <h2>아들러마인드의 사람들</h2>
     <div class="ab-divider"></div>
@@ -233,21 +256,26 @@ main { flex: 1; background: var(--am-white); }
     <div class="am-modal-bg" id="am-modal-bg">
       <div class="am-modal" id="am-modal-content"></div>
     </div>
+   </div>
   </section>
 
   <section id="work" class="ab-section">
+   <div class="ab-inner">
     <span class="ab-eyebrow">WHAT WE DO</span>
     <h2>하는 일</h2>
     <div class="ab-divider"></div>
     <p class="ab-placeholder-text">협동조합이 하는 일은 아직 정리 중입니다.<br>곧 자세히 소개해 드리겠습니다.</p>
+   </div>
   </section>
 
   <section id="location" class="ab-section">
+   <div class="ab-inner">
     <span class="ab-eyebrow">LOCATION</span>
     <h2>오시는 길</h2>
     <div class="ab-divider"></div>
     <p class="ab-address">경기도 광주시 남종면 산수로 1652-16</p>
     <div class="ab-map-placeholder">지도가 준비 중입니다</div>
+   </div>
   </section>
 
 </main>
@@ -256,8 +284,11 @@ main { flex: 1; background: var(--am-white); }
   /* 조합원 카드 (about_instructor_cards.html 재사용) */
   .am-card-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 20px;
+  }
+  @media (max-width: 720px) {
+    .am-card-grid { grid-template-columns: repeat(2, 1fr); }
   }
   .am-card {
     background: #fff;
@@ -273,16 +304,11 @@ main { flex: 1; background: var(--am-white); }
     transform: translateY(-2px);
   }
   .am-avatar {
-    width: 68px;
-    height: 68px;
-    border-radius: 50%;
+    width: 102px;
+    height: 102px;
+    border-radius: 18px;
     margin: 0 auto 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    font-weight: 500;
-    color: #fff;
+    display: block;
     object-fit: cover;
   }
   .am-card .am-name {
@@ -345,9 +371,9 @@ main { flex: 1; background: var(--am-white); }
     border: none;
   }
   .am-modal .am-avatar {
-    width: 84px;
-    height: 84px;
-    font-size: 18px;
+    width: 189px;
+    height: 189px;
+    border-radius: 33px;
   }
   .am-modal .am-name { font-size: 19px; }
   .am-modal-section {
@@ -414,7 +440,7 @@ document.getElementById('navHam').addEventListener('click', () => {
 /* 조합원 카드 데이터 및 렌더링 (about_instructor_cards.html) */
 const AM_MEMBERS = [
   {
-    id: "lks", name: "이경숙", role: "이사장", color: "#E8929A",
+    id: "lks", name: "이경숙", role: "이사장", color: "#E8929A", photo: "image/001.webp", photoPosition: "center 15%",
     tags: ["가족상담", "부부상담", "청소년상담", "아들러상담"],
     career: [
       "마음씨앗 심리상담소 소장 (2017.10~현재)",
@@ -427,7 +453,7 @@ const AM_MEMBERS = [
     ]
   },
   {
-    id: "gmg", name: "고미경", role: "이사", color: "#8FBFB8",
+    id: "gmg", name: "고미경", role: "이사", color: "#8FBFB8", photo: "image/002.webp",
     tags: ["중독상담", "가족상담", "청소년상담", "미술심리상담"],
     career: [
       "백석대학교 천안 학생생활상담센터 (2019.03~2024.06)",
@@ -440,7 +466,7 @@ const AM_MEMBERS = [
     ]
   },
   {
-    id: "syo", name: "신옥선", role: "이사", color: "#8FAFD4",
+    id: "syo", name: "신옥선", role: "이사", color: "#8FAFD4", photo: "image/003.webp",
     tags: ["명상", "미술치료", "분노조절", "학교폭력예방"],
     career: [
       "서울시립고양정신병원 미술치료 (2014.03~2015.02)",
@@ -453,7 +479,7 @@ const AM_MEMBERS = [
     ]
   },
   {
-    id: "pjy", name: "박정연", role: "감사", color: "#C48DA0",
+    id: "pjy", name: "박정연", role: "감사", color: "#C48DA0", photo: "image/004.webp", photoPosition: "center 15%",
     tags: ["감정코칭", "아로마테라피", "부모교육", "펫테라피"],
     career: [
       "몸앤맘힐러상담소 소장 · AI아로마테라피 상담 앱 개발",
@@ -466,7 +492,7 @@ const AM_MEMBERS = [
     ]
   },
   {
-    id: "kis", name: "김이수", role: "발기인 대표", color: "#F2C4B8",
+    id: "kis", name: "김이수", role: "조합원", color: "#F2C4B8", photo: "image/005.webp",
     tags: ["아들러상담", "부모교육", "타로상담", "미술상담"],
     career: [
       "심리상담연구소 心地 소장 — 연리지 34회기 진행",
@@ -479,7 +505,7 @@ const AM_MEMBERS = [
     ]
   },
   {
-    id: "kjg", name: "김종금", role: "조합원", color: "#9a4e68",
+    id: "kjg", name: "김종금", role: "조합원", color: "#9a4e68", photo: "image/006.webp",
     tags: ["놀이치료", "임상심리", "청소년상담", "가족상담"],
     career: [
       "광주시가족센터 전문상담원 (2024.10~현재)",
@@ -497,7 +523,7 @@ function renderCards() {
   const grid = document.getElementById('am-card-grid');
   grid.innerHTML = AM_MEMBERS.map(m => `
     <div class="am-card" onclick="openMemberModal('${m.id}')">
-      <div class="am-avatar" style="background:${m.color}">${m.name}</div>
+      <img class="am-avatar" src="${m.photo}" alt="${m.name}" style="object-position:${m.photoPosition || 'center'}">
       <p class="am-name">${m.name}</p>
       <p class="am-role">${m.role}</p>
       <div class="am-tags">
@@ -514,7 +540,7 @@ function openMemberModal(id) {
   document.getElementById('am-modal-content').innerHTML = `
     <button class="am-modal-close" onclick="closeMemberModal()">&times;</button>
     <div style="text-align:center;">
-      <div class="am-avatar" style="background:${m.color}">${m.name}</div>
+      <img class="am-avatar" src="${m.photo}" alt="${m.name}" style="object-position:${m.photoPosition || 'center'}">
       <p class="am-name">${m.name}</p>
       <p class="am-role">${m.role}</p>
     </div>
