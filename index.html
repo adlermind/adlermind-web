@@ -185,32 +185,6 @@ section { padding: 88px 32px; }
   line-height: 1.8;
 }
 
-/* ── 조합원 섹션 ── */
-#member-section { background: var(--am-bg); }
-.member-box {
-  border: 0.5px solid var(--am-border);
-  background: var(--am-white);
-  padding: 40px 48px;
-  max-width: 560px;
-}
-.member-box ul {
-  list-style: none;
-  margin-bottom: 32px;
-}
-.member-box ul li {
-  font-size: 13px; color: var(--am-gray);
-  padding: 9px 0;
-  border-bottom: 0.5px solid var(--am-bg);
-  display: flex; align-items: center; gap: 10px;
-}
-.member-box ul li::before {
-  content: '';
-  width: 4px; height: 4px;
-  border-radius: 50%;
-  background: var(--am-sage);
-  flex-shrink: 0;
-}
-
 /* ── 소식 섹션 ── */
 #news { background: var(--am-white); }
 .news-list { display: flex; flex-direction: column; gap: 0; }
@@ -271,7 +245,6 @@ footer {
   .nav-login-mobile { display: block !important; }
   section { padding: 60px 20px; }
   .hero { padding: 60px 20px; }
-  .member-box { padding: 28px 24px; }
 }
 .nav-member-mobile { display: none; }
 </style>
@@ -354,28 +327,6 @@ footer {
           상담사와 내담자, 구성원 모두가 대등한 관계로 협력합니다. 함께 만드는 심리상담 공동체입니다.
         </div>
       </div>
-    </div>
-  </div>
-</section>
-
-<hr class="divider-sage">
-
-<!-- SECTION 03: 조합원 전용 -->
-<section id="member-section">
-  <div class="section-inner">
-    <div class="section-label">MEMBERS ONLY</div>
-    <h2 class="section-title">조합원 전용 공간</h2>
-    <p class="section-desc">
-      조합원 서류, 회의록, 일정 조율 시스템에 접근할 수 있습니다.
-    </p>
-    <div class="member-box">
-      <ul>
-        <li>설립 서류 — 정관, 사업계획서, 예산안</li>
-        <li>회의 안건 및 의사록 — 발기인 모임·이사회·총회</li>
-        <li>게시판 — 공지, 서류 공유, 조합원 소통</li>
-        <li>일정 조율 시스템 — 가용시간 등록 및 모임 확정</li>
-      </ul>
-      <a class="btn-primary" href="members.html">조합원 마당</a>
     </div>
   </div>
 </section>

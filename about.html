@@ -102,10 +102,11 @@ main { flex: 1; background: var(--am-white); }
   font-family: 'Noto Serif KR', serif; font-weight: 300; font-size: 15.5px;
   line-height: 2.05; color: #4a4a4a; text-align: left;
   border-left: 2px solid var(--am-sage); padding-left: 24px;
+  margin-left: 15mm;
 }
 
 /* 약속 목록 */
-.ab-promise-list { list-style: none; counter-reset: promise; }
+.ab-promise-list { list-style: none; counter-reset: promise; margin-left: 15mm; }
 .ab-promise-list li {
   counter-increment: promise; display: flex; gap: 18px; align-items: flex-start;
   font-size: 14px; line-height: 1.8; color: #4a4a4a; padding: 14px 0;
@@ -129,11 +130,14 @@ main { flex: 1; background: var(--am-white); }
 
 /* 오시는 길 */
 .ab-address { text-align: center; font-size: 14px; color: #4a4a4a; line-height: 1.9; margin-bottom: 20px; }
-.ab-map-placeholder {
-  border: 0.5px dashed var(--am-border); border-radius: 4px; height: 220px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 12px; color: var(--am-muted); background: var(--am-bg);
+.ab-map-link {
+  display: block; width: fit-content; margin: 0 auto 20px;
+  padding: 9px 22px; background: var(--am-sage); color: #fff;
+  border-radius: 2px; font-size: 12px; font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 300; text-decoration: none; letter-spacing: 0.02em;
+  transition: background 0.15s;
 }
+.ab-map-link:hover { background: #6fa8a0; }
 
 @media (max-width: 720px) {
   nav { padding: 0 20px; }
@@ -274,7 +278,7 @@ main { flex: 1; background: var(--am-white); }
     <h2>오시는 길</h2>
     <div class="ab-divider"></div>
     <p class="ab-address">경기도 광주시 남종면 산수로 1652-16</p>
-    <div class="ab-map-placeholder">지도가 준비 중입니다</div>
+    <a class="ab-map-link" href="https://map.naver.com/p/search/%EA%B2%BD%EA%B8%B0%EB%8F%84%20%EA%B4%91%EC%A3%BC%EC%8B%9C%20%EB%82%A8%EC%A2%85%EB%A9%B4%20%EC%82%B0%EC%88%98%EB%A1%9C%201652-16" target="_blank" rel="noopener">네이버지도에서 보기</a>
    </div>
   </section>
 
