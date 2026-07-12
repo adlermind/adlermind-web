@@ -819,6 +819,7 @@ body {
 .comment-submit-row { display: flex; justify-content: flex-end; }
 
 /* ── 기획마당 ── */
+#panelIdeas { max-width: 1040px; }
 .idea-intro { font-size: 12px; color: var(--am-muted); margin-bottom: 14px; line-height: 1.7; }
 .idea-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 12px; font-size: 12px; color: var(--am-gray); }
 .idea-legend .idea-legend-t { font-weight: 700; color: var(--am-dark); }
@@ -827,10 +828,11 @@ body {
 .w-sin { background: #F6C9CE; } .w-lee { background: #BFE0DB; } .w-go { background: #C7D8EE; }
 .w-park { background: #F7D8C6; } .w-su { background: #E4C6D3; } .w-geum { background: #E1E3AE; }
 .idea-matrix-scroll { overflow-x: auto; border: 0.5px solid var(--am-border); background: var(--am-white); }
-table.idea-matrix { border-collapse: collapse; width: 100%; min-width: 640px; }
+table.idea-matrix { border-collapse: collapse; width: 100%; min-width: 680px; table-layout: fixed; }
 table.idea-matrix th, table.idea-matrix td { border: 0.5px solid var(--am-border); text-align: center; padding: 0; vertical-align: top; }
+table.idea-matrix th:first-child { width: 88px; }
 table.idea-matrix thead th { background: #f4f2ee; font-size: 12px; font-weight: 700; color: var(--am-gray); padding: 10px 6px; }
-table.idea-matrix tbody th { background: #f4f2ee; font-size: 13px; font-weight: 700; width: 82px; padding: 12px 6px; vertical-align: middle; }
+table.idea-matrix tbody th { background: #f4f2ee; font-size: 13px; font-weight: 700; padding: 12px 6px; vertical-align: middle; }
 .idea-cell { display: flex; flex-direction: column; gap: 4px; width: 100%; height: 112px; border: 0; background: transparent; cursor: pointer; font-family: inherit; padding: 8px 6px; overflow: hidden; transition: background .15s; }
 .idea-cell:hover { background: #f0f6f5; }
 .idea-cell.active { background: #e7f1ef; box-shadow: inset 0 0 0 2px var(--am-sage); }
@@ -872,7 +874,8 @@ table.idea-matrix tbody th { background: #f4f2ee; font-size: 13px; font-weight: 
 .idea-res-x { border: 0; background: transparent; cursor: pointer; color: var(--am-muted); padding: 2px; display: inline-flex; }
 .idea-form-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 6px; }
 @media (max-width: 480px) {
-  table.idea-matrix tbody th { width: 62px; font-size: 12px; }
+  table.idea-matrix th:first-child { width: 64px; }
+  table.idea-matrix tbody th { font-size: 12px; }
 }
 </style>
 </head>
