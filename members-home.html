@@ -817,6 +817,63 @@ body {
 }
 .comment-textarea:focus { outline: none; border-color: var(--am-sage); }
 .comment-submit-row { display: flex; justify-content: flex-end; }
+
+/* ── 기획마당 ── */
+.idea-intro { font-size: 12px; color: var(--am-muted); margin-bottom: 14px; line-height: 1.7; }
+.idea-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 12px; font-size: 12px; color: var(--am-gray); }
+.idea-legend .idea-legend-t { font-weight: 700; color: var(--am-dark); }
+.idea-legend > span { display: inline-flex; align-items: center; gap: 5px; }
+.who { flex: 0 0 auto; width: 17px; height: 17px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 800; color: #4a4540; }
+.w-sin { background: #F6C9CE; } .w-lee { background: #BFE0DB; } .w-go { background: #C7D8EE; }
+.w-park { background: #F7D8C6; } .w-su { background: #E4C6D3; } .w-geum { background: #E1E3AE; }
+.idea-matrix-scroll { overflow-x: auto; border: 0.5px solid var(--am-border); background: var(--am-white); }
+table.idea-matrix { border-collapse: collapse; width: 100%; min-width: 640px; }
+table.idea-matrix th, table.idea-matrix td { border: 0.5px solid var(--am-border); text-align: center; padding: 0; vertical-align: top; }
+table.idea-matrix thead th { background: #f4f2ee; font-size: 12px; font-weight: 700; color: var(--am-gray); padding: 10px 6px; }
+table.idea-matrix tbody th { background: #f4f2ee; font-size: 13px; font-weight: 700; width: 82px; padding: 12px 6px; vertical-align: middle; }
+.idea-cell { display: flex; flex-direction: column; gap: 4px; width: 100%; height: 112px; border: 0; background: transparent; cursor: pointer; font-family: inherit; padding: 8px 6px; overflow: hidden; transition: background .15s; }
+.idea-cell:hover { background: #f0f6f5; }
+.idea-cell.active { background: #e7f1ef; box-shadow: inset 0 0 0 2px var(--am-sage); }
+.idea-cell .ptitle { display: flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; color: var(--am-dark); background: #eef4f3; border-radius: 2px; padding: 3px 6px; max-width: 100%; }
+.idea-cell .ptitle .tx { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: left; }
+.idea-cell .empty { color: var(--am-pale); font-size: 18px; margin: auto; font-weight: 600; }
+#ideaCellPanel { margin-top: 18px; }
+.idea-cell-hd { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; }
+.idea-cell-t { font-size: 15px; font-weight: 700; }
+.idea-cell-t span { color: var(--am-sage); }
+.idea-cell-cnt { color: var(--am-muted); font-weight: 400; font-size: 13px; }
+.idea-empty { font-size: 13px; color: var(--am-muted); padding: 20px 16px; text-align: center; background: var(--am-white); border: 0.5px solid var(--am-border); margin-bottom: 12px; }
+.idea-card { border: 0.5px solid var(--am-border); border-left: 3px solid var(--am-mauve); background: var(--am-white); padding: 14px 16px; margin-bottom: 12px; }
+.idea-card-ttl { font-size: 15px; font-weight: 700; }
+.idea-card-m { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--am-muted); margin: 3px 0 8px; }
+.idea-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+.idea-chip { font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 20px; }
+.chip-ses { background: #eef4f3; color: #4d7a73; }
+.chip-wel { background: #f6eef2; color: #8a5a70; }
+.idea-card-feat { font-size: 13px; color: var(--am-dark); margin: 6px 0; white-space: pre-wrap; line-height: 1.7; }
+.idea-res { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.idea-res-item { font-size: 11px; text-decoration: none; color: var(--am-gray); background: #f7f5f2; border: 0.5px solid var(--am-border); padding: 4px 10px; border-radius: 2px; display: inline-flex; align-items: center; gap: 6px; max-width: 100%; }
+.idea-res-item .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rtag { font-size: 9px; font-weight: 800; letter-spacing: .03em; padding: 1px 5px; border-radius: 2px; background: var(--am-sage); color: #fff; flex-shrink: 0; }
+.idea-card-acts { display: flex; gap: 6px; margin-top: 12px; }
+.idea-del { color: var(--am-rose) !important; }
+.idea-form { background: #faf9f6; border: 0.5px solid var(--am-border); padding: 18px; margin-top: 8px; }
+.idea-form-t { font-size: 12px; font-weight: 700; color: var(--am-gray); margin-bottom: 14px; }
+.ifg { margin-bottom: 12px; }
+.ifg label { display: block; font-size: 12px; font-weight: 700; color: var(--am-gray); margin-bottom: 5px; }
+.ifg input, .ifg select, .ifg textarea { width: 100%; font-family: inherit; font-size: 13px; padding: 9px 11px; border: 0.5px solid var(--am-border); background: #fff; border-radius: 2px; color: var(--am-gray); }
+.ifg input:focus, .ifg select:focus, .ifg textarea:focus { outline: none; border-color: var(--am-sage); }
+.ifg textarea { resize: vertical; min-height: 80px; }
+.idea-res-btns { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+.idea-res-list { display: flex; flex-direction: column; gap: 6px; }
+.idea-res-empty { font-size: 11px; color: var(--am-muted); }
+.idea-res-chip { display: flex; align-items: center; gap: 8px; font-size: 12px; background: #fff; border: 0.5px solid var(--am-border); padding: 6px 10px; }
+.idea-res-nm { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--am-gray); }
+.idea-res-x { border: 0; background: transparent; cursor: pointer; color: var(--am-muted); padding: 2px; display: inline-flex; }
+.idea-form-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 6px; }
+@media (max-width: 480px) {
+  table.idea-matrix tbody th { width: 62px; font-size: 12px; }
+}
 </style>
 </head>
 <body>
@@ -840,8 +897,8 @@ body {
     <button class="htab" onclick="switchTab('schedule')" id="tabSchedule">
       <i class="ti ti-calendar-event"></i>일정·모임
     </button>
-    <button class="htab" onclick="switchTab('docs')" id="tabDocs">
-      <i class="ti ti-file-description"></i>서류
+    <button class="htab" onclick="switchTab('ideas')" id="tabIdeas">
+      <i class="ti ti-bulb"></i>기획마당
     </button>
     <button class="htab" onclick="switchTab('contact')" id="tabContact">
       <i class="ti ti-mail"></i>문의
@@ -899,33 +956,19 @@ body {
   </div>
 </div>
 
-<!-- Tab 3: 서류 -->
-<div class="panel" id="panelDocs">
+<!-- Tab 3: 기획마당 -->
+<!-- 기획마당: 창립 이후(2026-07-13) 이후 활용도 재검토 -->
+<div class="panel" id="panelIdeas">
   <div class="panel-hd">
-    <div class="panel-title">설립 서류</div>
+    <div class="panel-title">기획마당</div>
   </div>
-  <div class="doc-grid">
-    <div class="doc-card" onclick="openPdf('docs/02.pdf', '정관')">
-      <div class="doc-icon"><i class="ti ti-file-type-pdf"></i></div>
-      <div class="doc-name">정관</div>
-      <div class="doc-size">클릭하여 열기</div>
-    </div>
-    <div class="doc-card" onclick="openPdf('docs/03.pdf', '창립총회 개최공고 시안')">
-      <div class="doc-icon"><i class="ti ti-file-type-pdf"></i></div>
-      <div class="doc-name">창립총회 개최공고 시안</div>
-      <div class="doc-size">클릭하여 열기</div>
-    </div>
-    <div class="doc-card" onclick="openPdf('docs/06.pdf', '사업계획서 시안')">
-      <div class="doc-icon"><i class="ti ti-file-type-pdf"></i></div>
-      <div class="doc-name">사업계획서 시안</div>
-      <div class="doc-size">클릭하여 열기</div>
-    </div>
-    <div class="doc-card" onclick="openPdf('docs/07.pdf', '수입지출예산서 시안')">
-      <div class="doc-icon"><i class="ti ti-file-type-pdf"></i></div>
-      <div class="doc-name">수입지출예산서 시안</div>
-      <div class="doc-size">클릭하여 열기</div>
-    </div>
+  <div class="idea-intro">삶의 과제 × 생애 단계로 프로그램 아이디어를 모읍니다. 칸을 눌러 아이디어를 등록하세요.</div>
+  <div class="idea-legend" id="ideaLegend"></div>
+  <div class="idea-matrix-scroll">
+    <table class="idea-matrix" id="ideaMatrix"></table>
   </div>
+  <div id="ideaCellPanel"></div>
+  <input type="file" id="ideaFileInput" style="display:none" multiple>
 </div>
 
 <!-- Tab 4: 문의 관리 -->
@@ -1072,6 +1115,11 @@ body {
     <div class="form-group">
       <label class="form-label">작성자</label>
       <input class="form-input" type="text" id="wAuthor" placeholder="이름">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">관련 링크 (선택)</label>
+      <input class="form-input" type="url" id="wLink" placeholder="https://...">
     </div>
 
     <div class="pin-toggle-row">
@@ -1399,7 +1447,7 @@ async function uploadToStorage(file, folder) {
 
 // ── 탭 전환 ──
 function switchTab(tab) {
-  ['board','schedule','docs','contact','accounting'].forEach(t => {
+  ['board','schedule','ideas','contact','accounting'].forEach(t => {
     document.getElementById('tab' + cap(t)).classList.remove('active');
     document.getElementById('panel' + cap(t)).classList.remove('active');
   });
@@ -1407,6 +1455,7 @@ function switchTab(tab) {
   document.getElementById('panel' + cap(tab)).classList.add('active');
   if (tab === 'contact') loadContacts();
   if (tab === 'accounting') loadAccounting();
+  if (tab === 'ideas') loadIdeas();
 }
 function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
 
@@ -1488,6 +1537,17 @@ function openView(id) {
     document.getElementById('viewAttachments').innerHTML = '';
   }
 
+  if (p.link_url) {
+    document.getElementById('viewAttachments').innerHTML += `
+      <div class="modal-attachments">
+        <div class="modal-attachments-title">관련 링크</div>
+        <div class="attach-item">
+          <i class="ti ti-link" style="font-size:13px;color:var(--am-muted);flex-shrink:0;"></i>
+          <a class="attach-item-name" href="${esc(p.link_url)}" target="_blank" rel="noopener" style="color:var(--am-blue);text-decoration:underline;">${esc(p.link_url)}</a>
+        </div>
+      </div>`;
+  }
+
   document.getElementById('viewActions').innerHTML = `
     <button class="btn-outline-sm" onclick="copyPostLink('${p.id}')"><i class="ti ti-link"></i>링크 복사</button>
     <button class="btn-outline-sm" onclick="openEdit('${p.id}')"><i class="ti ti-pencil"></i>수정</button>
@@ -1514,6 +1574,7 @@ function openWritePage() {
   document.getElementById('wCat').value = '공지';
   document.getElementById('wTitle').value = '';
   document.getElementById('wAuthor').value = '';
+  document.getElementById('wLink').value = '';
   document.getElementById('wPinned').checked = false;
   quill.setText('');
   document.getElementById('htmlTextarea').value = '';
@@ -1537,6 +1598,7 @@ function openEdit(id) {
   document.getElementById('wCat').value = p.category;
   document.getElementById('wTitle').value = p.title;
   document.getElementById('wAuthor').value = p.author;
+  document.getElementById('wLink').value = p.link_url || '';
   document.getElementById('wPinned').checked = !!p.is_pinned;
   document.getElementById('wPublic').checked = p.visibility === 'public';
   quill.root.innerHTML = p.content || '';
@@ -1570,6 +1632,7 @@ async function submitPost() {
     content,
     is_pinned: pinned,
     visibility: isPublic ? 'public' : 'members',
+    link_url: document.getElementById('wLink').value.trim() || null,
     attachments: pendingFiles.map(f => ({ name: f.name, size: f.size, url: f.url })),
   };
 
@@ -2133,6 +2196,249 @@ async function deleteComment(id) {
   await fetch(`${SB_URL}/rest/v1/board_comments?id=eq.${id}`, { method: 'DELETE', headers: hdrs });
   await loadComments(currentPostId);
   showToast('삭제되었습니다.');
+}
+
+// ── 기획마당 ──
+const AM_TASKS  = ['일','사랑','우정','자기지향','영성'];
+const AM_STAGES = ['아동','청소년','성인','부모','중년','노년'];
+const AM_MEMBERS = [
+  { name:'신옥선', ini:'신', cls:'w-sin'  },
+  { name:'이경숙', ini:'이', cls:'w-lee'  },
+  { name:'고미경', ini:'고', cls:'w-go'   },
+  { name:'박정연', ini:'박', cls:'w-park' },
+  { name:'김이수', ini:'수', cls:'w-su'   },
+  { name:'김종금', ini:'금', cls:'w-geum' },
+];
+const AM_WEL = {
+  '창조적 자기': ['사고','정서','통제감','긍정적 유머','일'],
+  '대처적 자기': ['여가','스트레스 관리','자기가치감','현실적 신념'],
+  '사회적 자기': ['우정','사랑'],
+  '본질적 자기': ['영성','성 정체성','문화적 정체성','자기돌봄'],
+  '신체적 자기': ['운동','영양'],
+};
+function amMember(name) { return AM_MEMBERS.find(m => m.name === name); }
+function amWho(name) {
+  const m = amMember(name);
+  return m ? `<span class="who ${m.cls}">${m.ini}</span>` : '';
+}
+
+let allIdeas = [];
+let amCurrentTask = null, amCurrentStage = null;
+let amEditingId = null;
+let amResources = [];
+let ideasLoaded = false;
+
+async function loadIdeas() {
+  try {
+    const res = await fetch(`${SB_URL}/rest/v1/am_ideas?order=created_at.asc`, { headers: hdrs });
+    allIdeas = await res.json();
+    if (!Array.isArray(allIdeas)) allIdeas = [];
+  } catch(e) { allIdeas = []; }
+  ideasLoaded = true;
+  renderIdeaLegend();
+  renderIdeaMatrix();
+  if (amCurrentTask) renderIdeaCell();
+}
+
+function renderIdeaLegend() {
+  document.getElementById('ideaLegend').innerHTML =
+    '<span class="idea-legend-t">담당자</span>' +
+    AM_MEMBERS.map(m => `<span>${amWho(m.name)}${m.name}</span>`).join('');
+}
+
+function renderIdeaMatrix() {
+  const table = document.getElementById('ideaMatrix');
+  let html = '<thead><tr><th>과제 \\ 단계</th>' +
+    AM_STAGES.map(s => `<th>${s}</th>`).join('') + '</tr></thead><tbody>';
+  for (const task of AM_TASKS) {
+    html += `<tr><th>${task}</th>`;
+    for (const stage of AM_STAGES) {
+      const items = allIdeas.filter(i => i.life_task === task && i.life_stage === stage);
+      const active = (task === amCurrentTask && stage === amCurrentStage) ? ' active' : '';
+      const inner = items.length
+        ? items.map(i => `<span class="ptitle">${amWho(i.author)}<span class="tx">${esc(i.program_title)}</span></span>`).join('')
+        : '<span class="empty">—</span>';
+      html += `<td><button class="idea-cell${active}" onclick="openIdeaCell('${task}','${stage}')">${inner}</button></td>`;
+    }
+    html += '</tr>';
+  }
+  html += '</tbody>';
+  table.innerHTML = html;
+}
+
+function openIdeaCell(task, stage) {
+  amCurrentTask = task; amCurrentStage = stage;
+  amEditingId = null; amResources = [];
+  renderIdeaMatrix();
+  renderIdeaCell();
+  document.getElementById('ideaCellPanel').scrollIntoView({ behavior:'smooth', block:'nearest' });
+}
+
+function renderIdeaCell() {
+  const el = document.getElementById('ideaCellPanel');
+  const items = allIdeas.filter(i => i.life_task === amCurrentTask && i.life_stage === amCurrentStage);
+  const cards = items.map(renderIdeaCard).join('')
+    || '<div class="idea-empty">아직 등록된 아이디어가 없습니다. 첫 아이디어를 남겨보세요.</div>';
+  el.innerHTML = `
+    <div class="idea-cell-hd">
+      <div class="idea-cell-t"><span>${amCurrentTask}</span> · <span>${amCurrentStage}</span> <span class="idea-cell-cnt">(${items.length})</span></div>
+    </div>
+    <div class="idea-cards">${cards}</div>
+    ${renderIdeaForm()}`;
+  const editing = amEditingId ? allIdeas.find(i => i.id === amEditingId) : null;
+  if (editing) {
+    document.getElementById('iTitle').value    = editing.program_title || '';
+    document.getElementById('iSessions').value = editing.sessions || '';
+    document.getElementById('iContent').value  = editing.content || '';
+  }
+  renderIdeaResources();
+}
+
+function renderIdeaCard(i) {
+  const date = new Date(i.created_at).toLocaleDateString('ko-KR', { month:'long', day:'numeric' });
+  const ses = i.sessions ? `<span class="idea-chip chip-ses">권장 ${esc(i.sessions)}</span>` : '';
+  const wel = i.wel_domain ? `<span class="idea-chip chip-wel">5F-Wel · ${esc(i.wel_domain)}</span>` : '';
+  const res = (i.resources || []).map(r => {
+    const tag = r.kind === 'file' ? '파일' : '링크';
+    return `<a class="idea-res-item" href="${esc(r.url)}" target="_blank" rel="noopener"><span class="rtag">${tag}</span><span class="nm">${esc(r.name || r.url)}</span></a>`;
+  }).join('');
+  return `<div class="idea-card">
+    <div class="idea-card-ttl">${esc(i.program_title)}</div>
+    <div class="idea-card-m">${amWho(i.author)}${esc(i.author)} · ${date}</div>
+    <div class="idea-chips">${ses}${wel}</div>
+    <div class="idea-card-feat">${esc(i.content)}</div>
+    ${res ? `<div class="idea-res">${res}</div>` : ''}
+    <div class="idea-card-acts">
+      <button class="btn-outline-sm" onclick="editIdea('${i.id}')"><i class="ti ti-pencil"></i>수정</button>
+      <button class="btn-outline-sm idea-del" onclick="deleteIdea('${i.id}')"><i class="ti ti-trash"></i>삭제</button>
+    </div>
+  </div>`;
+}
+
+function renderIdeaForm() {
+  const editing = amEditingId ? allIdeas.find(i => i.id === amEditingId) : null;
+  const memberOpts = ['<option value="">— 담당자 선택 —</option>']
+    .concat(AM_MEMBERS.map(m => `<option${editing && editing.author === m.name ? ' selected' : ''}>${m.name}</option>`)).join('');
+  let welOpts = '<option value="">— 선택 안 함 —</option>';
+  for (const [self, subs] of Object.entries(AM_WEL)) {
+    welOpts += `<optgroup label="${self}">` +
+      subs.map(s => `<option${editing && editing.wel_domain === s ? ' selected' : ''}>${s}</option>`).join('') +
+      '</optgroup>';
+  }
+  return `
+  <div class="idea-form">
+    <div class="idea-form-t">${editing ? '아이디어 수정' : '아이디어 등록'} — 과제: ${amCurrentTask} / 대상: ${amCurrentStage}</div>
+    <div class="ifg"><label>담당자 *</label><select id="iAuthor">${memberOpts}</select></div>
+    <div class="ifg"><label>프로그램 제목 *</label><input id="iTitle" type="text" placeholder="예: 진로, 나를 만나는 8주"></div>
+    <div class="ifg"><label>권장 회기</label><input id="iSessions" type="text" placeholder="예: 8회기"></div>
+    <div class="ifg"><label>프로그램 특징 *</label><textarea id="iContent" rows="4" placeholder="프로그램의 목표·방식·특징을 적어주세요."></textarea></div>
+    <div class="ifg"><label>5F-Wel 영역 (선택)</label><select id="iWel">${welOpts}</select></div>
+    <div class="ifg">
+      <label>관련 자료 (선택 · 복수 등록)</label>
+      <div class="idea-res-btns">
+        <button class="btn-outline-sm" type="button" onclick="document.getElementById('ideaFileInput').click()"><i class="ti ti-paperclip"></i>파일 첨부</button>
+        <button class="btn-outline-sm" type="button" onclick="addIdeaLink()"><i class="ti ti-link"></i>링크 추가</button>
+      </div>
+      <div class="idea-res-list" id="ideaResList"></div>
+    </div>
+    <div class="idea-form-actions">
+      ${editing ? '<button class="btn-outline-sm" type="button" onclick="cancelIdeaEdit()">취소</button>' : ''}
+      <button class="btn-sage" type="button" onclick="submitIdea()">${editing ? '수정 완료' : '따뜻하게 등록하기'}</button>
+    </div>
+  </div>`;
+}
+
+function renderIdeaResources() {
+  const el = document.getElementById('ideaResList');
+  if (!el) return;
+  if (!amResources.length) {
+    el.innerHTML = '<div class="idea-res-empty">첨부한 자료가 없습니다.</div>';
+    return;
+  }
+  el.innerHTML = amResources.map((r, idx) => {
+    const tag = r.kind === 'file' ? '파일' : '링크';
+    return `<div class="idea-res-chip"><span class="rtag">${tag}</span><span class="idea-res-nm">${esc(r.name || r.url)}</span><button class="idea-res-x" type="button" onclick="removeIdeaResource(${idx})"><i class="ti ti-x"></i></button></div>`;
+  }).join('');
+}
+function removeIdeaResource(i) { amResources.splice(i, 1); renderIdeaResources(); }
+function addIdeaLink() {
+  const url = prompt('링크 URL을 입력하세요 (https://...)');
+  if (!url) return;
+  const u = url.trim();
+  if (!u) return;
+  amResources.push({ kind:'link', name:u, url:u });
+  renderIdeaResources();
+}
+
+document.getElementById('ideaFileInput').addEventListener('change', async function() {
+  const files = Array.from(this.files); if (!files.length) return;
+  for (const f of files) {
+    showToast(`${f.name} 업로드 중...`);
+    const url = await uploadToStorage(f, 'ideas');
+    if (url) {
+      amResources.push({ kind:'file', name:f.name, size:f.size, url });
+      showToast(`${f.name} 첨부 완료`);
+    }
+  }
+  renderIdeaResources();
+  this.value = '';
+});
+
+function editIdea(id) {
+  const i = allIdeas.find(x => x.id === id); if (!i) return;
+  amCurrentTask = i.life_task; amCurrentStage = i.life_stage;
+  amEditingId = id;
+  amResources = (i.resources || []).map(r => ({ ...r }));
+  renderIdeaMatrix();
+  renderIdeaCell();
+  document.getElementById('ideaCellPanel').scrollIntoView({ behavior:'smooth', block:'nearest' });
+}
+function cancelIdeaEdit() {
+  amEditingId = null; amResources = [];
+  renderIdeaCell();
+}
+
+async function submitIdea() {
+  const author         = document.getElementById('iAuthor').value;
+  const program_title  = document.getElementById('iTitle').value.trim();
+  const sessions       = document.getElementById('iSessions').value.trim();
+  const content        = document.getElementById('iContent').value.trim();
+  const wel_domain     = document.getElementById('iWel').value;
+  if (!author) { showToast('담당자를 선택해주세요.'); return; }
+  if (!program_title || !content) { showToast('프로그램 제목과 특징을 입력해주세요.'); return; }
+
+  const body = {
+    life_task: amCurrentTask,
+    life_stage: amCurrentStage,
+    author,
+    program_title,
+    sessions: sessions || null,
+    content,
+    wel_domain: wel_domain || null,
+    resources: amResources,
+  };
+  try {
+    if (amEditingId) {
+      await fetch(`${SB_URL}/rest/v1/am_ideas?id=eq.${amEditingId}`, {
+        method:'PATCH', headers:{ ...hdrs, 'Prefer':'return=minimal' }, body: JSON.stringify(body)
+      });
+      showToast('수정되었습니다.');
+    } else {
+      await fetch(`${SB_URL}/rest/v1/am_ideas`, {
+        method:'POST', headers:{ ...hdrs, 'Prefer':'return=minimal' }, body: JSON.stringify(body)
+      });
+      showToast('등록되었습니다.');
+    }
+    amEditingId = null; amResources = [];
+    await loadIdeas();
+  } catch(e) { showToast('저장 오류가 발생했습니다.'); }
+}
+
+async function deleteIdea(id) {
+  if (!confirm('이 아이디어를 삭제하시겠습니까?')) return;
+  await fetch(`${SB_URL}/rest/v1/am_ideas?id=eq.${id}`, { method:'DELETE', headers: hdrs });
+  showToast('삭제되었습니다.');
+  await loadIdeas();
 }
 </script>
 </body>

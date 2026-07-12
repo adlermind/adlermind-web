@@ -1,0 +1,8 @@
+# 백업 파일 — 로컬에만 보관, 깃/깃허브에는 올리지 않음
+# 예: members-home_backup_20260712.html, favicon_backup_20260628.ico
+*_backup_*
+
+# OS·에디터 부산물
+.DS_Store
+Thumbs.db
+desktop.ini
