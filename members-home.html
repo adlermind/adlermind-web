@@ -831,9 +831,7 @@ body {
 table.idea-matrix { border-collapse: collapse; width: 100%; min-width: 680px; table-layout: fixed; }
 table.idea-matrix th, table.idea-matrix td { border: 0.5px solid var(--am-border); text-align: center; padding: 0; vertical-align: top; }
 table.idea-matrix th:first-child { width: 88px; }
-table.idea-matrix thead th { background: #f4f2ee; font-size: 12px; font-weight: 700; color: var(--am-gray); padding: 10px 4px; white-space: nowrap; }
-.stage-lbl { display: inline-block; }
-.stage-lbl.narrow { transform: scaleX(0.9); transform-origin: center; }
+table.idea-matrix thead th { background: #f4f2ee; font-size: 12px; font-weight: 700; color: var(--am-gray); padding: 10px 6px; }
 table.idea-matrix tbody th { background: #f4f2ee; font-size: 13px; font-weight: 700; padding: 12px 6px; vertical-align: middle; }
 .idea-cell { display: flex; flex-direction: column; gap: 4px; width: 100%; height: 112px; border: 0; background: transparent; cursor: pointer; font-family: inherit; padding: 8px 6px; overflow: hidden; transition: background .15s; }
 .idea-cell:hover { background: #f0f6f5; }
@@ -2254,7 +2252,7 @@ function renderIdeaLegend() {
 function renderIdeaMatrix() {
   const table = document.getElementById('ideaMatrix');
   let html = '<thead><tr><th>과제 \\ 단계</th>' +
-    AM_STAGES.map(s => `<th><span class="stage-lbl${s.length > 5 ? ' narrow' : ''}">${s}</span></th>`).join('') + '</tr></thead><tbody>';
+    AM_STAGES.map(s => `<th>${s}</th>`).join('') + '</tr></thead><tbody>';
   for (const task of AM_TASKS) {
     html += `<tr><th>${task}</th>`;
     for (const stage of AM_STAGES) {
