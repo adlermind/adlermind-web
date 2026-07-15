@@ -22,7 +22,7 @@ nav {
   display: flex; align-items: center; gap: 32px; height: 60px;
 }
 .nav-logo img { height: 40px; display: block; margin-top: 4px; }
-.nav-links { display: flex; align-items: center; gap: 24px; flex: 1; }
+.nav-links { display: flex; align-items: center; gap: 18px; flex: 1; }
 .nav-links a { font-size: 13px; color: var(--am-gray); text-decoration: none; transition: color 0.15s; }
 .nav-links a:hover, .nav-links a.active { color: var(--am-sage); }
 .nav-login-link {
@@ -61,7 +61,7 @@ nav {
 }
 .back-link { font-size: 12px; color: var(--am-muted); text-decoration: none; }
 .back-link:hover { color: var(--am-sage); }
-@media (max-width: 720px) {
+@media (max-width: 900px) {
   nav { padding: 0 20px; }
   .nav-links { display: none; }
   .nav-links.open { display: flex; flex-direction: column; position: fixed; top: 60px; left: 0; right: 0; background: var(--am-white); border-bottom: 0.5px solid var(--am-border); padding: 20px; gap: 16px; z-index: 99; }
@@ -79,6 +79,7 @@ nav {
     <a href="counseling.html">심리상담</a>
     <a href="education.html" class="active">교육·연수</a>
     <a href="news.html">소식</a>
+    <a href="gallery.html">갤러리</a>
     <a href="contact.html">문의</a>
     <a id="navLoginMobile" class="nav-login-mobile" href="login.html">로그인</a>
   </div>

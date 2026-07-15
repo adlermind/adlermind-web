@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="image/favicon.png">
+<link rel="icon" type="image/webp" href="image/favicon.webp">
+<title>갤러리 · ADLER MIND 협동조합</title>
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:title" content="갤러리 · ADLER MIND 협동조합">
+<meta property="og:description" content="ADLER MIND 협동조합의 사진과 영상을 만나보세요.">
+<meta property="og:image" content="https://adlermind.co.kr/image/og-image.png">
+<meta property="og:url" content="https://adlermind.co.kr/gallery.html">
+<meta name="twitter:card" content="summary_large_image">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400&family=Noto+Sans+KR:wght@300;400&family=Raleway:wght@200;300;400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root {
+  --am-rose: #E8929A;
+  --am-sage: #8FBFB8;
+  --am-gray: #6B6B6B;
+  --am-bg: #FAFAF8;
+  --am-muted: #9a9490;
+  --am-border: #e8e4e0;
+  --am-white: #ffffff;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 300; color: var(--am-gray); background: var(--am-white);
+}
+body.modal-open { overflow: hidden; }
+button { font: inherit; }
+
+nav {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--am-white); border-bottom: 0.5px solid var(--am-border);
+  padding: 0 32px; display: flex; align-items: center; gap: 32px; height: 60px;
+}
+.nav-logo img { height: 40px; display: block; margin-top: 4px; }
+.nav-links { display: flex; align-items: center; gap: 18px; flex: 1; }
+.nav-links a { font-size: 13px; color: var(--am-gray); text-decoration: none; transition: color 0.15s; }
+.nav-links a:hover, .nav-links a.active { color: var(--am-sage); }
+.nav-login-link {
+  margin-left: auto; font-size: 12px; color: var(--am-muted);
+  text-decoration: none; letter-spacing: 0.04em; transition: color 0.15s; white-space: nowrap;
+}
+.nav-login-link:hover { color: var(--am-sage); }
+.nav-login-mobile, .nav-member-mobile { display: none; }
+.nav-member-btn {
+  padding: 7px 18px; background: var(--am-sage); color: #fff;
+  border: none; border-radius: 2px; font-size: 12px; font-weight: 300;
+  cursor: pointer; text-decoration: none; transition: background 0.15s; white-space: nowrap;
+}
+.nav-member-btn:hover { background: #6fa8a0; }
+.nav-ham { display: none; border: none; background: none; cursor: pointer; font-size: 22px; color: var(--am-gray); }
+
+.page-hero {
+  background: var(--am-bg); padding: 56px 32px 48px;
+  border-bottom: 0.5px solid var(--am-border);
+}
+.page-hero-inner, .page-body { max-width: 1040px; margin: 0 auto; }
+.page-label {
+  font-family: 'Raleway', sans-serif; font-size: 10px; font-weight: 300;
+  letter-spacing: 0.22em; color: var(--am-rose); text-transform: uppercase; margin-bottom: 12px;
+}
+.page-title {
+  font-family: 'Noto Serif KR', serif; font-size: 28px;
+  font-weight: 300; color: var(--am-gray); margin-bottom: 10px;
+}
+.page-desc { font-size: 13px; color: var(--am-muted); line-height: 1.8; }
+.page-body { padding: 48px 32px 88px; }
+
+.gallery-head {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  gap: 20px; margin-bottom: 20px;
+}
+.gallery-heading {
+  font-family: 'Noto Serif KR', serif; font-size: 19px;
+  font-weight: 300; color: var(--am-gray);
+}
+.carousel-controls { display: flex; gap: 8px; }
+.carousel-btn {
+  width: 38px; height: 38px; border: 0.5px solid var(--am-border);
+  background: var(--am-white); color: var(--am-gray); cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+.carousel-btn:hover:not(:disabled) { border-color: var(--am-sage); color: var(--am-sage); }
+.carousel-btn:disabled { opacity: 0.28; cursor: default; }
+.gallery-track {
+  display: flex; gap: 20px; overflow-x: auto; padding: 1px 1px 18px;
+  scroll-snap-type: x mandatory; scroll-behavior: smooth;
+  overscroll-behavior-inline: contain; scrollbar-width: thin;
+  scrollbar-color: var(--am-border) transparent;
+}
+.gallery-card {
+  flex: 0 0 min(520px, calc(100vw - 88px));
+  scroll-snap-align: start; text-align: left; color: inherit;
+  background: var(--am-white); border: 0.5px solid var(--am-border);
+  cursor: pointer; transition: transform 0.2s, border-color 0.2s;
+}
+.gallery-card:hover { transform: translateY(-2px); border-color: rgba(143,191,184,0.75); }
+.gallery-card:focus-visible { outline: 2px solid var(--am-sage); outline-offset: 3px; }
+.thumb { position: relative; display: block; aspect-ratio: 16 / 9; overflow: hidden; background: #eceae7; }
+.thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.play-mark {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  width: 58px; height: 58px; border-radius: 50%; background: rgba(255,255,255,0.92);
+  display: grid; place-items: center; color: var(--am-rose); font-size: 20px;
+  box-shadow: 0 5px 24px rgba(61,58,54,0.18); padding-left: 3px;
+}
+.media-badge {
+  position: absolute; left: 14px; top: 14px; padding: 5px 9px;
+  background: rgba(255,255,255,0.92); color: var(--am-rose);
+  font-family: 'Raleway', sans-serif; font-size: 9px; letter-spacing: 0.12em;
+}
+.card-body { display: block; padding: 20px 20px 22px; }
+.card-title {
+  display: block;
+  font-family: 'Noto Serif KR', serif; font-size: 17px; font-weight: 300;
+  color: var(--am-gray); line-height: 1.55; margin-bottom: 8px;
+}
+.card-meta { display: block; font-family: 'Raleway', sans-serif; font-size: 10px; color: var(--am-muted); letter-spacing: 0.06em; }
+.gallery-note { margin-top: 16px; font-size: 11px; color: var(--am-muted); }
+
+.video-modal {
+  position: fixed; inset: 0; z-index: 500; display: grid; place-items: center;
+  padding: 28px; background: rgba(38,36,34,0.76);
+}
+.video-modal[hidden] { display: none; }
+.modal-panel { width: min(960px, 100%); position: relative; }
+.modal-close {
+  position: absolute; right: 0; bottom: calc(100% + 10px);
+  width: 40px; height: 40px; border: 0.5px solid rgba(255,255,255,0.6);
+  background: rgba(38,36,34,0.5); color: #fff; font-size: 24px;
+  line-height: 1; cursor: pointer;
+}
+.video-frame { aspect-ratio: 16 / 9; background: #000; }
+.video-frame iframe { width: 100%; height: 100%; border: 0; display: block; }
+.modal-fallback { margin-top: 12px; text-align: right; }
+.modal-fallback a { color: #fff; font-size: 12px; text-underline-offset: 3px; }
+
+footer { background: var(--am-bg); border-top: 0.5px solid var(--am-border); padding: 48px 32px; }
+.footer-inner { max-width: 900px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 32px; justify-content: space-between; }
+.footer-logo img { height: 32px; margin-bottom: 10px; }
+.footer-info { font-size: 12px; color: var(--am-muted); line-height: 2; }
+.footer-nav { display: flex; flex-direction: column; gap: 8px; }
+.footer-nav a { font-size: 12px; color: var(--am-muted); text-decoration: none; }
+.footer-nav a:hover { color: var(--am-sage); }
+.footer-copy { max-width: 900px; margin: 24px auto 0; font-size: 11px; color: var(--am-muted); font-family: 'Raleway', sans-serif; border-top: 0.5px solid var(--am-border); padding-top: 16px; }
+
+@media (max-width: 900px) {
+  nav { padding: 0 20px; }
+  .nav-links { display: none; }
+  .nav-links.open { display: flex; flex-direction: column; position: fixed; top: 60px; left: 0; right: 0; background: var(--am-white); border-bottom: 0.5px solid var(--am-border); padding: 20px; gap: 16px; z-index: 99; }
+  .nav-ham { display: block; margin-left: auto; }
+  .nav-member-btn, .nav-login-link { display: none; }
+  .nav-login-mobile, .nav-member-mobile { display: block; }
+}
+@media (max-width: 600px) {
+  .page-hero { padding: 40px 20px 32px; }
+  .page-body { padding: 36px 20px 64px; }
+  .gallery-card { flex-basis: calc(100vw - 42px); }
+  .carousel-controls { display: none; }
+  .video-modal { padding: 64px 12px 20px; }
+  .play-mark { width: 52px; height: 52px; }
+}
+</style>
+</head>
+<body>
+
+<nav aria-label="주 메뉴">
+  <a class="nav-logo" href="index.html"><img src="image/adlermind_logo.png" alt="ADLER MIND 협동조합"></a>
+  <div class="nav-links" id="navLinks">
+    <a href="about.html">협동조합 소개</a>
+    <a href="counseling.html">심리상담</a>
+    <a href="education.html">교육·연수</a>
+    <a href="news.html">소식</a>
+    <a href="gallery.html" class="active">갤러리</a>
+    <a href="contact.html">문의</a>
+    <a id="navLoginMobile" class="nav-login-mobile" href="login.html">로그인</a>
+    <a class="nav-member-mobile" href="members.html">조합원 마당</a>
+  </div>
+  <a id="navLoginLink" class="nav-login-link" href="login.html">로그인</a>
+  <a class="nav-member-btn" href="members.html">조합원 마당</a>
+  <button class="nav-ham" id="navHam" type="button" aria-label="메뉴 열기" aria-expanded="false">&#9776;</button>
+</nav>
+
+<header class="page-hero">
+  <div class="page-hero-inner">
+    <div class="page-label">GALLERY</div>
+    <h1 class="page-title">갤러리</h1>
+    <p class="page-desc">아들러마인드 협동조합의 순간을 사진과 영상으로 전합니다.</p>
+  </div>
+</header>
+
+<main class="page-body">
+  <div class="gallery-head">
+    <h2 class="gallery-heading">창립총회</h2>
+    <div class="carousel-controls" role="group" aria-label="갤러리 이동">
+      <button class="carousel-btn" id="prevBtn" type="button" aria-label="이전 항목">&#8592;</button>
+      <button class="carousel-btn" id="nextBtn" type="button" aria-label="다음 항목">&#8594;</button>
+    </div>
+  </div>
+
+  <div class="gallery-track" id="galleryTrack">
+    <button class="gallery-card" type="button" data-video-id="mCeF7_Gkk6I" aria-label="아들러협동조합 창립총회 축하영상 재생">
+      <span class="thumb">
+        <img src="https://i.ytimg.com/vi/mCeF7_Gkk6I/hqdefault.jpg" alt="" loading="lazy">
+        <span class="media-badge">VIDEO</span>
+        <span class="play-mark" aria-hidden="true">&#9654;</span>
+      </span>
+      <span class="card-body">
+        <span class="card-title">아들러협동조합 창립총회 축하영상</span>
+        <span class="card-meta">2026. 07. 13 · 2 MIN 14 SEC</span>
+      </span>
+    </button>
+  </div>
+  <p class="gallery-note">모바일에서는 화면을 좌우로 밀어 볼 수 있습니다.</p>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-logo"><img src="image/adlermind_logo.png" alt="ADLER MIND 협동조합"></div>
+      <div class="footer-info">
+        ADLER MIND 협동조합 (일반협동조합)<br>
+        경기도 광주시 남종면 산수로 1652-16<br>
+        adlermindcoop@gmail.com
+      </div>
+    </div>
+    <nav class="footer-nav" aria-label="하단 메뉴">
+      <a href="about.html">협동조합 소개</a>
+      <a href="counseling.html">심리상담</a>
+      <a href="education.html">교육·연수</a>
+      <a href="news.html">소식</a>
+      <a href="gallery.html">갤러리</a>
+      <a href="contact.html">문의</a>
+      <a href="members.html">조합원 마당</a>
+    </nav>
+  </div>
+  <div class="footer-copy">&copy; 2026 ADLER MIND 협동조합. All rights reserved.</div>
+</footer>
+
+<div class="video-modal" id="videoModal" role="dialog" aria-modal="true" aria-label="영상 재생" hidden>
+  <div class="modal-panel">
+    <button class="modal-close" id="modalClose" type="button" aria-label="영상 닫기">&times;</button>
+    <div class="video-frame" id="videoFrame"></div>
+    <div class="modal-fallback">
+      <a id="youtubeLink" href="https://youtu.be/mCeF7_Gkk6I" target="_blank" rel="noopener">재생되지 않으면 YouTube에서 보기</a>
+    </div>
+  </div>
+</div>
+
+<script>
+const SB_URL = 'https://jboceiacgczkqkhqcmqu.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impib2NlaWFjZ2N6a3FraHFjbXF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI1OTg1MTYsImV4cCI6MjA5ODE3NDUxNn0.9jHLNB8PVDrWlSc5CDGz5j6ZF9yaKwrnzICvvvsFbvA';
+const track = document.getElementById('galleryTrack');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const modal = document.getElementById('videoModal');
+const frame = document.getElementById('videoFrame');
+const closeBtn = document.getElementById('modalClose');
+let lastTrigger = null;
+
+function updateControls() {
+  const max = track.scrollWidth - track.clientWidth;
+  prevBtn.disabled = track.scrollLeft <= 2;
+  nextBtn.disabled = track.scrollLeft >= max - 2;
+}
+
+function moveGallery(direction) {
+  track.scrollBy({ left: direction * Math.max(track.clientWidth * 0.82, 320), behavior: 'smooth' });
+}
+
+function openVideo(button) {
+  const id = button.dataset.videoId;
+  lastTrigger = button;
+  frame.innerHTML = `<iframe src="https://www.youtube.com/embed/${id}?autoplay=1&rel=0" title="아들러협동조합 창립총회 축하영상" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>`;
+  document.getElementById('youtubeLink').href = `https://youtu.be/${id}`;
+  modal.hidden = false;
+  document.body.classList.add('modal-open');
+  closeBtn.focus();
+}
+
+function closeVideo() {
+  frame.innerHTML = '';
+  modal.hidden = true;
+  document.body.classList.remove('modal-open');
+  if (lastTrigger) lastTrigger.focus();
+}
+
+prevBtn.addEventListener('click', () => moveGallery(-1));
+nextBtn.addEventListener('click', () => moveGallery(1));
+track.addEventListener('scroll', updateControls, { passive: true });
+window.addEventListener('resize', updateControls);
+document.querySelectorAll('.gallery-card[data-video-id]').forEach(button => {
+  button.addEventListener('click', () => openVideo(button));
+});
+closeBtn.addEventListener('click', closeVideo);
+modal.addEventListener('click', event => { if (event.target === modal) closeVideo(); });
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && !modal.hidden) closeVideo();
+});
+
+const navHam = document.getElementById('navHam');
+navHam.addEventListener('click', () => {
+  const open = document.getElementById('navLinks').classList.toggle('open');
+  navHam.setAttribute('aria-expanded', String(open));
+});
+
+updateControls();
+
+(async () => {
+  const sb = supabase.createClient(SB_URL, SB_KEY);
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) return;
+  const res = await fetch(
+    `${SB_URL}/rest/v1/site_users?user_id=eq.${session.user.id}&select=nickname`,
+    { headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` } }
+  );
+  const [user] = await res.json();
+  if (!user) return;
+  ['navLoginLink', 'navLoginMobile'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.textContent = user.nickname + '님의 Life Style'; el.href = 'mypage.html'; }
+  });
+})();
+</script>
+</body>
+</html>
