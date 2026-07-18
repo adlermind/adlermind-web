@@ -47,7 +47,7 @@
 </main>
 <script>
 const authClient = window.AMMemberAuth.client;
-const allowedNext = new Set(['account-home.html','members.html','members-home.html']);
+const allowedNext = new Set(['account-home.html','members.html','members-home.html','admin.html']);
 const requestedNext = new URLSearchParams(location.search).get('next');
 const nextPage = allowedNext.has(requestedNext) ? requestedNext : 'account-home.html';
 

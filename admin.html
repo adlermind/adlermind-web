@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<!-- 서버 관리 권한(site_admins)이 확인된 계정만 들어오는 관리자 페이지 뼈대입니다. 실제 관리 기능은 2주차에 붙습니다. -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<title>관리자 · ADLER MIND 협동조합</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400&family=Noto+Sans+KR:wght@300;400&family=Raleway:wght@300&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="member-auth.js"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#FAFAF8;color:#6B6B6B;font-family:'Noto Sans KR',sans-serif;font-weight:300}
+.wrap{max-width:720px;margin:0 auto;padding:54px 22px}
+.logo{height:55px}
+.card{margin-top:34px;background:#fff;border:1px solid #e8e4e0;padding:34px}
+.eyebrow{font-family:Raleway,sans-serif;font-size:10px;letter-spacing:.22em;color:#98928d}
+.title{font:400 22px 'Noto Serif KR',serif;margin:12px 0}
+.lead{font-size:13px;line-height:1.9}
+.menu{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:28px}
+.item{text-align:left;border:1px solid #e8e4e0;background:#fff;padding:18px;font:inherit;color:#6B6B6B;cursor:pointer}
+.item:hover{border-color:#8FBFB8}
+.item-name{display:block;font:400 14px 'Noto Serif KR',serif;color:#5e7773}
+.item-desc{display:block;font-size:11.5px;line-height:1.7;color:#98928d;margin-top:7px}
+.notice{margin-top:22px;padding:13px;background:#f7f6f3;font-size:11.5px;line-height:1.7}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:25px}
+.button{display:inline-block;border:1px solid #8FBFB8;padding:10px 15px;color:#5e7773;text-decoration:none;background:#fff;font:inherit;font-size:12px;cursor:pointer}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <a href="index.html"><img class="logo" src="image/adlermind_logo.png" alt="ADLER MIND 협동조합"></a>
+
+  <section class="card">
+    <div class="eyebrow">ADMIN</div>
+    <h1 class="title" id="title">관리자 권한을 확인하고 있습니다.</h1>
+    <p class="lead" id="lead"></p>
+
+    <div class="menu hidden" id="menu">
+      <button class="item" type="button" data-name="갤러리 관리">
+        <span class="item-name">갤러리 관리</span>
+        <span class="item-desc">사진을 올리고 순서와 설명을 고칩니다. 등록하면 갤러리 페이지에 바로 반영됩니다.</span>
+      </button>
+      <button class="item" type="button" data-name="체험 콘텐츠 관리">
+        <span class="item-name">체험 콘텐츠 관리</span>
+        <span class="item-desc">체험을 등록하고 어느 방에 내보낼지, 공개할지를 정합니다.</span>
+      </button>
+      <button class="item" type="button" data-name="신청·문의 확인">
+        <span class="item-name">신청·문의 확인</span>
+        <span class="item-desc">들어온 상담 신청과 문의를 보고 접수·확정·종료 상태를 바꿉니다.</span>
+      </button>
+      <button class="item" type="button" data-name="회원관리">
+        <span class="item-name">회원관리</span>
+        <span class="item-desc">신청자와 회원 명단을 확인합니다. 권한을 주고 뺏는 일은 여기서 하지 않습니다.</span>
+      </button>
+    </div>
+
+    <p class="notice hidden" id="stage">이 자리는 아직 준비 중입니다. 관리 기능은 2주차(7/27~8/2)에 하나씩 열립니다.</p>
+
+    <div class="actions" id="actions">
+      <a class="button" href="index.html">홈으로</a>
+    </div>
+  </section>
+</main>
+
+<script>
+const client = window.AMMemberAuth.client;
+
+function show(id) { document.getElementById(id).classList.remove('hidden'); }
+
+function addButton(html) {
+  document.getElementById('actions').insertAdjacentHTML('afterbegin', html);
+}
+
+async function init() {
+  const { data: { session } } = await client.auth.getSession();
+
+  // 로그인하지 않은 사람에게는 관리자 페이지의 존재를 알리지 않고 조용히 로그인 화면으로 보낸다.
+  if (!session) { location.replace('account.html?next=admin.html'); return; }
+
+  const { data: profile } = await client
+    .from('site_profiles').select('display_name,nickname')
+    .eq('user_id', session.user.id).maybeSingle();
+
+  const admin = await window.AMMemberAuth.getActiveAdmin();
+  if (!admin) {
+    document.getElementById('title').textContent = '관리자 권한이 없습니다.';
+    document.getElementById('lead').textContent =
+      '로그인은 확인되었지만 이 계정에는 관리자 권한이 없습니다. 조합원 자격과 관리자 권한은 별개이며, 관리자 권한은 홈페이지를 관리하는 사람에게만 따로 부여됩니다.';
+    // 이메일 회원은 내 계정으로, 별칭 체험계정은 마이페이지로 보낸다.
+    addButton(profile
+      ? '<a class="button" href="account-home.html">내 계정</a>'
+      : '<a class="button" href="mypage.html">마이페이지</a>');
+    return;
+  }
+
+  const name = profile ? (profile.nickname || profile.display_name) : '관리자';
+
+  document.getElementById('title').textContent = `${name}님, 관리자 화면입니다.`;
+  document.getElementById('lead').textContent =
+    '홈페이지 내용을 코드 수정 없이 직접 관리하는 자리입니다. 아래 네 가지가 차례로 열립니다.';
+  show('menu');
+  show('stage');
+  addButton('<a class="button" href="account-home.html">내 계정</a>');
+}
+
+document.getElementById('menu').addEventListener('click', event => {
+  const item = event.target.closest('.item');
+  if (!item) return;
+  document.getElementById('stage').textContent =
+    `${item.dataset.name}는 2주차(7/27~8/2)에 열립니다. 지금은 들어오는 문을 만든 단계입니다.`;
+});
+
+init();
+</script>
+</body>
+</html>

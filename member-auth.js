@@ -19,6 +19,22 @@
     return { session, member };
   }
 
+  // 관리자 권한은 조합원 권한과 별도 계층이며 site_admins 활성 행으로만 판정한다.
+  async function getActiveAdmin() {
+    const { data: { session }, error: sessionError } = await client.auth.getSession();
+    if (sessionError || !session || !session.user.email_confirmed_at) return null;
+
+    const { data: admin, error: adminError } = await client
+      .from('site_admins')
+      .select('user_id,is_active')
+      .eq('user_id', session.user.id)
+      .eq('is_active', true)
+      .maybeSingle();
+
+    if (adminError || !admin) return null;
+    return { session, admin };
+  }
+
   async function requireActiveMember(redirectPath) {
     const auth = await getActiveMember();
     if (!auth) {
@@ -58,6 +74,7 @@
     SUPABASE_KEY,
     client,
     getActiveMember,
+    getActiveAdmin,
     requireActiveMember,
     restHeaders,
     signedStorageUrl
