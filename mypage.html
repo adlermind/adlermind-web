@@ -245,9 +245,10 @@ document.getElementById('navHam').addEventListener('click', () => {
 
   const res = await fetch(
     `${SB_URL}/rest/v1/site_users?user_id=eq.${session.user.id}&select=nickname`,
-    { headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` } }
+    { headers: { apikey: SB_KEY, Authorization: `Bearer ${session.access_token}` } }
   );
-  const [u] = await res.json();
+  const rows = res.ok ? await res.json() : [];
+  const [u] = rows;
   const nick = u?.nickname || '회원';
   document.getElementById('nickDisplay').textContent = nick;
   document.getElementById('navNick').textContent = nick + '님의 Life Style';

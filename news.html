@@ -393,9 +393,9 @@ loadPosts();
   if (!session) return;
   const res = await fetch(
     `${SB_URL}/rest/v1/site_users?user_id=eq.${session.user.id}&select=nickname`,
-    { headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` } }
+    { headers: { apikey: SB_KEY, Authorization: `Bearer ${session.access_token}` } }
   );
-  const [u] = await res.json();
+  const [u] = res.ok ? await res.json() : [];
   if (!u) return;
   ['navLoginLink','navLoginMobile'].forEach(id => {
     const el = document.getElementById(id);
