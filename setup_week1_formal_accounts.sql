@@ -5,6 +5,7 @@ begin;
 create table if not exists public.site_profiles (
   user_id      uuid primary key references auth.users(id) on delete cascade,
   display_name text not null check (char_length(btrim(display_name)) between 2 and 40),
+  nickname     text not null check (char_length(btrim(nickname)) between 2 and 20),
   created_at   timestamptz not null default now(),
   updated_at   timestamptz not null default now()
 );
@@ -41,11 +42,13 @@ as $$
 declare
   account_type text := new.raw_user_meta_data ->> 'account_type';
   display_name text := btrim(coalesce(new.raw_user_meta_data ->> 'display_name', ''));
+  nickname text := btrim(coalesce(new.raw_user_meta_data ->> 'nickname', ''));
 begin
   if new.email_confirmed_at is not null and account_type = 'formal' then
-    if char_length(display_name) between 2 and 40 then
-      insert into public.site_profiles (user_id, display_name)
-      values (new.id, display_name)
+    if char_length(display_name) between 2 and 40
+       and char_length(nickname) between 2 and 20 then
+      insert into public.site_profiles (user_id, display_name, nickname)
+      values (new.id, display_name, nickname)
       on conflict (user_id) do nothing;
     end if;
 
@@ -65,12 +68,15 @@ create trigger sync_formal_account_after_auth_change
 after insert or update of email, email_confirmed_at on auth.users
 for each row execute function private.sync_formal_account();
 
-insert into public.site_profiles (user_id, display_name)
-select auth_user.id, btrim(auth_user.raw_user_meta_data ->> 'display_name')
+insert into public.site_profiles (user_id, display_name, nickname)
+select auth_user.id,
+       btrim(auth_user.raw_user_meta_data ->> 'display_name'),
+       btrim(auth_user.raw_user_meta_data ->> 'nickname')
   from auth.users as auth_user
  where auth_user.email_confirmed_at is not null
    and auth_user.raw_user_meta_data ->> 'account_type' = 'formal'
    and char_length(btrim(coalesce(auth_user.raw_user_meta_data ->> 'display_name', ''))) between 2 and 40
+   and char_length(btrim(coalesce(auth_user.raw_user_meta_data ->> 'nickname', ''))) between 2 and 20
 on conflict (user_id) do nothing;
 
 update public.member_accounts as member
@@ -102,5 +108,5 @@ grant execute on function public.is_active_member() to authenticated;
 
 commit;
 
-select user_id, display_name, created_at from public.site_profiles order by created_at;
+select user_id, display_name, nickname, created_at from public.site_profiles order by created_at;
 select email, display_name, user_id, is_active from public.member_accounts order by display_name;

@@ -23,6 +23,8 @@ alter table public.site_users drop column if exists email;
 grant usage on schema public to authenticated;
 revoke all on public.site_users from anon;
 grant select, insert, update, delete on public.site_users to authenticated;
+grant usage on schema public to service_role;
+grant insert on public.site_users to service_role;
 
 alter table public.site_users enable row level security;
 

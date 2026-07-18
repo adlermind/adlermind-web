@@ -33,6 +33,7 @@
     </div>
     <div class="panel" id="signupPanel">
       <label class="label" for="signupName">이름</label><input class="input" id="signupName" type="text" autocomplete="name" maxlength="40">
+      <label class="label" for="signupNickname">별칭</label><input class="input" id="signupNickname" type="text" autocomplete="nickname" maxlength="20">
       <label class="label" for="signupEmail">이메일</label><input class="input" id="signupEmail" type="email" autocomplete="email">
       <label class="label" for="signupPassword">비밀번호</label><input class="input" id="signupPassword" type="password" autocomplete="new-password" placeholder="8자 이상">
       <label class="label" for="signupPasswordConfirm">비밀번호 확인</label><input class="input" id="signupPasswordConfirm" type="password" autocomplete="new-password">
@@ -71,17 +72,19 @@ async function login() {
 async function signup() {
   hideMessage('signupError'); hideMessage('signupSuccess');
   const displayName=document.getElementById('signupName').value.trim();
+  const nickname=document.getElementById('signupNickname').value.normalize('NFKC').trim();
   const email=document.getElementById('signupEmail').value.trim().toLowerCase();
   const password=document.getElementById('signupPassword').value;
   const confirmation=document.getElementById('signupPasswordConfirm').value;
   if(displayName.length<2){showMessage('signupError','이름을 2자 이상 입력해 주세요.');return;}
+  if(nickname.length<2||nickname.length>20){showMessage('signupError','별칭을 2자 이상 20자 이하로 입력해 주세요.');return;}
   if(!email){showMessage('signupError','이메일을 입력해 주세요.');return;}
   if(password.length<8){showMessage('signupError','비밀번호는 8자 이상 입력해 주세요.');return;}
   if(password!==confirmation){showMessage('signupError','두 비밀번호가 일치하지 않습니다.');return;}
   if(!document.getElementById('privacyConsent').checked){showMessage('signupError','개인정보 처리 동의가 필요합니다.');return;}
   setBusy('signupButton',true,'가입 처리 중...');
   const redirectTo=`${location.origin}${location.pathname}?confirmed=1`;
-  const {data,error}=await authClient.auth.signUp({email,password,options:{emailRedirectTo:redirectTo,data:{display_name:displayName,account_type:'formal'}}});
+  const {data,error}=await authClient.auth.signUp({email,password,options:{emailRedirectTo:redirectTo,data:{display_name:displayName,nickname,account_type:'formal'}}});
   setBusy('signupButton',false,'회원가입');
   if(error){showMessage('signupError','회원가입을 처리하지 못했습니다. 입력 내용을 확인해 주세요.');return;}
   if(data.session){location.replace(nextPage);return;}
