@@ -22,7 +22,6 @@
   async function requireActiveMember(redirectPath) {
     const auth = await getActiveMember();
     if (!auth) {
-      await client.auth.signOut();
       window.location.replace(redirectPath);
       return null;
     }

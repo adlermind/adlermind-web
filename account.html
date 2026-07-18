@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<!-- 일반회원과 조합원이 함께 사용하는 이메일 회원가입·로그인 페이지입니다. -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<title>회원가입·로그인 · ADLER MIND 협동조합</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400&family=Noto+Sans+KR:wght@300;400&family=Raleway:wght@300;400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="member-auth.js"></script>
+<style>
+:root{--rose:#E8929A;--sage:#8FBFB8;--gray:#6B6B6B;--muted:#98928d;--border:#e8e4e0;--bg:#FAFAF8;--white:#fff}
+*{box-sizing:border-box;margin:0;padding:0} body{font-family:'Noto Sans KR',sans-serif;font-weight:300;background:var(--bg);color:var(--gray);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}.wrap{width:100%;max-width:430px}.logo{text-align:center;margin-bottom:28px}.logo img{height:57px}.box{background:var(--white);border:1px solid var(--border);padding:34px 32px}.eyebrow{font-family:Raleway,sans-serif;font-size:10px;letter-spacing:.22em;color:var(--muted);text-align:center;margin-bottom:14px}.title{font-family:'Noto Serif KR',serif;font-size:19px;font-weight:400;text-align:center;margin-bottom:10px}.intro{font-size:12px;line-height:1.8;text-align:center;color:var(--muted);margin-bottom:24px}.tabs{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--border);margin-bottom:24px}.tab{border:0;background:none;padding:11px;color:var(--muted);cursor:pointer}.tab.active{color:var(--gray);border-bottom:2px solid var(--sage)}.panel{display:none}.panel.active{display:block}.label{display:block;font-size:11px;color:var(--muted);margin:14px 0 6px}.input{width:100%;padding:12px;border:1px solid var(--border);background:#fff;font:inherit;color:var(--gray)}.input:focus{outline:1px solid var(--sage)}.consent{display:flex;gap:8px;align-items:flex-start;font-size:11px;line-height:1.6;margin-top:16px}.btn{width:100%;margin-top:20px;padding:13px;border:0;background:var(--sage);color:#fff;font:inherit;cursor:pointer}.btn:disabled{opacity:.55;cursor:wait}.message{display:none;margin-top:14px;font-size:11.5px;line-height:1.7}.error{color:#b75d66}.success{color:#4e817a}.links{text-align:center;margin-top:20px;font-size:11.5px;line-height:2}.links a{color:var(--muted);text-decoration:none}.note{margin-top:18px;padding-left:11px;border-left:2px solid var(--sage);font-size:11px;line-height:1.7;color:var(--muted)}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="logo"><a href="index.html"><img src="image/adlermind_logo.png" alt="ADLER MIND 협동조합"></a></div>
+  <section class="box">
+    <div class="eyebrow">ADLER MIND ACCOUNT</div>
+    <h1 class="title">이메일 회원계정</h1>
+    <p class="intro">일반회원과 조합원이 함께 사용하는 계정입니다.<br>조합원 마당은 로그인 후 별도 권한을 확인합니다.</p>
+    <div class="tabs">
+      <button class="tab active" type="button" data-panel="loginPanel">로그인</button>
+      <button class="tab" type="button" data-panel="signupPanel">회원가입</button>
+    </div>
+    <div class="panel active" id="loginPanel">
+      <label class="label" for="loginEmail">이메일</label><input class="input" id="loginEmail" type="email" autocomplete="email">
+      <label class="label" for="loginPassword">비밀번호</label><input class="input" id="loginPassword" type="password" autocomplete="current-password">
+      <button class="btn" id="loginButton" type="button">로그인</button>
+      <p class="message error" id="loginError"></p>
+    </div>
+    <div class="panel" id="signupPanel">
+      <label class="label" for="signupName">이름</label><input class="input" id="signupName" type="text" autocomplete="name" maxlength="40">
+      <label class="label" for="signupEmail">이메일</label><input class="input" id="signupEmail" type="email" autocomplete="email">
+      <label class="label" for="signupPassword">비밀번호</label><input class="input" id="signupPassword" type="password" autocomplete="new-password" placeholder="8자 이상">
+      <label class="label" for="signupPasswordConfirm">비밀번호 확인</label><input class="input" id="signupPasswordConfirm" type="password" autocomplete="new-password">
+      <label class="consent"><input id="privacyConsent" type="checkbox"><span>회원계정 생성과 로그인 제공을 위한 이름·이메일 처리에 동의합니다.</span></label>
+      <button class="btn" id="signupButton" type="button">회원가입</button>
+      <p class="message error" id="signupError"></p><p class="message success" id="signupSuccess"></p>
+      <p class="note">휴대전화는 프로그램 신청이나 주문 시에만, 배송지는 실물 상품 주문 시에만 별도로 받습니다.</p>
+    </div>
+  </section>
+  <div class="links"><a href="login.html">별칭으로 가볍게 체험하기</a><br><a href="index.html">홈으로 돌아가기</a></div>
+</main>
+<script>
+const authClient = window.AMMemberAuth.client;
+const allowedNext = new Set(['account-home.html','members.html','members-home.html']);
+const requestedNext = new URLSearchParams(location.search).get('next');
+const nextPage = allowedNext.has(requestedNext) ? requestedNext : 'account-home.html';
+
+function showMessage(id, text) { const el=document.getElementById(id); el.textContent=text; el.style.display='block'; }
+function hideMessage(id) { document.getElementById(id).style.display='none'; }
+function setBusy(id, busy, text) { const el=document.getElementById(id); el.disabled=busy; el.textContent=text; }
+function openPanel(id) { document.querySelectorAll('.tab').forEach(el=>el.classList.toggle('active',el.dataset.panel===id)); document.querySelectorAll('.panel').forEach(el=>el.classList.toggle('active',el.id===id)); }
+document.querySelectorAll('.tab').forEach(el=>el.addEventListener('click',()=>openPanel(el.dataset.panel)));
+
+async function login() {
+  hideMessage('loginError');
+  const email=document.getElementById('loginEmail').value.trim().toLowerCase();
+  const password=document.getElementById('loginPassword').value;
+  if(!email||!password){showMessage('loginError','이메일과 비밀번호를 모두 입력해 주세요.');return;}
+  setBusy('loginButton',true,'로그인 중...');
+  const {error}=await authClient.auth.signInWithPassword({email,password});
+  setBusy('loginButton',false,'로그인');
+  if(error){showMessage('loginError',error.message==='Email not confirmed'?'이메일 인증을 먼저 완료해 주세요.':'이메일 또는 비밀번호를 확인해 주세요.');return;}
+  location.replace(nextPage);
+}
+
+async function signup() {
+  hideMessage('signupError'); hideMessage('signupSuccess');
+  const displayName=document.getElementById('signupName').value.trim();
+  const email=document.getElementById('signupEmail').value.trim().toLowerCase();
+  const password=document.getElementById('signupPassword').value;
+  const confirmation=document.getElementById('signupPasswordConfirm').value;
+  if(displayName.length<2){showMessage('signupError','이름을 2자 이상 입력해 주세요.');return;}
+  if(!email){showMessage('signupError','이메일을 입력해 주세요.');return;}
+  if(password.length<8){showMessage('signupError','비밀번호는 8자 이상 입력해 주세요.');return;}
+  if(password!==confirmation){showMessage('signupError','두 비밀번호가 일치하지 않습니다.');return;}
+  if(!document.getElementById('privacyConsent').checked){showMessage('signupError','개인정보 처리 동의가 필요합니다.');return;}
+  setBusy('signupButton',true,'가입 처리 중...');
+  const redirectTo=`${location.origin}${location.pathname}?confirmed=1`;
+  const {data,error}=await authClient.auth.signUp({email,password,options:{emailRedirectTo:redirectTo,data:{display_name:displayName,account_type:'formal'}}});
+  setBusy('signupButton',false,'회원가입');
+  if(error){showMessage('signupError','회원가입을 처리하지 못했습니다. 입력 내용을 확인해 주세요.');return;}
+  if(data.session){location.replace(nextPage);return;}
+  showMessage('signupSuccess','인증 메일을 보냈습니다. 메일의 링크를 눌러 가입을 완료해 주세요.');
+}
+
+document.getElementById('loginButton').addEventListener('click',login);
+document.getElementById('signupButton').addEventListener('click',signup);
+document.getElementById('loginPassword').addEventListener('keydown',event=>{if(event.key==='Enter')login();});
+authClient.auth.getSession().then(async ({data:{session}})=>{
+  if(!session||!session.user.email_confirmed_at)return;
+  const {data:profile}=await authClient.from('site_profiles').select('user_id').eq('user_id',session.user.id).maybeSingle();
+  if(profile)location.replace(nextPage);
+});
+if(new URLSearchParams(location.search).get('confirmed')==='1') showMessage('loginError','이메일 인증이 완료되었습니다. 로그인해 주세요.');
+</script>
+</body>
+</html>

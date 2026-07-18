@@ -1,5 +1,5 @@
--- 조합원 초대 계정만 내부 데이터에 접근하도록 권한과 RLS를 전환한다.
--- 실행 전 아래 [조합원 명부 입력]의 이메일과 표시 이름을 실제 값으로 교체한다.
+-- 활성 조합원 권한이 확인된 이메일 회원만 내부 데이터에 접근하도록 RLS를 전환합니다.
+-- setup_week1_formal_accounts.sql 실행과 실제 로그인 검증을 마친 뒤 마지막에 실행합니다.
 
 begin;
 
@@ -24,48 +24,11 @@ create policy "조합원 본인 계정 조회" on public.member_accounts
   for select to authenticated
   using (user_id = (select auth.uid()) and is_active = true);
 
-create or replace function public.bind_invited_member()
-returns trigger
-language plpgsql
-security definer
-set search_path = public, auth
-as $$
-begin
-  if new.email_confirmed_at is not null then
-    update public.member_accounts
-       set user_id = new.id,
-           updated_at = now()
-     where email = lower(new.email)
-       and is_active = true
-       and (user_id is null or user_id = new.id);
-  end if;
-  return new;
-end;
-$$;
-
-revoke all on function public.bind_invited_member() from public, anon, authenticated;
-
-drop trigger if exists bind_invited_member_after_auth_change on auth.users;
-create trigger bind_invited_member_after_auth_change
-after insert or update of email, email_confirmed_at on auth.users
-for each row execute function public.bind_invited_member();
-
--- 이미 이메일 인증이 완료된 초대 계정이 있으면 명부와 연결한다.
-update public.member_accounts as member
-   set user_id = auth_user.id,
-       updated_at = now()
-  from auth.users as auth_user
- where member.email = lower(auth_user.email)
-   and member.is_active = true
-   and auth_user.email_confirmed_at is not null
-   and (member.user_id is null or member.user_id = auth_user.id);
-
 create or replace function public.is_active_member()
 returns boolean
 language sql
 stable
-security definer
-set search_path = public
+set search_path = ''
 as $$
   select exists (
     select 1
@@ -77,16 +40,6 @@ $$;
 
 revoke all on function public.is_active_member() from public, anon;
 grant execute on function public.is_active_member() to authenticated;
-
--- 조합원 명부 입력.
--- 아래 예시를 삭제하고 실제 이메일 6개와 이름을 넣은 뒤 실행한다.
--- insert into public.member_accounts (email, display_name) values
---   ('member1@example.com', '조합원1'),
---   ('member2@example.com', '조합원2')
--- on conflict (email) do update
---   set display_name = excluded.display_name,
---       is_active = true,
---       updated_at = now();
 
 -- 내부 테이블의 anon 권한을 회수하고 authenticated 역할에 테이블 권한을 부여한다.
 revoke all on public.board_comments from anon;
@@ -122,7 +75,7 @@ begin
 end
 $$;
 create policy "공개 게시글 조회" on public.board_posts
-  for select to anon using (visibility = 'public');
+  for select to anon, authenticated using (visibility = 'public');
 create policy "조합원 게시글 조회" on public.board_posts
   for select to authenticated using ((select public.is_active_member()));
 create policy "조합원 게시글 등록" on public.board_posts

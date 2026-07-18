@@ -175,6 +175,7 @@ body {
     </div>
   </div>
 
+  <a class="back-link" href="account.html">이메일 회원가입·로그인</a>
   <a class="back-link" href="index.html">&larr; 홈으로 돌아가기</a>
   <div class="notice">
     별칭과 비밀번호만으로 가입할 수 있습니다.<br>
@@ -201,9 +202,15 @@ async function nicknameToEmail(nickname) {
   return `u${hex.slice(0, 40)}@adlermind.co.kr`;
 }
 
-// 이미 로그인된 경우 마이페이지로 이동
-_sb.auth.getSession().then(({ data: { session } }) => {
-  if (session) window.location.href = 'mypage.html';
+// 체험계정 세션일 때만 체험 마이페이지로 이동
+_sb.auth.getSession().then(async ({ data: { session } }) => {
+  if (!session) return;
+  const { data: profile } = await _sb
+    .from('site_users')
+    .select('user_id')
+    .eq('user_id', session.user.id)
+    .maybeSingle();
+  if (profile) window.location.href = 'mypage.html';
 });
 
 function switchTab(tab) {
@@ -260,45 +267,24 @@ async function doSignup() {
   const btn = document.getElementById('signupBtn');
   btn.disabled = true; btn.textContent = '가입 처리 중...';
 
-  // 별칭으로 내부 로그인 주소를 계산하되 화면이나 공개 테이블에는 저장하지 않음
-  const email = await nicknameToEmail(nick);
-  const { data, error } = await _sb.auth.signUp({ email, password: pw });
+  const signupRes = await fetch(`${SB_URL}/functions/v1/create-experience-account`, {
+    method: 'POST',
+    headers: { apikey: SB_KEY, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ nickname: nick, password: pw })
+  });
 
-  if (error) {
+  if (!signupRes.ok) {
     btn.disabled = false; btn.textContent = '가입하기';
-    showErr('signupErr', '가입 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
-    console.error(error);
+    const result = await signupRes.json().catch(() => ({}));
+    showErr('signupErr', result.message || '가입 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
     return;
   }
 
-  // site_users에 닉네임 + 내부 이메일 등록
-  const userId = data.user.id;
-  const token  = data.session?.access_token || SB_KEY;
-  const insertRes = await fetch(`${SB_URL}/rest/v1/site_users`, {
-    method: 'POST',
-    headers: {
-      apikey: SB_KEY,
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-      Prefer: 'return=minimal'
-    },
-    body: JSON.stringify({ user_id: userId, nickname: nick })
-  });
-
+  const email = await nicknameToEmail(nick);
+  const { error } = await _sb.auth.signInWithPassword({ email, password: pw });
   btn.disabled = false; btn.textContent = '가입하기';
-
-  if (!insertRes.ok) {
-    console.error('site_users insert failed:', await insertRes.text());
-  }
-
-  if (data.session) {
-    window.location.href = 'mypage.html';
-  } else {
-    const ok = document.getElementById('signupOk');
-    ok.textContent = '가입이 완료되었습니다. 로그인 탭에서 입장해주세요.';
-    ok.style.display = 'block';
-    setTimeout(() => switchTab('login'), 2000);
-  }
+  if (error) { showErr('signupErr', '가입은 완료됐지만 자동 로그인하지 못했습니다. 로그인 탭에서 입장해 주세요.'); return; }
+  window.location.href = 'mypage.html';
 }
 </script>
 </body>
