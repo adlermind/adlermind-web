@@ -14,6 +14,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400&family=Noto+Sans+KR:wght@300;400&family=Raleway:wght@200;300;400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../member-auth.js"></script>
 <style>
 :root {
   --am-rose:   #E8929A;
@@ -383,22 +384,7 @@ body {
            onerror="this.src='../image/adlermind_logo.png'">
     </div>
     <div class="login-sub">COOPERATIVE SCHEDULE · 일정 조율</div>
-    <div class="login-label">이름을 선택해주세요</div>
-    <div class="member-grid">
-      <button class="member-btn" onclick="selectMember(this,'이경숙')">이경숙</button>
-      <button class="member-btn" onclick="selectMember(this,'고미경')">고미경</button>
-      <button class="member-btn" onclick="selectMember(this,'신옥선')">신옥선</button>
-      <button class="member-btn" onclick="selectMember(this,'박정연')">박정연</button>
-      <button class="member-btn" onclick="selectMember(this,'김이수')">김이수</button>
-      <button class="member-btn" onclick="selectMember(this,'김종금')">김종금</button>
-    </div>
-    <div class="pw-area" id="pwArea">
-      <div class="pw-hint">담당자 전용 — 비밀번호를 입력해주세요</div>
-      <input class="pw-input" type="password" id="pwInput" placeholder="비밀번호"
-        onkeydown="if(event.key==='Enter')doLogin()">
-    </div>
-    <div class="login-err" id="loginErr"></div>
-    <button class="login-btn" onclick="doLogin()">입장하기</button>
+    <div class="login-label" style="text-align:center;">조합원 인증을 확인하고 있습니다.</div>
     <a class="back-link" href="../members-home.html">&larr; 조합원 공간으로</a>
   </div>
 </div>
@@ -551,18 +537,15 @@ body {
 const SUPABASE_URL = 'https://jboceiacgczkqkhqcmqu.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impib2NlaWFjZ2N6a3FraHFjbXF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI1OTg1MTYsImV4cCI6MjA5ODE3NDUxNn0.9jHLNB8PVDrWlSc5CDGz5j6ZF9yaKwrnzICvvvsFbvA';
 
-const ADMIN_NAME = '김이수';
-const ADMIN_PW   = 'adler2026';
-
+const memberAuth = window.AMMemberAuth;
 const MEMBERS = ['이경숙','고미경','신옥선','박정연','김이수','김종금'];
 const HOURS   = [9,10,11,13,14,15,16,17,18,19,20,21];
 const DAYS_KR = ['일','월','화','수','목','금','토'];
 
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const sb = memberAuth.client;
 
 let currentUser    = null;
 let isAdmin        = false;
-let selectedMember = null;
 let availWeekStart = getMonday(new Date());
 let myBlocked      = new Set();
 let statusWeekStart = getMonday(new Date());
@@ -592,29 +575,11 @@ function isToday(d) {
 }
 function slotKey(dateStr, hour) { return `${dateStr}_${String(hour).padStart(2,'0')}`; }
 
-function selectMember(btn, name) {
-  document.querySelectorAll('.member-btn').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
-  selectedMember = name;
-  document.getElementById('pwArea').classList.toggle('visible', name === ADMIN_NAME);
-  document.getElementById('loginErr').style.display = 'none';
-}
-
-function doLogin() {
-  const err = document.getElementById('loginErr');
-  if (!selectedMember) {
-    err.style.display = 'block'; err.textContent = '이름을 선택해주세요.'; return;
-  }
-  if (selectedMember === ADMIN_NAME) {
-    const pw = document.getElementById('pwInput').value.trim();
-    if (!pw) { err.style.display = 'block'; err.textContent = '비밀번호를 입력해주세요.'; return; }
-    if (pw !== ADMIN_PW) { err.style.display = 'block'; err.textContent = '비밀번호가 맞지 않습니다.'; return; }
-    isAdmin = true;
-  } else {
-    isAdmin = false;
-  }
-  err.style.display = 'none';
-  currentUser = selectedMember;
+async function initMemberSchedule() {
+  const auth = await memberAuth.requireActiveMember('../members.html');
+  if (!auth) return;
+  currentUser = auth.member.display_name;
+  isAdmin = false;
   document.getElementById('loginScreen').style.display = 'none';
   document.getElementById('app').classList.add('visible');
   document.getElementById('userAv').textContent = currentUser.charAt(0);
@@ -623,15 +588,9 @@ function doLogin() {
   initApp();
 }
 
-function doLogout() {
-  currentUser = null; isAdmin = false; selectedMember = null;
-  myBlocked.clear();
-  document.getElementById('loginScreen').style.display = 'flex';
-  document.getElementById('app').classList.remove('visible');
-  document.getElementById('pwInput').value = '';
-  document.getElementById('pwArea').classList.remove('visible');
-  document.querySelectorAll('.member-btn').forEach(b => b.classList.remove('selected'));
-  switchTab('avail');
+async function doLogout() {
+  await sb.auth.signOut();
+  window.location.replace('../members.html');
 }
 
 function switchTab(tab) {
@@ -925,6 +884,7 @@ function showToast(msg) {
 
 document.getElementById('voteModal').addEventListener('click', e => { if (e.target===document.getElementById('voteModal')) closeVoteModal(); });
 document.getElementById('newMeetingModal').addEventListener('click', e => { if (e.target===document.getElementById('newMeetingModal')) closeNewMeetingModal(); });
+initMemberSchedule();
 </script>
 </body>
 </html>
