@@ -11,7 +11,7 @@
 <script src="member-auth.js"></script>
 <style>
 :root{--rose:#E8929A;--sage:#8FBFB8;--gray:#6B6B6B;--muted:#98928d;--border:#e8e4e0;--bg:#FAFAF8;--white:#fff}
-*{box-sizing:border-box;margin:0;padding:0} body{font-family:'Noto Sans KR',sans-serif;font-weight:300;background:var(--bg);color:var(--gray);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}.wrap{width:100%;max-width:430px}.logo{text-align:center;margin-bottom:28px}.logo img{height:57px}.box{background:var(--white);border:1px solid var(--border);padding:34px 32px}.eyebrow{font-family:Raleway,sans-serif;font-size:10px;letter-spacing:.22em;color:var(--muted);text-align:center;margin-bottom:14px}.title{font-family:'Noto Serif KR',serif;font-size:19px;font-weight:400;text-align:center;margin-bottom:10px}.intro{font-size:12px;line-height:1.8;text-align:center;color:var(--muted);margin-bottom:24px}.tabs{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--border);margin-bottom:24px}.tab{border:0;background:none;padding:11px;color:var(--muted);cursor:pointer}.tab.active{color:var(--gray);border-bottom:2px solid var(--sage)}.panel{display:none}.panel.active{display:block}.label{display:block;font-size:11px;color:var(--muted);margin:14px 0 6px}.input{width:100%;padding:12px;border:1px solid var(--border);background:#fff;font:inherit;color:var(--gray)}.input:focus{outline:1px solid var(--sage)}.consent{display:flex;gap:8px;align-items:flex-start;font-size:11px;line-height:1.6;margin-top:16px}.btn{width:100%;margin-top:20px;padding:13px;border:0;background:var(--sage);color:#fff;font:inherit;cursor:pointer}.btn:disabled{opacity:.55;cursor:wait}.message{display:none;margin-top:14px;font-size:11.5px;line-height:1.7}.error{color:#b75d66}.success{color:#4e817a}.links{text-align:center;margin-top:20px;font-size:11.5px;line-height:2}.links a{color:var(--muted);text-decoration:none}.note{margin-top:18px;padding-left:11px;border-left:2px solid var(--sage);font-size:11px;line-height:1.7;color:var(--muted)}
+*{box-sizing:border-box;margin:0;padding:0} body{font-family:'Noto Sans KR',sans-serif;font-weight:300;background:var(--bg);color:var(--gray);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}.wrap{width:100%;max-width:430px}.logo{text-align:center;margin-bottom:28px}.logo img{height:57px}.box{background:var(--white);border:1px solid var(--border);padding:34px 32px}.eyebrow{font-family:Raleway,sans-serif;font-size:10px;letter-spacing:.22em;color:var(--muted);text-align:center;margin-bottom:14px}.title{font-family:'Noto Serif KR',serif;font-size:19px;font-weight:400;text-align:center;margin-bottom:10px}.intro{font-size:12px;line-height:1.8;text-align:center;color:var(--muted);margin-bottom:24px}.tabs{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--border);margin-bottom:24px}.tab{border:0;background:none;padding:11px;color:var(--muted);cursor:pointer}.tab.active{color:var(--gray);border-bottom:2px solid var(--sage)}.panel{display:none}.panel.active{display:block}.label{display:block;font-size:11px;color:var(--muted);margin:14px 0 6px}.input{width:100%;padding:12px;border:1px solid var(--border);background:#fff;font:inherit;color:var(--gray)}.input:focus{outline:1px solid var(--sage)}.consent{display:flex;gap:8px;align-items:flex-start;font-size:11px;line-height:1.6;margin-top:16px}.btn{width:100%;margin-top:20px;padding:13px;border:0;background:var(--sage);color:#fff;font:inherit;cursor:pointer}.btn:disabled{opacity:.55;cursor:wait}.message{display:none;margin-top:14px;font-size:11.5px;line-height:1.7}.error{color:#b75d66}.success{color:#4e817a}.linkbtn{border:0;background:none;padding:0;font:inherit;font-size:11.5px;color:var(--muted);text-decoration:underline;cursor:pointer}.reset{text-align:center;margin-top:16px}.tabs.hidden{display:none}.links{text-align:center;margin-top:20px;font-size:11.5px;line-height:2}.links a{color:var(--muted);text-decoration:none}.note{margin-top:18px;padding-left:11px;border-left:2px solid var(--sage);font-size:11px;line-height:1.7;color:var(--muted)}
 </style>
 </head>
 <body>
@@ -30,6 +30,8 @@
       <label class="label" for="loginPassword">비밀번호</label><input class="input" id="loginPassword" type="password" autocomplete="current-password">
       <button class="btn" id="loginButton" type="button">로그인</button>
       <p class="message error" id="loginError"></p>
+      <p class="reset"><button class="linkbtn" id="resetButton" type="button">비밀번호를 잊으셨나요?</button></p>
+      <p class="message success" id="resetSuccess"></p>
     </div>
     <div class="panel" id="signupPanel">
       <label class="label" for="signupName">이름</label><input class="input" id="signupName" type="text" autocomplete="name" maxlength="40">
@@ -41,6 +43,12 @@
       <button class="btn" id="signupButton" type="button">회원가입</button>
       <p class="message error" id="signupError"></p><p class="message success" id="signupSuccess"></p>
       <p class="note">휴대전화는 프로그램 신청이나 주문 시에만, 배송지는 실물 상품 주문 시에만 별도로 받습니다.</p>
+    </div>
+    <div class="panel" id="recoveryPanel">
+      <label class="label" for="newPassword">새 비밀번호</label><input class="input" id="newPassword" type="password" autocomplete="new-password" placeholder="8자 이상">
+      <label class="label" for="newPasswordConfirm">새 비밀번호 확인</label><input class="input" id="newPasswordConfirm" type="password" autocomplete="new-password">
+      <button class="btn" id="updatePasswordButton" type="button" disabled>확인 중...</button>
+      <p class="message error" id="recoveryError"></p><p class="message success" id="recoverySuccess"></p>
     </div>
   </section>
   <div class="links"><a href="login.html">별칭으로 가볍게 체험하기</a><br><a href="index.html">홈으로 돌아가기</a></div>
@@ -56,6 +64,16 @@ function hideMessage(id) { document.getElementById(id).style.display='none'; }
 function setBusy(id, busy, text) { const el=document.getElementById(id); el.disabled=busy; el.textContent=text; }
 function openPanel(id) { document.querySelectorAll('.tab').forEach(el=>el.classList.toggle('active',el.dataset.panel===id)); document.querySelectorAll('.panel').forEach(el=>el.classList.toggle('active',el.id===id)); }
 document.querySelectorAll('.tab').forEach(el=>el.addEventListener('click',()=>openPanel(el.dataset.panel)));
+
+// 서버가 돌려준 실제 원인을 사람이 읽을 수 있는 안내로 바꾼다. 원인을 감추면 이용자가 재시도만 반복하게 된다.
+function authErrorText(error, fallback) {
+  if(error.status===429) return '요청이 몰려 잠시 제한되었습니다. 10분쯤 뒤에 다시 시도해 주세요. 지금 다시 누르셔도 처리되지 않습니다.';
+  const message=error.message||'';
+  if(/already registered|already exists/i.test(message)) return '이미 가입된 이메일입니다. 로그인 탭에서 로그인하시거나 비밀번호를 잊으셨다면 재설정을 이용해 주세요.';
+  if(/invalid.*email|email.*invalid/i.test(message)) return '이메일 주소 형식을 확인해 주세요.';
+  if(/password/i.test(message)) return '비밀번호가 조건에 맞지 않습니다. 8자 이상으로 다시 입력해 주세요.';
+  return fallback;
+}
 
 async function login() {
   hideMessage('loginError');
@@ -86,15 +104,58 @@ async function signup() {
   const redirectTo=`${location.origin}${location.pathname}?confirmed=1`;
   const {data,error}=await authClient.auth.signUp({email,password,options:{emailRedirectTo:redirectTo,data:{display_name:displayName,nickname,account_type:'formal'}}});
   setBusy('signupButton',false,'회원가입');
-  if(error){showMessage('signupError','회원가입을 처리하지 못했습니다. 입력 내용을 확인해 주세요.');return;}
+  if(error){console.error('signup failed',error);showMessage('signupError',authErrorText(error,'회원가입을 처리하지 못했습니다. 입력 내용을 확인해 주세요.'));return;}
   if(data.session){location.replace(nextPage);return;}
-  showMessage('signupSuccess','인증 메일을 보냈습니다. 메일의 링크를 눌러 가입을 완료해 주세요.');
+  showMessage('signupSuccess','인증 메일을 보냈습니다. 메일이 도착하기까지 몇 분 걸릴 수 있고 스팸함으로 갈 수도 있으니 함께 확인해 주세요. 회원가입을 다시 누르지 않으셔도 됩니다.');
+}
+
+async function requestReset() {
+  hideMessage('loginError'); hideMessage('resetSuccess');
+  const email=document.getElementById('loginEmail').value.trim().toLowerCase();
+  if(!email){showMessage('loginError','재설정 메일을 받을 이메일을 위 칸에 입력한 뒤 다시 눌러 주세요.');return;}
+  setBusy('resetButton',true,'메일 보내는 중...');
+  const {error}=await authClient.auth.resetPasswordForEmail(email,{redirectTo:`${location.origin}${location.pathname}?recovery=1`});
+  setBusy('resetButton',false,'비밀번호를 잊으셨나요?');
+  if(error){console.error('reset request failed',error);showMessage('loginError',authErrorText(error,'재설정 메일을 보내지 못했습니다. 잠시 후 다시 시도해 주세요.'));return;}
+  showMessage('resetSuccess','재설정 메일을 보냈습니다. 메일이 도착하기까지 몇 분 걸릴 수 있고 스팸함으로 갈 수도 있으니 함께 확인해 주세요.');
+}
+
+async function updatePassword() {
+  hideMessage('recoveryError'); hideMessage('recoverySuccess');
+  const password=document.getElementById('newPassword').value;
+  const confirmation=document.getElementById('newPasswordConfirm').value;
+  if(password.length<8){showMessage('recoveryError','비밀번호는 8자 이상 입력해 주세요.');return;}
+  if(password!==confirmation){showMessage('recoveryError','두 비밀번호가 일치하지 않습니다.');return;}
+  setBusy('updatePasswordButton',true,'변경 중...');
+  const {error}=await authClient.auth.updateUser({password});
+  setBusy('updatePasswordButton',false,'비밀번호 변경');
+  if(error){console.error('password update failed',error);showMessage('recoveryError',authErrorText(error,'비밀번호를 변경하지 못했습니다. 재설정 메일의 링크를 다시 눌러 주세요.'));return;}
+  showMessage('recoverySuccess','비밀번호를 변경했습니다. 잠시 후 이동합니다.');
+  setTimeout(()=>location.replace(nextPage),1500);
 }
 
 document.getElementById('loginButton').addEventListener('click',login);
 document.getElementById('signupButton').addEventListener('click',signup);
+document.getElementById('resetButton').addEventListener('click',requestReset);
+document.getElementById('updatePasswordButton').addEventListener('click',updatePassword);
 document.getElementById('loginPassword').addEventListener('keydown',event=>{if(event.key==='Enter')login();});
+
+// 재설정 링크로 들어온 경우에는 자동 이동을 막고 새 비밀번호 입력 화면만 보여준다.
+const recoveryMode = new URLSearchParams(location.search).get('recovery')==='1';
+if(recoveryMode){
+  document.querySelector('.tabs').classList.add('hidden');
+  openPanel('recoveryPanel');
+  // 메일 링크의 토큰이 세션으로 바뀐 뒤에야 비밀번호를 변경할 수 있다.
+  authClient.auth.onAuthStateChange((event,session)=>{
+    if(session) setBusy('updatePasswordButton',false,'비밀번호 변경');
+  });
+  authClient.auth.getSession().then(({data:{session}})=>{
+    if(session) setBusy('updatePasswordButton',false,'비밀번호 변경');
+  });
+}
+
 authClient.auth.getSession().then(async ({data:{session}})=>{
+  if(recoveryMode)return;
   if(!session||!session.user.email_confirmed_at)return;
   const {data:profile}=await authClient.from('site_profiles').select('user_id').eq('user_id',session.user.id).maybeSingle();
   if(profile)location.replace(nextPage);
