@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<!-- 서버 관리 권한(site_admins)이 확인된 계정만 들어오는 관리자 페이지 뼈대입니다. 실제 관리 기능은 2주차에 붙습니다. -->
+<!-- 서버 관리 권한(site_admins)이 확인된 계정만 들어오는 관리자 페이지입니다.
+     [2-1] 탭 세 개의 틀과 회원관리 탭을 붙였습니다. 갤러리·체험 콘텐츠는 2-2·2-3에서 채웁니다.
+     신청·문의는 조합원 마당(members-home.html)에서 조합원 모두가 함께 보므로 여기에 두지 않습니다. -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -12,7 +14,7 @@
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#FAFAF8;color:#6B6B6B;font-family:'Noto Sans KR',sans-serif;font-weight:300}
-.wrap{max-width:720px;margin:0 auto;padding:54px 22px}
+.wrap{max-width:960px;margin:0 auto;padding:54px 22px}
 .logo{height:55px}
 .card{margin-top:34px;background:#fff;border:1px solid #e8e4e0;padding:34px}
 .eyebrow{font-family:Raleway,sans-serif;font-size:10px;letter-spacing:.22em;color:#98928d}
@@ -21,12 +23,45 @@ body{margin:0;background:#FAFAF8;color:#6B6B6B;font-family:'Noto Sans KR',sans-s
 .menu{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:28px}
 .item{text-align:left;border:1px solid #e8e4e0;background:#fff;padding:18px;font:inherit;color:#6B6B6B;cursor:pointer}
 .item:hover{border-color:#8FBFB8}
+.item[aria-selected="true"]{border-color:#8FBFB8;background:#f4faf9}
 .item-name{display:block;font:400 14px 'Noto Serif KR',serif;color:#5e7773}
 .item-desc{display:block;font-size:11.5px;line-height:1.7;color:#98928d;margin-top:7px}
 .notice{margin-top:22px;padding:13px;background:#f7f6f3;font-size:11.5px;line-height:1.7}
+.notice a{color:#5e7773}
+.panel{margin-top:26px;border-top:1px solid #e8e4e0;padding-top:26px}
+.panel-title{font:400 16px 'Noto Serif KR',serif;color:#5e7773;margin-bottom:14px}
+.panel-empty{padding:26px;background:#f7f6f3;font-size:12px;line-height:1.9;text-align:center;color:#98928d}
+.tools{display:flex;flex-wrap:wrap;gap:9px;align-items:center;margin-bottom:16px}
+.tools select,.tools input{font:inherit;font-size:12px;padding:8px 10px;border:1px solid #e8e4e0;background:#fff;color:#6B6B6B}
+.tools input{flex:1;min-width:170px}
+.count{font-size:11.5px;color:#98928d;margin-left:auto}
+.table-scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:12px;min-width:640px}
+th,td{border-bottom:1px solid #eeeae6;padding:11px 9px;text-align:left;vertical-align:top}
+th{font-weight:400;color:#98928d;font-size:11px;letter-spacing:.04em;cursor:pointer;white-space:nowrap}
+th:hover{color:#5e7773}
+tbody tr{cursor:pointer}
+tbody tr:hover{background:#f7fbfa}
+tbody tr[aria-selected="true"]{background:#f4faf9}
+.tag{display:inline-block;padding:3px 7px;font-size:10px;border:1px solid #e8e4e0;color:#98928d;margin-right:4px;white-space:nowrap}
+.tag-member{border-color:#8FBFB8;color:#5e7773}
+.tag-admin{border-color:#E8929A;color:#c2727a}
+.muted{color:#b4aeaa}
 .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:25px}
 .button{display:inline-block;border:1px solid #8FBFB8;padding:10px 15px;color:#5e7773;text-decoration:none;background:#fff;font:inherit;font-size:12px;cursor:pointer}
+.button:hover{background:#f4faf9}
+.detail{margin-top:22px;border:1px solid #e8e4e0;padding:22px;background:#fdfdfc}
+.detail-head{display:flex;flex-wrap:wrap;gap:10px;align-items:baseline;margin-bottom:6px}
+.detail-name{font:400 15px 'Noto Serif KR',serif;color:#5e7773}
+.detail-sub{font-size:11.5px;color:#98928d}
+.record{border-top:1px solid #eeeae6;padding-top:15px;margin-top:15px}
+.record-head{font-size:12.5px;color:#5e7773;margin-bottom:4px}
+.record-meta{font-size:11px;color:#98928d;margin-bottom:9px}
+.record-block{margin-top:9px}
+.record-label{font-size:10.5px;letter-spacing:.06em;color:#98928d;margin-bottom:4px}
+.record-body{font-size:12px;line-height:1.85;white-space:pre-wrap;word-break:break-word;background:#f7f6f3;padding:11px}
 .hidden{display:none}
+@media (max-width:600px){.wrap{padding:36px 16px}.card{padding:22px}}
 </style>
 </head>
 <body>
@@ -38,26 +73,73 @@ body{margin:0;background:#FAFAF8;color:#6B6B6B;font-family:'Noto Sans KR',sans-s
     <h1 class="title" id="title">관리자 권한을 확인하고 있습니다.</h1>
     <p class="lead" id="lead"></p>
 
-    <div class="menu hidden" id="menu">
-      <button class="item" type="button" data-name="갤러리 관리">
+    <div class="menu hidden" id="menu" role="tablist">
+      <button class="item" type="button" role="tab" aria-selected="false" data-tab="gallery">
         <span class="item-name">갤러리 관리</span>
         <span class="item-desc">사진을 올리고 순서와 설명을 고칩니다. 등록하면 갤러리 페이지에 바로 반영됩니다.</span>
       </button>
-      <button class="item" type="button" data-name="체험 콘텐츠 관리">
+      <button class="item" type="button" role="tab" aria-selected="false" data-tab="experience">
         <span class="item-name">체험 콘텐츠 관리</span>
         <span class="item-desc">체험을 등록하고 어느 방에 내보낼지, 공개할지를 정합니다.</span>
       </button>
-      <button class="item" type="button" data-name="신청·문의 확인">
-        <span class="item-name">신청·문의 확인</span>
-        <span class="item-desc">들어온 상담 신청과 문의를 보고 접수·확정·종료 상태를 바꿉니다.</span>
-      </button>
-      <button class="item" type="button" data-name="회원관리">
+      <button class="item" type="button" role="tab" aria-selected="false" data-tab="members">
         <span class="item-name">회원관리</span>
-        <span class="item-desc">신청자와 회원 명단을 확인합니다. 권한을 주고 뺏는 일은 여기서 하지 않습니다.</span>
+        <span class="item-desc">계정을 조회하고 검색하며 체험 응답 내용을 확인합니다. 권한을 주고 뺏는 일은 여기서 하지 않습니다.</span>
       </button>
     </div>
 
-    <p class="notice hidden" id="stage">이 자리는 아직 준비 중입니다. 관리 기능은 2주차(7/27~8/2)에 하나씩 열립니다.</p>
+    <p class="notice hidden" id="inquiryNotice">
+      신청과 문의는 <a href="members-home.html">조합원 마당</a>에서 조합원 모두가 함께 봅니다.
+      처리 과정을 투명하게 두고 가능한 분들에게 순차로 배정하기 위해 관리자 화면에 따로 두지 않습니다.
+    </p>
+
+    <!-- 갤러리 관리 · 2-2 -->
+    <section class="panel hidden" id="panel-gallery">
+      <h2 class="panel-title">갤러리 관리</h2>
+      <div class="panel-empty">2-2에서 열립니다. 사진 저장소와 갤러리 목록을 만든 뒤 이 자리에 붙입니다.</div>
+    </section>
+
+    <!-- 체험 콘텐츠 관리 · 2-3 -->
+    <section class="panel hidden" id="panel-experience">
+      <h2 class="panel-title">체험 콘텐츠 관리</h2>
+      <div class="panel-empty">2-3에서 열립니다. 체험 목록을 만든 뒤 등록·공개 화면을 이 자리에 붙입니다.</div>
+    </section>
+
+    <!-- 회원관리 · 2-1 -->
+    <section class="panel hidden" id="panel-members">
+      <h2 class="panel-title">회원관리</h2>
+
+      <div class="tools">
+        <select id="typeFilter" aria-label="계정 유형 거르기">
+          <option value="all">전체</option>
+          <option value="experience">체험계정</option>
+          <option value="formal">이메일 회원</option>
+          <option value="member">조합원</option>
+          <option value="admin">관리자</option>
+        </select>
+        <input id="searchInput" type="search" placeholder="이름 · 별칭 · 이메일 검색" aria-label="회원 검색">
+        <button class="button" type="button" id="csvButton">CSV 내려받기</button>
+        <span class="count" id="countText"></span>
+      </div>
+
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th data-sort="label">이름 · 별칭</th>
+              <th data-sort="email">이메일</th>
+              <th data-sort="type">유형</th>
+              <th data-sort="created">가입일</th>
+              <th data-sort="records">체험 기록</th>
+            </tr>
+          </thead>
+          <tbody id="memberRows"></tbody>
+        </table>
+      </div>
+      <p class="panel-empty hidden" id="memberEmpty">해당하는 계정이 없습니다.</p>
+
+      <div class="detail hidden" id="detail"></div>
+    </section>
 
     <div class="actions" id="actions">
       <a class="button" href="index.html">홈으로</a>
@@ -66,25 +148,229 @@ body{margin:0;background:#FAFAF8;color:#6B6B6B;font-family:'Noto Sans KR',sans-s
 </main>
 
 <script>
-const client = window.AMMemberAuth.client;
+const auth = window.AMMemberAuth;
+const client = auth.client;
+
+let accounts = [];        // admin_list_accounts() 결과 원본
+let session = null;
+let sortKey = 'created';
+let sortAsc = false;
 
 function show(id) { document.getElementById(id).classList.remove('hidden'); }
+function hide(id) { document.getElementById(id).classList.add('hidden'); }
 
 function addButton(html) {
   document.getElementById('actions').insertAdjacentHTML('afterbegin', html);
 }
 
+function escapeHtml(value) {
+  return String(value ?? '').replace(/[&<>"']/g, ch =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+}
+
+function formatDate(value) {
+  if (!value) return '';
+  const d = new Date(value);
+  return `${d.getFullYear()}. ${String(d.getMonth() + 1).padStart(2, '0')}. ${String(d.getDate()).padStart(2, '0')}`;
+}
+
+// 이름과 별칭 중 화면에 앞세울 값. 체험계정은 별칭만 있습니다.
+function labelOf(account) {
+  return account.display_name || account.nickname || '(이름 없음)';
+}
+
+function typeText(account) {
+  const parts = [account.base_type === 'experience' ? '체험계정' : '이메일 회원'];
+  if (account.is_member) parts.push('조합원');
+  if (account.is_admin) parts.push('관리자');
+  return parts.join(' · ');
+}
+
+function matchesFilter(account, filter) {
+  if (filter === 'all') return true;
+  if (filter === 'member') return account.is_member;
+  if (filter === 'admin') return account.is_admin;
+  return account.base_type === filter;
+}
+
+function visibleAccounts() {
+  const filter = document.getElementById('typeFilter').value;
+  const term = document.getElementById('searchInput').value.trim().toLowerCase();
+
+  const rows = accounts.filter(account => {
+    if (!matchesFilter(account, filter)) return false;
+    if (!term) return true;
+    return [account.display_name, account.nickname, account.email]
+      .some(value => value && value.toLowerCase().includes(term));
+  });
+
+  const compare = {
+    label: (a, b) => labelOf(a).localeCompare(labelOf(b), 'ko'),
+    email: (a, b) => (a.email || '').localeCompare(b.email || ''),
+    type: (a, b) => typeText(a).localeCompare(typeText(b), 'ko'),
+    created: (a, b) => new Date(a.created_at) - new Date(b.created_at),
+    records: (a, b) => a.record_count - b.record_count
+  }[sortKey];
+
+  rows.sort((a, b) => (sortAsc ? 1 : -1) * compare(a, b));
+  return rows;
+}
+
+function renderTable() {
+  const rows = visibleAccounts();
+  document.getElementById('countText').textContent = `${rows.length}명 / 전체 ${accounts.length}명`;
+  document.getElementById('memberEmpty').classList.toggle('hidden', rows.length > 0);
+
+  document.getElementById('memberRows').innerHTML = rows.map(account => `
+    <tr data-user-id="${account.user_id}" aria-selected="false">
+      <td>${escapeHtml(labelOf(account))}${
+        account.display_name && account.nickname
+          ? `<br><span class="muted">${escapeHtml(account.nickname)}</span>` : ''}</td>
+      <td>${account.email
+        ? escapeHtml(account.email)
+        : '<span class="muted">표시하지 않음</span>'}</td>
+      <td><span class="tag">${account.base_type === 'experience' ? '체험계정' : '이메일 회원'}</span>${
+        account.is_member ? '<span class="tag tag-member">조합원</span>' : ''}${
+        account.is_admin ? '<span class="tag tag-admin">관리자</span>' : ''}</td>
+      <td>${formatDate(account.created_at)}</td>
+      <td>${account.record_count
+        ? `${account.record_count}건<br><span class="muted">${formatDate(account.last_record_at)}</span>`
+        : '<span class="muted">없음</span>'}</td>
+    </tr>`).join('');
+}
+
+function downloadCsv() {
+  const header = ['이름', '별칭', '이메일', '유형', '가입일', '체험 기록 수', '마지막 기록일'];
+  const lines = visibleAccounts().map(account => [
+    account.display_name || '',
+    account.nickname || '',
+    account.email || '',
+    typeText(account),
+    formatDate(account.created_at),
+    account.record_count,
+    formatDate(account.last_record_at)
+  ]);
+
+  const csv = [header, ...lines]
+    .map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+    .join('\r\n');
+
+  // 엑셀이 한글을 깨뜨리지 않도록 BOM 을 앞에 둡니다.
+  const url = URL.createObjectURL(new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' }));
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `adlermind_회원목록_${new Date().toISOString().slice(0, 10)}.csv`;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+// 응답·결과 JSON 을 사람이 읽을 수 있는 줄글로 폅니다.
+function formatData(data) {
+  if (!data || typeof data !== 'object') return String(data ?? '');
+  const entries = Object.entries(data);
+  if (!entries.length) return '';
+  return entries
+    .map(([key, value]) => `${key}: ${typeof value === 'object' ? JSON.stringify(value, null, 2) : value}`)
+    .join('\n');
+}
+
+function renderRecords(account, records) {
+  const detail = document.getElementById('detail');
+
+  const head = `
+    <div class="detail-head">
+      <span class="detail-name">${escapeHtml(labelOf(account))}</span>
+      <span class="detail-sub">${escapeHtml(typeText(account))}${
+        account.email ? ' · ' + escapeHtml(account.email) : ''}</span>
+    </div>
+    <p class="detail-sub">가입 ${formatDate(account.created_at)} · 체험 기록 ${records.length}건</p>`;
+
+  if (!records.length) {
+    detail.innerHTML = head + '<div class="panel-empty" style="margin-top:15px">저장된 체험 기록이 없습니다.</div>';
+    show('detail');
+    return;
+  }
+
+  detail.innerHTML = head + records.map(record => {
+    const response = formatData(record.response_data);
+    const result = formatData(record.result_data);
+    const rating = record.feedback_rating ? `${record.feedback_rating} / 5` : '';
+
+    return `
+      <div class="record">
+        <div class="record-head">${escapeHtml(record.experience_title)}</div>
+        <div class="record-meta">${formatDate(record.created_at)} · ${
+          record.context_type === 'program' ? '프로그램' : '체험'}${
+          rating ? ' · 만족도 ' + rating : ''}</div>
+        ${response ? `<div class="record-block"><div class="record-label">응답</div><div class="record-body">${escapeHtml(response)}</div></div>` : ''}
+        ${result ? `<div class="record-block"><div class="record-label">결과</div><div class="record-body">${escapeHtml(result)}</div></div>` : ''}
+        ${record.feedback_text ? `<div class="record-block"><div class="record-label">피드백</div><div class="record-body">${escapeHtml(record.feedback_text)}</div></div>` : ''}
+      </div>`;
+  }).join('');
+
+  show('detail');
+}
+
+async function openAccount(userId) {
+  const account = accounts.find(item => item.user_id === userId);
+  if (!account) return;
+
+  document.querySelectorAll('#memberRows tr').forEach(row => {
+    row.setAttribute('aria-selected', String(row.dataset.userId === userId));
+  });
+
+  const detail = document.getElementById('detail');
+  detail.innerHTML = '<p class="detail-sub">체험 기록을 불러오고 있습니다.</p>';
+  show('detail');
+
+  // experience_records 는 1주차에 관리자 전체 조회 정책이 걸려 있어 그대로 읽힙니다.
+  const response = await fetch(
+    `${auth.SUPABASE_URL}/rest/v1/experience_records` +
+    `?user_id=eq.${userId}&order=created_at.desc` +
+    `&select=experience_title,context_type,response_data,result_data,feedback_rating,feedback_text,created_at`,
+    { headers: auth.restHeaders(session.access_token) }
+  );
+
+  if (!response.ok) {
+    detail.innerHTML = '<p class="detail-sub">체험 기록을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</p>';
+    return;
+  }
+
+  renderRecords(account, await response.json());
+}
+
+function selectTab(name) {
+  ['gallery', 'experience', 'members'].forEach(tab => {
+    document.getElementById(`panel-${tab}`).classList.toggle('hidden', tab !== name);
+  });
+  document.querySelectorAll('#menu .item').forEach(item => {
+    item.setAttribute('aria-selected', String(item.dataset.tab === name));
+  });
+}
+
+async function loadAccounts() {
+  const { data, error } = await client.rpc('admin_list_accounts');
+  if (error) {
+    document.getElementById('memberRows').innerHTML =
+      '<tr><td colspan="5">계정 목록을 불러오지 못했습니다. setup_week2_admin_accounts.sql 실행 여부를 확인해 주세요.</td></tr>';
+    return;
+  }
+  accounts = data || [];
+  renderTable();
+}
+
 async function init() {
-  const { data: { session } } = await client.auth.getSession();
+  const { data: { session: current } } = await client.auth.getSession();
 
   // 로그인하지 않은 사람에게는 관리자 페이지의 존재를 알리지 않고 조용히 로그인 화면으로 보낸다.
-  if (!session) { location.replace('account.html?next=admin.html'); return; }
+  if (!current) { location.replace('account.html?next=admin.html'); return; }
+  session = current;
 
   const { data: profile } = await client
     .from('site_profiles').select('display_name,nickname')
     .eq('user_id', session.user.id).maybeSingle();
 
-  const admin = await window.AMMemberAuth.getActiveAdmin();
+  const admin = await auth.getActiveAdmin();
   if (!admin) {
     document.getElementById('title').textContent = '관리자 권한이 없습니다.';
     document.getElementById('lead').textContent =
@@ -100,17 +386,36 @@ async function init() {
 
   document.getElementById('title').textContent = `${name}님, 관리자 화면입니다.`;
   document.getElementById('lead').textContent =
-    '홈페이지 내용을 코드 수정 없이 직접 관리하는 자리입니다. 아래 네 가지가 차례로 열립니다.';
+    '홈페이지 내용을 코드 수정 없이 직접 관리하는 자리입니다. 위에서 관리할 곳을 고르세요.';
   show('menu');
-  show('stage');
+  show('inquiryNotice');
   addButton('<a class="button" href="account-home.html">내 계정</a>');
+
+  selectTab('members');
+  await loadAccounts();
 }
 
 document.getElementById('menu').addEventListener('click', event => {
   const item = event.target.closest('.item');
-  if (!item) return;
-  document.getElementById('stage').textContent =
-    `${item.dataset.name}는 2주차(7/27~8/2)에 열립니다. 지금은 들어오는 문을 만든 단계입니다.`;
+  if (item) selectTab(item.dataset.tab);
+});
+
+document.getElementById('typeFilter').addEventListener('change', renderTable);
+document.getElementById('searchInput').addEventListener('input', renderTable);
+document.getElementById('csvButton').addEventListener('click', downloadCsv);
+
+document.querySelectorAll('th[data-sort]').forEach(header => {
+  header.addEventListener('click', () => {
+    const key = header.dataset.sort;
+    sortAsc = sortKey === key ? !sortAsc : true;
+    sortKey = key;
+    renderTable();
+  });
+});
+
+document.getElementById('memberRows').addEventListener('click', event => {
+  const row = event.target.closest('tr');
+  if (row) openAccount(row.dataset.userId);
 });
 
 init();
