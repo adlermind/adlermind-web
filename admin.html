@@ -61,6 +61,18 @@ tbody tr[aria-selected="true"]{background:#f4faf9}
 .record-label{font-size:10.5px;letter-spacing:.06em;color:#98928d;margin-bottom:4px}
 .record-body{font-size:12px;line-height:1.85;white-space:pre-wrap;word-break:break-word;background:#f7f6f3;padding:11px}
 .hidden{display:none}
+.subpanel{border:1px solid #e8e4e0;padding:20px;margin-bottom:18px;background:#fdfdfc}
+.subpanel-title{font:400 14px 'Noto Serif KR',serif;color:#5e7773;margin:0 0 10px}
+.hint{font-size:11px;line-height:1.7;color:#98928d;margin:6px 0 0}
+.field{margin-top:14px}
+.label{display:block;font-size:11.5px;color:#98928d;margin-bottom:5px}
+.field input,.field select,.field textarea{font:inherit;font-size:12px;padding:8px 10px;border:1px solid #e8e4e0;background:#fff;color:#6B6B6B;width:100%}
+.field textarea{resize:vertical}
+.section-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid #eeeae6}
+.section-row input[type=text]{flex:1;min-width:150px;font:inherit;font-size:12px;padding:7px 9px;border:1px solid #e8e4e0;background:#fff;color:#6B6B6B}
+.section-row input[type=number]{flex:0 0 74px;font:inherit;font-size:12px;padding:7px 9px;border:1px solid #e8e4e0;background:#fff;color:#6B6B6B}
+.link-btn{border:none;background:none;font:inherit;font-size:11.5px;color:#5e7773;cursor:pointer;padding:4px 6px;text-decoration:underline}
+.link-btn.danger{color:#c2727a}
 @media (max-width:600px){.wrap{padding:36px 16px}.card{padding:22px}}
 </style>
 </head>
@@ -96,7 +108,90 @@ tbody tr[aria-selected="true"]{background:#f4faf9}
     <!-- 갤러리 관리 · 2-2 -->
     <section class="panel hidden" id="panel-gallery">
       <h2 class="panel-title">갤러리 관리</h2>
-      <div class="panel-empty">2-2에서 열립니다. 사진 저장소와 갤러리 목록을 만든 뒤 이 자리에 붙입니다.</div>
+
+      <!-- 섹션 관리. 갤러리 페이지의 큰 제목입니다. -->
+      <div class="subpanel">
+        <h3 class="subpanel-title">섹션</h3>
+        <p class="hint">갤러리 페이지의 큰 제목입니다. 보여줄 항목이 없는 섹션은 화면에 나타나지 않습니다.</p>
+        <div id="sectionRows"></div>
+        <div class="tools" style="margin-top:14px">
+          <input id="sectionTitle" type="text" placeholder="새 섹션 이름" aria-label="새 섹션 이름">
+          <input id="sectionOrder" type="number" value="0" style="flex:0 0 84px;min-width:84px" aria-label="새 섹션 순서">
+          <button class="button" type="button" id="sectionAdd">섹션 추가</button>
+        </div>
+      </div>
+
+      <!-- 항목 등록 폼. [2-3] 체험 콘텐츠에서 같은 틀을 다시 씁니다. -->
+      <div class="subpanel">
+        <h3 class="subpanel-title" id="formTitle">새 항목 등록</h3>
+        <div class="field">
+          <label class="label" for="itemSection">섹션</label>
+          <select id="itemSection"></select>
+        </div>
+        <div class="field">
+          <label class="label" for="itemType">매체</label>
+          <select id="itemType">
+            <option value="photo">사진</option>
+            <option value="video">영상 (YouTube)</option>
+          </select>
+        </div>
+        <div class="field" id="photoField">
+          <label class="label" for="itemFile">사진 파일</label>
+          <input id="itemFile" type="file" accept="image/*">
+          <p class="hint" id="photoHint">10MB 이하 이미지. 고칠 때 파일을 고르지 않으면 지금 사진을 그대로 둡니다.</p>
+        </div>
+        <div class="field hidden" id="videoField">
+          <label class="label" for="itemVideo">YouTube 영상 ID</label>
+          <input id="itemVideo" type="text" placeholder="예: s9_0Zgx4tT0">
+          <p class="hint">조합원 공개로 두더라도 영상 자체는 YouTube에서 <strong>일부 공개(unlisted)</strong>로 설정하셔야 실제로 보호됩니다.</p>
+        </div>
+        <div class="field">
+          <label class="label" for="itemTitle">제목</label>
+          <input id="itemTitle" type="text" placeholder="카드와 모달에 함께 쓰입니다">
+        </div>
+        <div class="field">
+          <label class="label" for="itemDesc">설명</label>
+          <textarea id="itemDesc" rows="3" placeholder="눌러서 열리는 화면에 표시됩니다. 비워 두면 표시하지 않습니다."></textarea>
+        </div>
+        <div class="field">
+          <label class="label" for="itemMeta">메타 한 줄</label>
+          <input id="itemMeta" type="text" placeholder="예: 2026. 07. 13 · 2 MIN 14 SEC">
+        </div>
+        <div class="field">
+          <label class="label" for="itemVisibility">공개 범위</label>
+          <select id="itemVisibility">
+            <option value="public">공개 — 누구나</option>
+            <option value="members">조합원 공개 — 활성 조합원만</option>
+            <option value="private">비공개 — 관리자만</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="label" for="itemOrder">순서</label>
+          <input id="itemOrder" type="number" value="0">
+          <p class="hint">작은 숫자가 앞에 옵니다.</p>
+        </div>
+        <div class="actions" style="margin-top:18px">
+          <button class="button" type="button" id="itemSave">저장</button>
+          <button class="button hidden" type="button" id="itemCancel">고치기 그만두기</button>
+        </div>
+        <p class="hint" id="itemStatus"></p>
+      </div>
+
+      <!-- 등록된 항목 -->
+      <div class="subpanel">
+        <h3 class="subpanel-title">등록된 항목</h3>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>순서</th><th>섹션</th><th>제목</th><th>매체</th><th>공개 범위</th><th></th>
+              </tr>
+            </thead>
+            <tbody id="galleryRows"></tbody>
+          </table>
+        </div>
+        <p class="panel-empty hidden" id="galleryEmpty">아직 등록된 항목이 없습니다.</p>
+      </div>
     </section>
 
     <!-- 체험 콘텐츠 관리 · 2-3 -->
@@ -339,6 +434,248 @@ async function openAccount(userId) {
   renderRecords(account, await response.json());
 }
 
+/* ── 갤러리 관리 · 2-2 ─────────────────────────────────────────
+   콘텐츠를 코드가 아니라 데이터로. 여기서 등록하면 gallery.html 에 그대로 나타납니다.
+   공개 범위는 site_gallery.visibility 한 곳에만 있고 사진 파일 권한도 그 값을 따라갑니다. */
+const GALLERY_BUCKET = 'gallery-images';
+const VISIBILITY_TEXT = { public: '공개', members: '조합원 공개', private: '비공개' };
+
+let sections = [];
+let galleryItems = [];
+let editingId = null;      // null 이면 새 항목 등록, 아니면 그 항목을 고치는 중
+let galleryLoaded = false;
+
+function galleryStatus(message) {
+  document.getElementById('itemStatus').textContent = message || '';
+}
+
+async function loadGallery() {
+  const [sectionResult, itemResult] = await Promise.all([
+    client.from('site_gallery_sections').select('id,title,sort_order').order('sort_order'),
+    client.from('site_gallery')
+      .select('id,section_id,media_type,title,description,image_path,youtube_id,meta_text,visibility,sort_order')
+      .order('sort_order').order('created_at')
+  ]);
+
+  if (sectionResult.error || itemResult.error) {
+    galleryStatus('갤러리를 불러오지 못했습니다. setup_week2_gallery.sql 실행 여부를 확인해 주세요.');
+    return;
+  }
+
+  sections = sectionResult.data || [];
+  galleryItems = itemResult.data || [];
+  renderSections();
+  renderGalleryTable();
+}
+
+function renderSections() {
+  document.getElementById('sectionRows').innerHTML = sections.map(section => `
+    <div class="section-row" data-section-id="${section.id}">
+      <input type="text" value="${escapeHtml(section.title)}" aria-label="섹션 이름">
+      <input type="number" value="${section.sort_order}" aria-label="섹션 순서">
+      <button class="link-btn" type="button" data-act="save">저장</button>
+      <button class="link-btn danger" type="button" data-act="delete">삭제</button>
+    </div>`).join('');
+
+  document.getElementById('itemSection').innerHTML = sections
+    .map(section => `<option value="${section.id}">${escapeHtml(section.title)}</option>`).join('');
+}
+
+function renderGalleryTable() {
+  document.getElementById('galleryEmpty').classList.toggle('hidden', galleryItems.length > 0);
+  const sectionTitle = id => (sections.find(s => s.id === id) || {}).title || '(섹션 없음)';
+
+  document.getElementById('galleryRows').innerHTML = galleryItems.map(item => `
+    <tr data-item-id="${item.id}">
+      <td>${item.sort_order}</td>
+      <td>${escapeHtml(sectionTitle(item.section_id))}</td>
+      <td>${escapeHtml(item.title)}</td>
+      <td>${item.media_type === 'video' ? '영상' : '사진'}</td>
+      <td><span class="tag${item.visibility === 'public' ? '' : ' tag-member'}">${VISIBILITY_TEXT[item.visibility]}</span></td>
+      <td>
+        <button class="link-btn" type="button" data-act="edit">고치기</button>
+        <button class="link-btn danger" type="button" data-act="delete">삭제</button>
+      </td>
+    </tr>`).join('');
+}
+
+function resetItemForm() {
+  editingId = null;
+  document.getElementById('formTitle').textContent = '새 항목 등록';
+  document.getElementById('itemCancel').classList.add('hidden');
+  ['itemTitle', 'itemDesc', 'itemMeta', 'itemVideo'].forEach(id => { document.getElementById(id).value = ''; });
+  document.getElementById('itemFile').value = '';
+  document.getElementById('itemType').value = 'photo';
+  document.getElementById('itemVisibility').value = 'public';
+  document.getElementById('itemOrder').value = '0';
+  syncMediaFields();
+  galleryStatus('');
+}
+
+function syncMediaFields() {
+  const isVideo = document.getElementById('itemType').value === 'video';
+  document.getElementById('photoField').classList.toggle('hidden', isVideo);
+  document.getElementById('videoField').classList.toggle('hidden', !isVideo);
+}
+
+function editItem(id) {
+  const item = galleryItems.find(entry => entry.id === id);
+  if (!item) return;
+
+  editingId = id;
+  document.getElementById('formTitle').textContent = '항목 고치기';
+  document.getElementById('itemCancel').classList.remove('hidden');
+  document.getElementById('itemSection').value = item.section_id;
+  document.getElementById('itemType').value = item.media_type;
+  document.getElementById('itemTitle').value = item.title;
+  document.getElementById('itemDesc').value = item.description || '';
+  document.getElementById('itemMeta').value = item.meta_text || '';
+  document.getElementById('itemVideo').value = item.youtube_id || '';
+  document.getElementById('itemVisibility').value = item.visibility;
+  document.getElementById('itemOrder').value = item.sort_order;
+  document.getElementById('itemFile').value = '';
+  syncMediaFields();
+  galleryStatus('고치는 중입니다. 사진을 새로 고르지 않으면 지금 사진을 그대로 둡니다.');
+  document.getElementById('panel-gallery').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+async function saveItem() {
+  const mediaType = document.getElementById('itemType').value;
+  const title = document.getElementById('itemTitle').value.trim();
+  const sectionId = document.getElementById('itemSection').value;
+  const file = document.getElementById('itemFile').files[0];
+  const youtubeId = document.getElementById('itemVideo').value.trim();
+  const current = editingId ? galleryItems.find(entry => entry.id === editingId) : null;
+
+  if (!sectionId) { galleryStatus('섹션을 먼저 하나 만들어 주세요.'); return; }
+  if (!title) { galleryStatus('제목을 적어 주세요.'); return; }
+  if (mediaType === 'video' && !youtubeId) { galleryStatus('YouTube 영상 ID를 적어 주세요.'); return; }
+  if (mediaType === 'photo' && !file && !(current && current.image_path)) {
+    galleryStatus('사진 파일을 골라 주세요.');
+    return;
+  }
+
+  galleryStatus('저장하고 있습니다.');
+
+  let imagePath = current ? current.image_path : null;
+  if (mediaType === 'photo' && file) {
+    const extension = (file.name.split('.').pop() || 'jpg').toLowerCase();
+    const path = `items/${crypto.randomUUID()}.${extension}`;
+    const { error: uploadError } = await client.storage
+      .from(GALLERY_BUCKET).upload(path, file, { contentType: file.type });
+    if (uploadError) { galleryStatus('사진을 올리지 못했습니다. ' + uploadError.message); return; }
+    imagePath = path;
+  }
+
+  const row = {
+    section_id: sectionId,
+    media_type: mediaType,
+    title,
+    description: document.getElementById('itemDesc').value.trim() || null,
+    meta_text: document.getElementById('itemMeta').value.trim() || null,
+    visibility: document.getElementById('itemVisibility').value,
+    sort_order: Number(document.getElementById('itemOrder').value) || 0,
+    image_path: mediaType === 'photo' ? imagePath : null,
+    youtube_id: mediaType === 'video' ? youtubeId : null
+  };
+
+  const { error } = editingId
+    ? await client.from('site_gallery').update(row).eq('id', editingId)
+    : await client.from('site_gallery').insert(row);
+
+  if (error) { galleryStatus('저장하지 못했습니다. ' + error.message); return; }
+
+  // 사진을 새 파일로 바꿨다면 이전 파일은 저장소에서 지웁니다.
+  if (current && current.image_path && current.image_path !== row.image_path) {
+    await client.storage.from(GALLERY_BUCKET).remove([current.image_path]);
+  }
+
+  resetItemForm();
+  galleryStatus('저장했습니다.');
+  await loadGallery();
+}
+
+async function deleteItem(id) {
+  const item = galleryItems.find(entry => entry.id === id);
+  if (!item) return;
+  if (!confirm(`"${item.title}" 항목을 지울까요? 되돌릴 수 없습니다.`)) return;
+
+  const { error } = await client.from('site_gallery').delete().eq('id', id);
+  if (error) { galleryStatus('지우지 못했습니다. ' + error.message); return; }
+  if (item.image_path) await client.storage.from(GALLERY_BUCKET).remove([item.image_path]);
+  if (editingId === id) resetItemForm();
+  galleryStatus('지웠습니다.');
+  await loadGallery();
+}
+
+async function addSection() {
+  const title = document.getElementById('sectionTitle').value.trim();
+  if (!title) { galleryStatus('섹션 이름을 적어 주세요.'); return; }
+
+  const { error } = await client.from('site_gallery_sections').insert({
+    title,
+    sort_order: Number(document.getElementById('sectionOrder').value) || 0
+  });
+  if (error) { galleryStatus('섹션을 만들지 못했습니다. ' + error.message); return; }
+
+  document.getElementById('sectionTitle').value = '';
+  galleryStatus('섹션을 만들었습니다.');
+  await loadGallery();
+}
+
+async function saveSection(row) {
+  const [titleInput, orderInput] = row.querySelectorAll('input');
+  const title = titleInput.value.trim();
+  if (!title) { galleryStatus('섹션 이름을 비울 수 없습니다.'); return; }
+
+  const { error } = await client.from('site_gallery_sections')
+    .update({ title, sort_order: Number(orderInput.value) || 0 })
+    .eq('id', row.dataset.sectionId);
+  if (error) { galleryStatus('섹션을 고치지 못했습니다. ' + error.message); return; }
+
+  galleryStatus('섹션을 고쳤습니다.');
+  await loadGallery();
+}
+
+async function deleteSection(id) {
+  const section = sections.find(entry => entry.id === id);
+  const count = galleryItems.filter(item => item.section_id === id).length;
+  if (!confirm(count
+    ? `"${section.title}" 섹션과 그 안의 항목 ${count}건이 함께 지워집니다. 계속할까요?`
+    : `"${section.title}" 섹션을 지울까요?`)) return;
+
+  // 표는 on delete cascade 로 함께 지워지므로 사진 파일을 먼저 치웁니다.
+  const paths = galleryItems.filter(item => item.section_id === id && item.image_path).map(item => item.image_path);
+
+  const { error } = await client.from('site_gallery_sections').delete().eq('id', id);
+  if (error) { galleryStatus('섹션을 지우지 못했습니다. ' + error.message); return; }
+  if (paths.length) await client.storage.from(GALLERY_BUCKET).remove(paths);
+
+  galleryStatus('섹션을 지웠습니다.');
+  await loadGallery();
+}
+
+document.getElementById('itemType').addEventListener('change', syncMediaFields);
+document.getElementById('itemSave').addEventListener('click', saveItem);
+document.getElementById('itemCancel').addEventListener('click', resetItemForm);
+document.getElementById('sectionAdd').addEventListener('click', addSection);
+
+document.getElementById('sectionRows').addEventListener('click', event => {
+  const button = event.target.closest('.link-btn');
+  if (!button) return;
+  const row = button.closest('.section-row');
+  if (button.dataset.act === 'save') saveSection(row);
+  else deleteSection(row.dataset.sectionId);
+});
+
+document.getElementById('galleryRows').addEventListener('click', event => {
+  const button = event.target.closest('.link-btn');
+  if (!button) return;
+  const id = button.closest('tr').dataset.itemId;
+  if (button.dataset.act === 'edit') editItem(id);
+  else deleteItem(id);
+});
+
 function selectTab(name) {
   ['gallery', 'experience', 'members'].forEach(tab => {
     document.getElementById(`panel-${tab}`).classList.toggle('hidden', tab !== name);
@@ -346,6 +683,10 @@ function selectTab(name) {
   document.querySelectorAll('#menu .item').forEach(item => {
     item.setAttribute('aria-selected', String(item.dataset.tab === name));
   });
+  if (name === 'gallery' && !galleryLoaded) {
+    galleryLoaded = true;
+    loadGallery();
+  }
 }
 
 async function loadAccounts() {

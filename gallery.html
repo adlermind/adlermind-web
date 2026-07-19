@@ -124,6 +124,14 @@ nav {
 }
 .card-meta { display: block; font-family: 'Raleway', sans-serif; font-size: 10px; color: var(--am-muted); letter-spacing: 0.06em; }
 .gallery-note { margin-top: 16px; font-size: 11px; color: var(--am-muted); }
+.gallery-section + .gallery-section { margin-top: 44px; }
+.gallery-state { padding: 40px 0; font-size: 12.5px; color: var(--am-muted); text-align: center; }
+.gallery-state[hidden] { display: none; }
+.visibility-badge {
+  position: absolute; right: 14px; top: 14px; padding: 5px 9px;
+  background: rgba(255,255,255,0.92); color: var(--am-sage);
+  font-family: 'Raleway', sans-serif; font-size: 9px; letter-spacing: 0.12em;
+}
 
 .video-modal {
   position: fixed; inset: 0; z-index: 500; display: grid; place-items: center;
@@ -139,7 +147,13 @@ nav {
 }
 .video-frame { aspect-ratio: 16 / 9; background: #000; }
 .video-frame iframe { width: 100%; height: 100%; border: 0; display: block; }
+.video-frame img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.modal-caption { margin-top: 14px; }
+.modal-title { font-family: 'Noto Serif KR', serif; font-size: 15px; font-weight: 300; color: #fff; line-height: 1.6; }
+.modal-desc { margin-top: 8px; font-size: 12.5px; color: rgba(255,255,255,0.82); line-height: 1.85; white-space: pre-wrap; }
+.modal-desc[hidden] { display: none; }
 .modal-fallback { margin-top: 12px; text-align: right; }
+.modal-fallback[hidden] { display: none; }
 .modal-fallback a { color: #fff; font-size: 12px; text-underline-offset: 3px; }
 
 footer { background: var(--am-bg); border-top: 0.5px solid var(--am-border); padding: 48px 32px; }
@@ -197,28 +211,10 @@ footer { background: var(--am-bg); border-top: 0.5px solid var(--am-border); pad
 </header>
 
 <main class="page-body">
-  <div class="gallery-head">
-    <h2 class="gallery-heading">창립총회</h2>
-    <div class="carousel-controls" role="group" aria-label="갤러리 이동">
-      <button class="carousel-btn" id="prevBtn" type="button" aria-label="이전 항목">&#8592;</button>
-      <button class="carousel-btn" id="nextBtn" type="button" aria-label="다음 항목">&#8594;</button>
-    </div>
-  </div>
-
-  <div class="gallery-track" id="galleryTrack">
-    <button class="gallery-card" type="button" data-video-id="s9_0Zgx4tT0" aria-label="아들러협동조합 창립총회 축하영상 재생">
-      <span class="thumb">
-        <img src="https://i.ytimg.com/vi/s9_0Zgx4tT0/hqdefault.jpg" alt="" loading="lazy">
-        <span class="media-badge">VIDEO</span>
-        <span class="play-mark" aria-hidden="true">&#9654;</span>
-      </span>
-      <span class="card-body">
-        <span class="card-title">아들러협동조합 창립총회 축하영상</span>
-        <span class="card-meta">2026. 07. 13 · 2 MIN 14 SEC</span>
-      </span>
-    </button>
-  </div>
-  <p class="gallery-note">모바일에서는 화면을 좌우로 밀어 볼 수 있습니다.</p>
+  <!-- 항목은 관리자 페이지에서 등록한 데이터로 채웁니다. 코드에 사진을 적지 않습니다. -->
+  <div id="gallerySections"></div>
+  <p class="gallery-state" id="galleryState">갤러리를 불러오고 있습니다.</p>
+  <p class="gallery-note" id="galleryNote" hidden>모바일에서는 화면을 좌우로 밀어 볼 수 있습니다.</p>
 </main>
 
 <footer>
@@ -248,7 +244,11 @@ footer { background: var(--am-bg); border-top: 0.5px solid var(--am-border); pad
   <div class="modal-panel">
     <button class="modal-close" id="modalClose" type="button" aria-label="영상 닫기">&times;</button>
     <div class="video-frame" id="videoFrame"></div>
-    <div class="modal-fallback">
+    <div class="modal-caption" id="modalCaption">
+      <p class="modal-title" id="modalTitle"></p>
+      <p class="modal-desc" id="modalDesc" hidden></p>
+    </div>
+    <div class="modal-fallback" id="modalFallback">
       <a id="youtubeLink" href="https://youtu.be/s9_0Zgx4tT0" target="_blank" rel="noopener">재생되지 않으면 YouTube에서 보기</a>
     </div>
   </div>
@@ -257,29 +257,58 @@ footer { background: var(--am-bg); border-top: 0.5px solid var(--am-border); pad
 <script>
 const SB_URL = 'https://jboceiacgczkqkhqcmqu.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impib2NlaWFjZ2N6a3FraHFjbXF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI1OTg1MTYsImV4cCI6MjA5ODE3NDUxNn0.9jHLNB8PVDrWlSc5CDGz5j6ZF9yaKwrnzICvvvsFbvA';
-const track = document.getElementById('galleryTrack');
-const prevBtn = document.getElementById('prevBtn');
-const nextBtn = document.getElementById('nextBtn');
+const sb = supabase.createClient(SB_URL, SB_KEY);
+const BUCKET = 'gallery-images';
+
 const modal = document.getElementById('videoModal');
 const frame = document.getElementById('videoFrame');
 const closeBtn = document.getElementById('modalClose');
+const sectionsEl = document.getElementById('gallerySections');
+const stateEl = document.getElementById('galleryState');
+const noteEl = document.getElementById('galleryNote');
 let lastTrigger = null;
+let items = [];        // 카드가 data-index 로 참조하는 항목 배열
+const carousels = [];  // 섹션마다 하나씩. { track, prevBtn, nextBtn }
 
-function updateControls() {
-  const max = track.scrollWidth - track.clientWidth;
-  prevBtn.disabled = track.scrollLeft <= 2;
-  nextBtn.disabled = track.scrollLeft >= max - 2;
+function escapeHtml(value) {
+  return String(value ?? '').replace(/[&<>"']/g, ch =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
 }
 
-function moveGallery(direction) {
-  track.scrollBy({ left: direction * Math.max(track.clientWidth * 0.82, 320), behavior: 'smooth' });
+function updateControls(carousel) {
+  const max = carousel.track.scrollWidth - carousel.track.clientWidth;
+  carousel.prevBtn.disabled = carousel.track.scrollLeft <= 2;
+  carousel.nextBtn.disabled = carousel.track.scrollLeft >= max - 2;
 }
 
-function openVideo(button) {
-  const id = button.dataset.videoId;
+function moveGallery(carousel, direction) {
+  carousel.track.scrollBy({
+    left: direction * Math.max(carousel.track.clientWidth * 0.82, 320),
+    behavior: 'smooth'
+  });
+}
+
+function openItem(button) {
+  const item = items[Number(button.dataset.index)];
+  if (!item) return;
   lastTrigger = button;
-  frame.innerHTML = `<iframe src="https://www.youtube.com/embed/${id}?autoplay=1&rel=0" title="아들러협동조합 창립총회 축하영상" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>`;
-  document.getElementById('youtubeLink').href = `https://youtu.be/${id}`;
+
+  const fallback = document.getElementById('modalFallback');
+  if (item.media_type === 'video') {
+    frame.innerHTML = `<iframe src="https://www.youtube.com/embed/${encodeURIComponent(item.youtube_id)}?autoplay=1&rel=0" title="${escapeHtml(item.title)}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>`;
+    document.getElementById('youtubeLink').href = `https://youtu.be/${item.youtube_id}`;
+    fallback.hidden = false;
+  } else {
+    frame.innerHTML = `<img src="${escapeHtml(item.imageUrl || '')}" alt="${escapeHtml(item.title)}">`;
+    fallback.hidden = true;
+  }
+
+  document.getElementById('modalTitle').textContent = item.title;
+  const desc = document.getElementById('modalDesc');
+  desc.textContent = item.description || '';
+  desc.hidden = !item.description;
+
+  modal.setAttribute('aria-label', item.title);
   modal.hidden = false;
   document.body.classList.add('modal-open');
   closeBtn.focus();
@@ -292,13 +321,96 @@ function closeVideo() {
   if (lastTrigger) lastTrigger.focus();
 }
 
-prevBtn.addEventListener('click', () => moveGallery(-1));
-nextBtn.addEventListener('click', () => moveGallery(1));
-track.addEventListener('scroll', updateControls, { passive: true });
-window.addEventListener('resize', updateControls);
-document.querySelectorAll('.gallery-card[data-video-id]').forEach(button => {
-  button.addEventListener('click', () => openVideo(button));
-});
+function cardHtml(item, index) {
+  const thumb = item.media_type === 'video'
+    ? `https://i.ytimg.com/vi/${encodeURIComponent(item.youtube_id)}/hqdefault.jpg`
+    : item.imageUrl;
+  const label = item.media_type === 'video' ? `${item.title} 재생` : `${item.title} 크게 보기`;
+
+  return `
+    <button class="gallery-card" type="button" data-index="${index}" aria-label="${escapeHtml(label)}">
+      <span class="thumb">
+        ${thumb ? `<img src="${escapeHtml(thumb)}" alt="" loading="lazy">` : ''}
+        <span class="media-badge">${item.media_type === 'video' ? 'VIDEO' : 'PHOTO'}</span>
+        ${item.media_type === 'video' ? '<span class="play-mark" aria-hidden="true">&#9654;</span>' : ''}
+        ${item.visibility === 'members' ? '<span class="visibility-badge">MEMBERS</span>' : ''}
+      </span>
+      <span class="card-body">
+        <span class="card-title">${escapeHtml(item.title)}</span>
+        ${item.meta_text ? `<span class="card-meta">${escapeHtml(item.meta_text)}</span>` : ''}
+      </span>
+    </button>`;
+}
+
+async function loadGallery() {
+  const [sectionResult, itemResult] = await Promise.all([
+    sb.from('site_gallery_sections').select('id,title,sort_order').order('sort_order'),
+    sb.from('site_gallery')
+      .select('id,section_id,media_type,title,description,image_path,youtube_id,meta_text,visibility,sort_order')
+      .order('sort_order').order('created_at')
+  ]);
+
+  if (sectionResult.error || itemResult.error) {
+    stateEl.textContent = '갤러리를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.';
+    return;
+  }
+
+  items = itemResult.data || [];
+
+  // 사진은 비공개 버킷에 있으므로 서명 URL 을 받아 옵니다. 공개 범위 판정은 Storage 정책이 합니다.
+  await Promise.all(items.map(async item => {
+    if (item.media_type !== 'photo' || !item.image_path) return;
+    const { data } = await sb.storage.from(BUCKET).createSignedUrl(item.image_path, 3600);
+    item.imageUrl = data ? data.signedUrl : null;
+  }));
+
+  const html = (sectionResult.data || []).map(section => {
+    const cards = items
+      .map((item, index) => ({ item, index }))
+      .filter(entry => entry.item.section_id === section.id);
+    if (!cards.length) return '';   // 보여줄 항목이 없는 섹션은 그리지 않습니다.
+
+    return `
+      <section class="gallery-section">
+        <div class="gallery-head">
+          <h2 class="gallery-heading">${escapeHtml(section.title)}</h2>
+          <div class="carousel-controls" role="group" aria-label="${escapeHtml(section.title)} 갤러리 이동">
+            <button class="carousel-btn" type="button" data-dir="-1" aria-label="이전 항목">&#8592;</button>
+            <button class="carousel-btn" type="button" data-dir="1" aria-label="다음 항목">&#8594;</button>
+          </div>
+        </div>
+        <div class="gallery-track">${cards.map(entry => cardHtml(entry.item, entry.index)).join('')}</div>
+      </section>`;
+  }).join('');
+
+  if (!html) {
+    stateEl.textContent = '아직 등록된 갤러리 항목이 없습니다.';
+    return;
+  }
+
+  sectionsEl.innerHTML = html;
+  stateEl.hidden = true;
+  noteEl.hidden = false;
+
+  sectionsEl.querySelectorAll('.gallery-section').forEach(section => {
+    const carousel = {
+      track: section.querySelector('.gallery-track'),
+      prevBtn: section.querySelector('.carousel-btn[data-dir="-1"]'),
+      nextBtn: section.querySelector('.carousel-btn[data-dir="1"]')
+    };
+    carousels.push(carousel);
+    carousel.prevBtn.addEventListener('click', () => moveGallery(carousel, -1));
+    carousel.nextBtn.addEventListener('click', () => moveGallery(carousel, 1));
+    carousel.track.addEventListener('scroll', () => updateControls(carousel), { passive: true });
+    updateControls(carousel);
+  });
+
+  sectionsEl.querySelectorAll('.gallery-card').forEach(button => {
+    button.addEventListener('click', () => openItem(button));
+  });
+}
+
+window.addEventListener('resize', () => carousels.forEach(updateControls));
 closeBtn.addEventListener('click', closeVideo);
 modal.addEventListener('click', event => { if (event.target === modal) closeVideo(); });
 document.addEventListener('keydown', event => {
@@ -311,10 +423,9 @@ navHam.addEventListener('click', () => {
   navHam.setAttribute('aria-expanded', String(open));
 });
 
-updateControls();
+loadGallery();
 
 (async () => {
-  const sb = supabase.createClient(SB_URL, SB_KEY);
   const { data: { session } } = await sb.auth.getSession();
   if (!session) return;
   const res = await fetch(
