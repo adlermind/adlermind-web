@@ -26,6 +26,9 @@
   --am-gray:   #6B6B6B;
   --am-pale:   #D8D8DC;
   --am-bg:     #FAFAF8;
+  /* 주제가 바뀔 때마다 바탕색이 바뀝니다. 소개 페이지(about.html)와 같은 초저채도 파스텔 무지개를
+     쓰되, 대문은 그 앞자락(빨강·노랑·초록)만 씁니다. 소개 페이지로 넘어가면 다시 빨강부터 이어집니다. */
+  --rb-red: #FBF2F1; --rb-yellow: #FAF9EA; --rb-green: #F0F7F1;
   --am-muted:  #9a9490;
   --am-border: #e8e4e0;
   --am-white:  #ffffff;
@@ -108,30 +111,41 @@ nav {
 /* ── 마음을 알아가는 창 (히어로 안) ──
    첫 화면에서 스크롤 없이 보여야 하므로 히어로 높이를 넘기지 않게 짜맞췄습니다.
    화면이 낮은 노트북에서는 아래 media query 가 여백과 제목을 한 번 더 줄입니다. */
-.hero-experience { width: 100%; max-width: 1060px; margin-top: 26px; text-align: left; }
+/* 체험 띠는 히어로 안에 있지만 바탕색을 화면 끝까지 깔아 "여기부터는 해보는 자리"임을 눈에 보이게 나눕니다.
+   그래서 .hero 의 좌우 여백을 0으로 두고 글자 요소에만 좌우 여백을 줍니다. */
+.hero-experience {
+  width: 100%; margin-top: 26px; text-align: center;
+  background: var(--rb-red);
+  border-top: 0.5px solid var(--am-border);
+  border-bottom: 0.5px solid var(--am-border);
+  padding: 28px 32px 30px;
+}
 .hero-exp-title {
   font-family: 'Noto Serif KR', serif; font-size: 17px; font-weight: 300;
   color: var(--am-gray); margin: 0 0 16px;
 }
+#expCards { max-width: 1200px; margin: 0 auto; }
 
 /* 히어로 여백을 줄여 첫마디와 체험 띠가 함께 첫 화면에 들어가게 합니다.
    히어로는 min-height 로 화면을 채우므로, 남는 만큼은 가운데 여백이 되어 답답해지지 않습니다. */
-.hero { padding: 44px 32px; }
-.hero-sub { margin-bottom: 24px; }
+/* 좌우 여백을 0으로 두는 것은 체험 띠가 화면 끝까지 색을 깔기 위함입니다. */
+.hero { padding: 44px 0; }
+.hero-sub { margin-bottom: 24px; padding: 0 32px; }
+.hero-statement { padding: 0 32px; }
 
 /* 화면이 낮은 노트북에서는 여백과 줄간격을 줄입니다. */
 @media (max-height: 860px) {
-  .hero { padding: 30px 32px; }
+  .hero { padding: 30px 0; }
   .hero-sub { margin-bottom: 18px; }
   .hero-statement { line-height: 2; }
-  .hero-experience { margin-top: 20px; }
+  .hero-experience { margin-top: 20px; padding: 22px 32px 24px; }
 }
 /* 아주 낮은 화면(768 노트북 등)에서 첫마디 다섯 줄과 체험 띠를 함께 넣습니다. */
 @media (max-height: 720px) {
-  .hero { padding: 20px 32px; }
+  .hero { padding: 20px 0; }
   .hero-sub { margin-bottom: 10px; }
   .hero-statement { font-size: clamp(14px, 1.8vw, 17px); line-height: 1.95; }
-  .hero-experience { margin-top: 14px; }
+  .hero-experience { margin-top: 12px; padding: 14px 20px 16px; }
   .hero-exp-title { margin-bottom: 12px; }
 }
 
@@ -164,7 +178,7 @@ section { padding: 88px 32px; }
 }
 
 /* ── 아들러 섹션 ── */
-#adler { background: var(--am-white); }
+#adler { background: var(--rb-yellow); }
 .adler-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -191,7 +205,7 @@ section { padding: 88px 32px; }
 }
 
 /* ── 소식 섹션 ── */
-#news { background: var(--am-white); }
+#news { background: var(--rb-green); }
 .news-list { display: flex; flex-direction: column; gap: 0; }
 .news-item {
   display: flex; align-items: flex-start; gap: 20px;
