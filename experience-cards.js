@@ -14,28 +14,47 @@
 .exp-card {
   flex: 0 0 262px; scroll-snap-align: start;
   display: flex; flex-direction: column; text-align: left;
-  background: #fff; border: 0.5px solid #e8e4e0; padding: 24px 22px;
-  color: #6B6B6B; text-decoration: none; transition: border-color .15s;
+  background: #fff; border: 0.5px solid #e8e4e0;
+  color: #6B6B6B; text-decoration: none;
+  transition: border-color .15s, transform .15s;
+  overflow: hidden;
 }
-.exp-card:hover { border-color: #8FBFB8; }
+.exp-card:hover { border-color: #8FBFB8; transform: translateY(-2px); }
+/* 섬네일. 16:9 자리를 늘 차지하므로 그림이 늦게 떠도 카드가 덜컹이지 않습니다. */
+.exp-card-thumb {
+  display: block; width: 100%; aspect-ratio: 16 / 9;
+  object-fit: cover; background: #f4f2ef;
+}
+.exp-card-body { padding: 20px 20px 22px; display: flex; flex-direction: column; flex: 1; }
 .exp-card-label {
   font-family: 'Raleway', sans-serif; font-size: 9.5px; font-weight: 300;
   letter-spacing: .22em; color: #9a9490; text-transform: uppercase;
 }
 .exp-card-title {
   font-family: 'Noto Serif KR', serif; font-size: 16px; font-weight: 300;
-  color: #6B6B6B; margin: 14px 0 0; line-height: 1.6;
+  color: #6B6B6B; margin: 10px 0 0; line-height: 1.6;
 }
-.exp-card-summary { font-size: 12.5px; line-height: 1.9; color: #9a9490; margin: 10px 0 0; }
+.exp-card-summary { font-size: 12.5px; line-height: 1.9; color: #9a9490; margin: 8px 0 0; }
 .exp-card-go {
-  font-size: 11.5px; color: #8FBFB8; margin: 18px 0 0;
-  letter-spacing: .04em; padding-top: 14px; border-top: 0.5px solid #f0ece8;
+  font-size: 11.5px; color: #8FBFB8; margin: 16px 0 0; letter-spacing: .04em;
 }
+/* 그림이 없는 카드는 위가 허전하지 않게 여백을 조금 더 줍니다. */
+.exp-card-plain .exp-card-body { padding-top: 26px; }
 .exp-empty { font-size: 12.5px; line-height: 2; color: #9a9490; }
-@media (max-width: 600px) { .exp-card { flex-basis: 232px; padding: 20px 18px; } }
+/* 대문 히어로용. 첫 화면에 단추까지 함께 들어가야 해서 한 뼘 작습니다. */
+.exp-compact .exp-card { flex: 0 0 216px; }
+.exp-compact .exp-card-body { padding: 16px 16px 18px; }
+.exp-compact .exp-card-title { font-size: 15px; margin-top: 8px; }
+.exp-compact .exp-card-summary { font-size: 12px; margin-top: 6px; }
+.exp-compact .exp-card-go { margin-top: 12px; }
+/* 대문 히어로가 아주 낮은 화면에 들어가야 할 때는 카드 요약을 접습니다.
+   그림과 제목만으로도 무엇인지 알 수 있고, 눌러 들어가면 소개가 다시 나옵니다. */
+@media (max-height: 720px) { .exp-compact .exp-card-summary { display: none; } }
+@media (max-width: 600px) { .exp-card, .exp-compact .exp-card { flex-basis: 232px; } }
 `;
 
   const ROOM_LABEL = { counseling: 'COUNSELING', education: 'EDUCATION' };
+  const THUMB_BUCKET = 'experience-thumbs';
 
   function escapeHtml(value) {
     return String(value ?? '').replace(/[&<>"']/g, ch =>
@@ -56,12 +75,22 @@
     const href = isLink ? item.link_url : `experience.html?key=${encodeURIComponent(item.experience_key)}`;
     const target = isLink ? ' target="_blank" rel="noopener noreferrer"' : '';
 
+    // 섬네일 버킷은 공개라 주소로 바로 열립니다. 서명 URL 을 받지 않으므로
+    // 대문 첫 화면에서 그림마다 요청이 붙지 않고 브라우저 캐시가 그대로 듣습니다.
+    const thumb = item.thumb_path
+      ? `<img class="exp-card-thumb" src="${SUPABASE_URL}/storage/v1/object/public/${THUMB_BUCKET}/${item.thumb_path}"
+             alt="" loading="lazy">`
+      : '';
+
     return `
-      <a class="exp-card" href="${escapeHtml(href)}"${target}>
-        <span class="exp-card-label">${ROOM_LABEL[item.placement] || 'EXPERIENCE'}</span>
-        <h3 class="exp-card-title">${escapeHtml(item.title)}</h3>
-        ${item.summary ? `<p class="exp-card-summary">${escapeHtml(item.summary)}</p>` : ''}
-        <p class="exp-card-go">${isLink ? '바로 가기 &rarr;' : '해보기 &rarr;'}</p>
+      <a class="exp-card${thumb ? '' : ' exp-card-plain'}" href="${escapeHtml(href)}"${target}>
+        ${thumb}
+        <span class="exp-card-body">
+          <span class="exp-card-label">${ROOM_LABEL[item.placement] || 'EXPERIENCE'}</span>
+          <span class="exp-card-title">${escapeHtml(item.title)}</span>
+          ${item.summary ? `<span class="exp-card-summary">${escapeHtml(item.summary)}</span>` : ''}
+          <span class="exp-card-go">${isLink ? '바로 가기 &rarr;' : '해보기 &rarr;'}</span>
+        </span>
       </a>`;
   }
 
@@ -73,7 +102,7 @@
     if (!host) return;
 
     let query = `${SUPABASE_URL}/rest/v1/experiences` +
-      `?select=experience_key,title,summary,placement,content_type,link_url,sort_order` +
+      `?select=experience_key,title,summary,placement,content_type,link_url,thumb_path,sort_order` +
       `&order=sort_order.asc&order=created_at.asc`;
     query += options.placement
       ? `&placement=eq.${options.placement}`
@@ -94,7 +123,8 @@
     }
 
     injectStyle();
-    host.innerHTML = `<div class="exp-strip"><div class="exp-strip-scroll">${items.map(cardHtml).join('')}</div></div>`;
+    host.innerHTML = `<div class="exp-strip${options.compact ? ' exp-compact' : ''}">` +
+      `<div class="exp-strip-scroll">${items.map(cardHtml).join('')}</div></div>`;
     if (options.onReady) options.onReady(items.length);
   }
 

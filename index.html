@@ -131,6 +131,50 @@ nav {
 }
 .btn-outline:hover { border-color: var(--am-sage); color: var(--am-sage); }
 
+/* ── 마음을 알아가는 창 (히어로 안) ──
+   첫 화면에서 스크롤 없이 보여야 하므로 히어로 높이를 넘기지 않게 짜맞췄습니다.
+   화면이 낮은 노트북에서는 아래 media query 가 여백과 제목을 한 번 더 줄입니다. */
+.hero-experience { width: 100%; max-width: 1060px; margin-top: 26px; text-align: left; }
+.hero-exp-title {
+  font-family: 'Noto Serif KR', serif; font-size: 17px; font-weight: 300;
+  color: var(--am-gray); margin: 0;
+}
+.hero-exp-desc { font-size: 12.5px; color: var(--am-muted); line-height: 1.9; margin: 6px 0 16px; }
+.hero-btns { margin-top: 20px; }
+
+/* 히어로 여백을 줄여 체험 띠와 단추까지 첫 화면에 넣습니다.
+   히어로는 min-height 로 화면을 채우므로, 남는 만큼은 가운데 여백이 되어 답답해지지 않습니다. */
+.hero { padding: 44px 32px; }
+.hero-sub { margin-bottom: 16px; }
+.hero-title { margin-bottom: 14px; }
+.hero-desc { margin-bottom: 24px; }
+
+/* 화면이 더 낮은 노트북에서는 글자까지 한 번 더 줄입니다. */
+@media (max-height: 860px) {
+  .hero { padding: 30px 32px; }
+  .hero-title { font-size: clamp(22px, 3.6vw, 30px); margin-bottom: 12px; }
+  .hero-desc { font-size: 13px; margin-bottom: 18px; }
+  .hero-experience { margin-top: 20px; }
+  .hero-btns { margin-top: 16px; }
+}
+
+/* 아주 낮은 화면(768 노트북 등)에서는 다 들어갈 자리가 없어 무언가는 접어야 합니다.
+   조합을 소개하는 본문 글은 지키고, 띠 설명과 카드 요약만 접습니다.
+   제목과 그림만으로도 무엇인지 알 수 있기 때문입니다. */
+@media (max-height: 720px) {
+  .hero { padding: 20px 32px; }
+  .hero-sub { margin-bottom: 10px; }
+  .hero-title { font-size: clamp(20px, 3vw, 26px); margin-bottom: 10px; }
+  .hero-desc { font-size: 12.5px; line-height: 1.7; margin-bottom: 14px; }
+  .hero-experience { margin-top: 14px; }
+  .hero-exp-desc { display: none; }
+  .hero-exp-title { margin-bottom: 12px; }
+  .hero-btns { margin-top: 12px; }
+}
+@media (max-width: 600px) {
+  .hero-desc br { display: none; }
+}
+
 /* ── 섹션 공통 ── */
 section { padding: 88px 32px; }
 .section-inner { max-width: 900px; margin: 0 auto; }
@@ -283,6 +327,16 @@ footer {
     사회적 관심과 공동체 감각을 바탕으로<br>
     심리상담과 교육을 함께 만들어갑니다.
   </p>
+  <!-- 마음을 알아가는 창 · 2-3
+       상담의 방과 배움의 방에 걸어 둔 체험이 여기에 옆으로 늘어섭니다.
+       스크롤하지 않아도 첫 화면에서 바로 보이도록 히어로 안에 두었습니다.
+       걸린 체험이 없으면 이 자리는 나타나지 않고 아래 두 단추만 보입니다. -->
+  <div class="hero-experience hidden" id="experience">
+    <h2 class="hero-exp-title">마음을 알아가는 창</h2>
+    <p class="hero-exp-desc">설명을 읽기 전에 먼저 해보시는 자리입니다. 로그인 없이 해보실 수 있습니다.</p>
+    <div id="expCards"></div>
+  </div>
+
   <div class="hero-btns">
     <a class="btn-primary" href="counseling.html">상담 안내</a>
     <a class="btn-outline" href="about.html">조합 소개</a>
@@ -290,20 +344,6 @@ footer {
 </section>
 
 <hr class="divider-sage">
-
-<!-- SECTION 01-1: 체험해 보기 · 2-3
-     상담의 방과 배움의 방에 걸어 둔 체험이 모두 여기에 옆으로 늘어섭니다.
-     걸린 체험이 없으면 이 자리는 나타나지 않습니다. -->
-<section id="experience" class="hidden">
-  <div class="section-inner">
-    <div class="section-label">EXPERIENCE</div>
-    <h2 class="section-title">체험해 보기</h2>
-    <p class="section-desc">
-      설명을 읽기 전에 먼저 해보시는 자리입니다. 로그인 없이 해보실 수 있습니다.
-    </p>
-    <div id="expCards"></div>
-  </div>
-</section>
 
 <!-- SECTION 02: 왜 아들러심리학인가 -->
 <section id="adler">
@@ -444,8 +484,10 @@ loadNews();
 <script src="experience-cards.js"></script>
 <script>
 // placement 를 주지 않으면 상담·배움에 걸린 체험이 모두 옵니다.
+// compact 는 히어로 안에 들어가는 작은 카드입니다.
 AMExperienceCards.render({
   into: 'expCards',
+  compact: true,
   onReady: () => document.getElementById('experience').classList.remove('hidden')
 });
 </script>

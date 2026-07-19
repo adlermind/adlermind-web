@@ -222,6 +222,16 @@ tbody tr[aria-selected="true"]{background:#f4faf9}
         </div>
 
         <div class="field">
+          <label class="label" for="expThumb">섬네일</label>
+          <input id="expThumb" type="file" accept="image/*">
+          <p class="hint" id="expThumbHint">
+            카드에 뜨는 그림입니다. <strong>가로 800 &times; 세로 450 (16:9)</strong> 로 만들어 주세요.
+            더 큰 그림은 자동으로 줄여서 올립니다. 넣지 않으면 글자만 있는 카드가 됩니다.
+            고칠 때 파일을 고르지 않으면 지금 그림을 그대로 둡니다.
+          </p>
+        </div>
+
+        <div class="field">
           <label class="label" for="expPlacement">노출 위치</label>
           <select id="expPlacement">
             <option value="counseling">상담의 방 — counseling.html</option>
@@ -288,7 +298,7 @@ tbody tr[aria-selected="true"]{background:#f4faf9}
           <table>
             <thead>
               <tr>
-                <th>순서</th><th>제목</th><th>이름표</th><th>갈래</th><th>노출 위치</th><th></th>
+                <th>순서</th><th>섬네일</th><th>제목</th><th>이름표</th><th>갈래</th><th>노출 위치</th><th></th>
               </tr>
             </thead>
             <tbody id="expRows"></tbody>
@@ -302,8 +312,9 @@ tbody tr[aria-selected="true"]{background:#f4faf9}
         <h3 class="subpanel-title">옮기기</h3>
         <p class="hint" style="margin-top:0">
           체험 한 건을 글자로 내보내 반대편 홈페이지 관리자 화면에 붙여넣으면 그대로 옮겨집니다.
-          이름표·제목·소개·본문·순서가 넘어가고, <strong>노출 위치와 참여 기록은 넘어가지 않습니다</strong> —
-          방 구조는 기관마다 다르고 응답은 섞지 않기 때문입니다.
+          이름표·제목·소개·본문·순서가 넘어가고, <strong>노출 위치와 섬네일과 참여 기록은 넘어가지 않습니다</strong> —
+          방 구조는 기관마다 다르고, 그림은 각 홈페이지 저장소에 따로 있으며, 응답은 섞지 않기 때문입니다.
+          옮긴 뒤 섬네일은 그쪽 기관 결에 맞게 새로 올리시면 됩니다.
         </p>
         <div class="field">
           <label class="label" for="expTransfer">내보낸 글</label>
@@ -559,13 +570,14 @@ const JPEG_QUALITY = 0.85;
 
 // 휴대폰 사진은 5~10MB 라 그대로 두면 갤러리 여는 속도가 느려집니다.
 // 긴 변이 MAX_EDGE 보다 크면 줄여서 올립니다. 작은 사진은 원본 그대로 둡니다.
-async function shrinkImage(file) {
+// maxEdge 를 주지 않으면 갤러리 기준(1600px)입니다. 체험 섬네일은 더 작게 줄여 씁니다.
+async function shrinkImage(file, maxEdge) {
   if (!/^image\/(jpeg|png|webp)$/.test(file.type)) return file;   // GIF 등은 건드리지 않습니다.
 
   try {
     // 휴대폰 사진이 눕지 않도록 EXIF 회전을 반영해 읽습니다.
     const bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' });
-    const scale = Math.min(1, MAX_EDGE / Math.max(bitmap.width, bitmap.height));
+    const scale = Math.min(1, (maxEdge || MAX_EDGE) / Math.max(bitmap.width, bitmap.height));
     if (scale === 1) { bitmap.close(); return file; }
 
     const canvas = document.createElement('canvas');
@@ -826,6 +838,8 @@ document.getElementById('galleryRows').addEventListener('click', event => {
    갤러리와 같은 자리입니다. 여기서 등록하면 지정한 방과 대문에 그대로 나타납니다.
    노출 위치와 공개 여부는 placement 한 곳에만 있습니다. */
 const PLACEMENT_TEXT = { counseling: '상담의 방', education: '배움의 방', hidden: '보관' };
+const THUMB_BUCKET = 'experience-thumbs';
+const THUMB_EDGE = 800;      // 카드에 260px 로 뜨므로 800px 이면 고화질 화면에서도 또렷합니다.
 
 let experiences = [];
 let editingExpId = null;   // null 이면 새 체험 등록, 아니면 그 체험을 고치는 중
@@ -837,7 +851,7 @@ function expStatus(message) {
 
 async function loadExperiences() {
   const { data, error } = await client.from('experiences')
-    .select('id,experience_key,title,summary,placement,content_type,body_html,link_url,map_region,sort_order')
+    .select('id,experience_key,title,summary,placement,content_type,body_html,link_url,thumb_path,map_region,sort_order')
     .order('sort_order').order('created_at');
 
   if (error) {
@@ -851,9 +865,14 @@ async function loadExperiences() {
 function renderExpTable() {
   document.getElementById('expEmpty').classList.toggle('hidden', experiences.length > 0);
 
+  const thumbUrl = path => `${auth.SUPABASE_URL}/storage/v1/object/public/${THUMB_BUCKET}/${path}`;
+
   document.getElementById('expRows').innerHTML = experiences.map(item => `
     <tr data-exp-id="${item.id}">
       <td>${item.sort_order}</td>
+      <td>${item.thumb_path
+        ? `<img src="${thumbUrl(item.thumb_path)}" alt="" style="width:72px;height:41px;object-fit:cover;display:block;border:1px solid #eeeae6">`
+        : '<span class="muted">없음</span>'}</td>
       <td>${escapeHtml(item.title)}</td>
       <td><span class="muted">${escapeHtml(item.experience_key)}</span></td>
       <td>${item.content_type === 'link' ? '바깥 링크' : 'HTML'}</td>
@@ -880,6 +899,7 @@ function resetExpForm() {
     document.getElementById(id).value = '';
   });
   document.getElementById('expFile').value = '';
+  document.getElementById('expThumb').value = '';
   document.getElementById('expKey').readOnly = false;
   document.getElementById('expType').value = 'html';
   document.getElementById('expPlacement').value = 'counseling';
@@ -907,8 +927,11 @@ function editExperience(id) {
   document.getElementById('expRegion').value = item.map_region || '';
   document.getElementById('expOrder').value = item.sort_order;
   document.getElementById('expFile').value = '';
+  document.getElementById('expThumb').value = '';
   syncExpFields();
-  expStatus('고치는 중입니다.');
+  expStatus(item.thumb_path
+    ? '고치는 중입니다. 섬네일을 새로 고르지 않으면 지금 그림을 그대로 둡니다.'
+    : '고치는 중입니다. 아직 섬네일이 없습니다.');
   document.getElementById('panel-experience').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
@@ -932,6 +955,23 @@ async function saveExperience() {
 
   expStatus('저장하고 있습니다.');
 
+  const current = editingExpId ? experiences.find(entry => entry.id === editingExpId) : null;
+  const thumbFile = document.getElementById('expThumb').files[0];
+  let thumbPath = current ? current.thumb_path : null;
+
+  if (thumbFile) {
+    const upload = await shrinkImage(thumbFile, THUMB_EDGE);
+    if (upload !== thumbFile) {
+      expStatus(`섬네일을 줄여서 올리고 있습니다. (${Math.round(thumbFile.size / 1024)}KB → ${Math.round(upload.size / 1024)}KB)`);
+    }
+    const extension = (upload.type.split('/')[1] || 'jpg').replace('jpeg', 'jpg');
+    const path = `thumbs/${crypto.randomUUID()}.${extension}`;
+    const { error: uploadError } = await client.storage
+      .from(THUMB_BUCKET).upload(path, upload, { contentType: upload.type });
+    if (uploadError) { expStatus('섬네일을 올리지 못했습니다. ' + uploadError.message); return; }
+    thumbPath = path;
+  }
+
   const row = {
     experience_key: key,
     title,
@@ -940,6 +980,7 @@ async function saveExperience() {
     content_type: contentType,
     body_html: contentType === 'html' ? bodyHtml : null,
     link_url: contentType === 'link' ? linkUrl : null,
+    thumb_path: thumbPath,
     map_region: document.getElementById('expRegion').value.trim() || null,
     sort_order: Number(document.getElementById('expOrder').value) || 0
   };
@@ -955,6 +996,11 @@ async function saveExperience() {
     return;
   }
 
+  // 섬네일을 새 그림으로 바꿨다면 이전 그림은 저장소에서 지웁니다.
+  if (current && current.thumb_path && current.thumb_path !== thumbPath) {
+    await client.storage.from(THUMB_BUCKET).remove([current.thumb_path]);
+  }
+
   resetExpForm();
   expStatus('저장했습니다.');
   await loadExperiences();
@@ -967,6 +1013,7 @@ async function deleteExperience(id) {
 
   const { error } = await client.from('experiences').delete().eq('id', id);
   if (error) { expStatus('지우지 못했습니다. ' + error.message); return; }
+  if (item.thumb_path) await client.storage.from(THUMB_BUCKET).remove([item.thumb_path]);
   if (editingExpId === id) resetExpForm();
   expStatus('지웠습니다.');
   await loadExperiences();
