@@ -134,6 +134,7 @@ nav {
 /* ── 섹션 공통 ── */
 section { padding: 88px 32px; }
 .section-inner { max-width: 900px; margin: 0 auto; }
+.hidden { display: none; }
 .section-label {
   font-family: 'Raleway', sans-serif;
   font-size: 10px; font-weight: 300;
@@ -290,6 +291,20 @@ footer {
 
 <hr class="divider-sage">
 
+<!-- SECTION 01-1: 체험해 보기 · 2-3
+     상담의 방과 배움의 방에 걸어 둔 체험이 모두 여기에 옆으로 늘어섭니다.
+     걸린 체험이 없으면 이 자리는 나타나지 않습니다. -->
+<section id="experience" class="hidden">
+  <div class="section-inner">
+    <div class="section-label">EXPERIENCE</div>
+    <h2 class="section-title">체험해 보기</h2>
+    <p class="section-desc">
+      설명을 읽기 전에 먼저 해보시는 자리입니다. 로그인 없이 해보실 수 있습니다.
+    </p>
+    <div id="expCards"></div>
+  </div>
+</section>
+
 <!-- SECTION 02: 왜 아들러심리학인가 -->
 <section id="adler">
   <div class="section-inner">
@@ -425,6 +440,14 @@ loadNews();
     if (el) { el.textContent = u.nickname + '님의 Life Style'; el.href = 'mypage.html'; }
   });
 })();
+</script>
+<script src="experience-cards.js"></script>
+<script>
+// placement 를 주지 않으면 상담·배움에 걸린 체험이 모두 옵니다.
+AMExperienceCards.render({
+  into: 'expCards',
+  onReady: () => document.getElementById('experience').classList.remove('hidden')
+});
 </script>
 <script src="site-session.js"></script>
 </body>

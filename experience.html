@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<!-- 체험 실행 화면 · 2-3
+     체험 하나를 iframe 안에서 실행합니다. 실행하는 자리를 한 곳에 모아 두었으므로
+     체험이 늘어나도 이 파일 하나만 있으면 됩니다.
+     기관 색은 여기서 넣어 줍니다. 체험 HTML 은 색을 var(--exp-*) 로만 부르므로
+     심지로 옮길 때 파일을 고치지 않고 이 값만 바꾸면 됩니다. -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<title>체험 · ADLER MIND 협동조합</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400&family=Noto+Sans+KR:wght@300;400&family=Raleway:wght@200;300;400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --am-rose: #E8929A; --am-sage: #8FBFB8; --am-gray: #6B6B6B;
+  --am-bg: #FAFAF8; --am-muted: #9a9490; --am-border: #e8e4e0; --am-white: #ffffff;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Noto Sans KR', sans-serif; font-weight: 300; color: var(--am-gray); background: var(--am-white); min-height: 100vh; display: flex; flex-direction: column; }
+nav {
+  position: sticky; top: 0; z-index: 100; background: var(--am-white);
+  border-bottom: 0.5px solid var(--am-border); padding: 0 32px;
+  display: flex; align-items: center; gap: 32px; height: 60px;
+}
+.nav-logo img { height: 40px; display: block; margin-top: 4px; }
+.nav-links { display: flex; align-items: center; gap: 18px; flex: 1; }
+.nav-links a { font-size: 13px; color: var(--am-gray); text-decoration: none; transition: color 0.15s; }
+.nav-links a:hover, .nav-links a.active { color: var(--am-sage); }
+.nav-login-link { margin-left: auto; font-size: 12px; color: var(--am-muted); text-decoration: none; letter-spacing: 0.04em; transition: color 0.15s; white-space: nowrap; }
+.nav-login-link:hover { color: var(--am-sage); }
+.nav-login-mobile { display: none; }
+.nav-member-btn { padding: 7px 18px; background: var(--am-sage); color: #fff; border: none; border-radius: 2px; font-size: 12px; font-weight: 300; cursor: pointer; text-decoration: none; transition: background 0.15s; white-space: nowrap; }
+.nav-member-btn:hover { background: #6fa8a0; }
+.nav-ham { display: none; border: none; background: none; cursor: pointer; font-size: 22px; color: var(--am-gray); }
+
+main { flex: 1; background: var(--am-bg); padding: 44px 32px 80px; }
+.inner { max-width: 900px; margin: 0 auto; }
+.crumb { font-size: 12px; color: var(--am-muted); text-decoration: none; }
+.crumb:hover { color: var(--am-sage); }
+.exp-label { font-family: 'Raleway', sans-serif; font-size: 10px; font-weight: 200; letter-spacing: 0.3em; color: var(--am-muted); text-transform: uppercase; margin-top: 26px; }
+.exp-title { font-family: 'Noto Serif KR', serif; font-size: 22px; font-weight: 300; margin-top: 14px; }
+.exp-summary { font-size: 13px; line-height: 2; color: var(--am-muted); margin-top: 12px; }
+.stage { margin-top: 30px; background: var(--am-white); border: 0.5px solid var(--am-border); }
+.stage iframe { display: block; width: 100%; border: 0; min-height: 460px; }
+.note { margin-top: 22px; padding: 18px 20px; background: var(--am-white); border: 0.5px solid var(--am-border); font-size: 12.5px; line-height: 2; color: var(--am-muted); }
+.note strong { color: var(--am-gray); font-weight: 400; }
+.state { padding: 70px 20px; text-align: center; font-size: 13px; line-height: 2; color: var(--am-muted); }
+.hidden { display: none; }
+@media (max-width: 900px) {
+  nav { padding: 0 20px; }
+  .nav-links { display: none; }
+  .nav-links.open { display: flex; flex-direction: column; position: fixed; top: 60px; left: 0; right: 0; background: var(--am-white); border-bottom: 0.5px solid var(--am-border); padding: 20px; gap: 16px; z-index: 99; }
+  .nav-ham { display: block; margin-left: auto; }
+  .nav-login-link { display: none; }
+  .nav-login-mobile { display: block !important; }
+  main { padding: 32px 20px 60px; }
+}
+</style>
+</head>
+<body>
+<nav>
+  <a class="nav-logo" href="index.html"><img src="image/adlermind_logo.png" alt="ADLER MIND 협동조합"></a>
+  <div class="nav-links" id="navLinks">
+    <a href="about.html">협동조합 소개</a>
+    <a href="counseling.html">심리상담</a>
+    <a href="education.html">교육·연수</a>
+    <a href="news.html">소식</a>
+    <a href="gallery.html">갤러리</a>
+    <a href="contact.html">문의</a>
+    <a id="navLoginMobile" class="nav-login-mobile" href="login.html">로그인</a>
+  </div>
+  <a id="navLoginLink" class="nav-login-link" href="login.html">로그인</a>
+  <a class="nav-member-btn" href="members.html">조합원 마당</a>
+  <button class="nav-ham" id="navHam" aria-label="메뉴">&#9776;</button>
+</nav>
+
+<main>
+  <div class="inner">
+    <p class="state" id="state">체험을 불러오고 있습니다.</p>
+
+    <div class="hidden" id="content">
+      <a class="crumb" id="crumb" href="index.html">&larr; 돌아가기</a>
+      <div class="exp-label" id="expLabel">EXPERIENCE</div>
+      <h1 class="exp-title" id="expTitle"></h1>
+      <p class="exp-summary hidden" id="expSummary"></p>
+
+      <div class="stage">
+        <iframe id="stage" title="체험 화면"></iframe>
+      </div>
+
+      <p class="note hidden" id="doneNote"></p>
+    </div>
+  </div>
+</main>
+
+<script>
+const SB_URL = 'https://jboceiacgczkqkhqcmqu.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impib2NlaWFjZ2N6a3FraHFjbXF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI1OTg1MTYsImV4cCI6MjA5ODE3NDUxNn0.9jHLNB8PVDrWlSc5CDGz5j6ZF9yaKwrnzICvvvsFbvA';
+
+document.getElementById('navHam').addEventListener('click', () => {
+  document.getElementById('navLinks').classList.toggle('open');
+});
+
+/* 기관 색과 글꼴. 체험 HTML 은 이 이름으로만 색을 부릅니다.
+   심지로 옮길 때는 이 값만 그쪽 브랜드로 바꾸면 되고 체험 파일은 그대로 씁니다. */
+const SKIN = `
+:root {
+  --exp-accent: #8FBFB8;
+  --exp-accent-soft: #f4faf9;
+  --exp-rose: #E8929A;
+  --exp-ink: #6B6B6B;
+  --exp-muted: #9a9490;
+  --exp-bg: #FAFAF8;
+  --exp-white: #ffffff;
+  --exp-border: #e8e4e0;
+  --exp-serif: 'Noto Serif KR', serif;
+  --exp-sans: 'Noto Sans KR', sans-serif;
+}
+html, body { margin: 0; padding: 0; background: transparent; }
+`;
+
+const ROOM = {
+  counseling: { label: 'COUNSELING', back: 'counseling.html', name: '심리상담' },
+  education:  { label: 'EDUCATION',  back: 'education.html',  name: '교육·연수' }
+};
+
+function showState(message) {
+  document.getElementById('state').textContent = message;
+  document.getElementById('state').classList.remove('hidden');
+}
+
+// srcdoc 으로 넣은 화면은 이 페이지와 같은 자리로 취급되므로 안쪽 높이를 읽어 따라갈 수 있습니다.
+function followHeight(frame) {
+  const doc = frame.contentDocument;
+  if (!doc) return;
+  const grow = () => {
+    const height = Math.max(doc.documentElement.scrollHeight, doc.body ? doc.body.scrollHeight : 0);
+    if (height) frame.style.height = (height + 8) + 'px';
+  };
+  grow();
+  if (window.ResizeObserver && doc.body) new ResizeObserver(grow).observe(doc.body);
+  // 그림이 늦게 뜨면 높이가 한 번 더 바뀝니다.
+  frame.contentWindow.addEventListener('load', grow);
+  setTimeout(grow, 400);
+  setTimeout(grow, 1500);
+}
+
+// 체험이 끝났다고 알려 오면 받습니다.
+// 지금은 잠시 보관만 하고, 계정에 저장하는 흐름은 3주차 [3-3] 에서 잇습니다.
+window.addEventListener('message', event => {
+  const data = event.data;
+  if (!data || data.type !== 'am-experience-done') return;
+
+  const key = new URLSearchParams(location.search).get('key');
+  try {
+    sessionStorage.setItem('am-experience-' + key, JSON.stringify({
+      experience_key: key,
+      result: data.result || null,
+      response: data.response || null,
+      note: data.note || null,
+      finished_at: new Date().toISOString()
+    }));
+  } catch (error) { /* 보관에 실패해도 체험 자체는 끝난 것으로 둡니다. */ }
+
+  const note = document.getElementById('doneNote');
+  note.innerHTML = '<strong>결과가 이 창에 잠시 담겼습니다.</strong> ' +
+    '내 계정에 저장하는 기능은 준비 중입니다. 창을 닫으면 결과는 사라집니다.';
+  note.classList.remove('hidden');
+});
+
+(async () => {
+  const key = new URLSearchParams(location.search).get('key');
+  if (!key) { showState('어떤 체험인지 알 수 없습니다. 돌아가서 다시 골라 주세요.'); return; }
+
+  let item = null;
+  try {
+    const response = await fetch(
+      `${SB_URL}/rest/v1/experiences?experience_key=eq.${encodeURIComponent(key)}` +
+      `&select=experience_key,title,summary,placement,content_type,body_html,link_url`,
+      { headers: { apikey: SB_KEY } }
+    );
+    if (response.ok) [item] = await response.json();
+  } catch (error) { item = null; }
+
+  if (!item) { showState('체험을 찾지 못했습니다. 아직 공개되지 않았거나 내려간 체험일 수 있습니다.'); return; }
+
+  // 바깥 링크로 등록된 체험은 실행 화면을 거치지 않습니다.
+  if (item.content_type === 'link') { location.replace(item.link_url); return; }
+
+  const room = ROOM[item.placement];
+  document.getElementById('expLabel').textContent = room ? room.label : 'EXPERIENCE';
+  document.getElementById('expTitle').textContent = item.title;
+  document.title = item.title + ' · ADLER MIND 협동조합';
+
+  const crumb = document.getElementById('crumb');
+  if (room) {
+    crumb.href = room.back;
+    crumb.innerHTML = '&larr; ' + room.name + ' 으로 돌아가기';
+  }
+
+  if (item.summary) {
+    document.getElementById('expSummary').textContent = item.summary;
+    document.getElementById('expSummary').classList.remove('hidden');
+  }
+
+  const frame = document.getElementById('stage');
+  frame.setAttribute('title', item.title);
+  frame.addEventListener('load', () => followHeight(frame));
+  frame.srcdoc = '<style>' + SKIN + '</style>' + item.body_html;
+
+  document.getElementById('state').classList.add('hidden');
+  document.getElementById('content').classList.remove('hidden');
+})();
+</script>
+<script src="site-session.js"></script>
+</body>
+</html>

@@ -61,6 +61,16 @@ nav {
 }
 .back-link { font-size: 12px; color: var(--am-muted); text-decoration: none; }
 .back-link:hover { color: var(--am-sage); }
+.hidden { display: none; }
+.exp-section { flex: 1; background: var(--am-bg); padding: 64px 32px 80px; }
+.exp-inner { max-width: 1000px; margin: 0 auto; }
+.exp-section-label {
+  font-family: 'Raleway', sans-serif; font-size: 10px; font-weight: 200;
+  letter-spacing: 0.3em; color: var(--am-muted); text-transform: uppercase;
+}
+.exp-section-title { font-family: 'Noto Serif KR', serif; font-size: 22px; font-weight: 300; margin: 16px 0 0; }
+.exp-section-desc { font-size: 13px; line-height: 2; color: var(--am-muted); margin: 12px 0 30px; }
+@media (max-width: 900px) { .exp-section { padding: 44px 20px 60px; } }
 @media (max-width: 900px) {
   nav { padding: 0 20px; }
   .nav-links { display: none; }
@@ -87,7 +97,20 @@ nav {
   <a class="nav-member-btn" href="members.html">조합원 마당</a>
   <button class="nav-ham" id="navHam">&#9776;</button>
 </nav>
-<div class="coming-wrap">
+<!-- 체험 목록. 관리자 페이지에서 상담의 방으로 걸어 둔 체험이 여기에 나타납니다.
+     아직 걸린 체험이 없으면 아래 준비 중 안내가 그대로 보입니다. -->
+<section class="exp-section hidden" id="expSection">
+  <div class="exp-inner">
+    <div class="exp-section-label">COUNSELING</div>
+    <h1 class="exp-section-title">상담의 방</h1>
+    <p class="exp-section-desc">
+      설명 대신 먼저 해보시는 자리입니다. 로그인 없이 해보실 수 있습니다.
+    </p>
+    <div id="expCards"></div>
+  </div>
+</section>
+
+<div class="coming-wrap" id="comingWrap">
   <div class="coming-label">COUNSELING</div>
   <div class="coming-line"></div>
   <h1 class="coming-title">심리상담 페이지를 준비 중입니다</h1>
@@ -121,6 +144,17 @@ document.getElementById('navHam').addEventListener('click', () => {
     if (el) { el.textContent = u.nickname + '님의 Life Style'; el.href = 'mypage.html'; }
   });
 })();
+</script>
+<script src="experience-cards.js"></script>
+<script>
+AMExperienceCards.render({
+  into: 'expCards',
+  placement: 'counseling',
+  onReady: () => {
+    document.getElementById('expSection').classList.remove('hidden');
+    document.getElementById('comingWrap').classList.add('hidden');
+  }
+});
 </script>
 <script src="site-session.js"></script>
 </body>
