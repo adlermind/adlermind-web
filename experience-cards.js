@@ -41,13 +41,19 @@
 /* 그림이 없는 카드는 위가 허전하지 않게 여백을 조금 더 줍니다. */
 .exp-card-plain .exp-card-body { padding-top: 26px; }
 .exp-empty { font-size: 12.5px; line-height: 2; color: #9a9490; }
-/* 대문 히어로용. 첫 화면에 단추까지 함께 들어가야 해서 한 뼘 작습니다. */
-.exp-compact .exp-card { flex: 0 0 216px; }
-.exp-compact .exp-card-body { padding: 16px 16px 18px; }
-.exp-compact .exp-card-title { font-size: 15px; margin-top: 8px; }
-.exp-compact .exp-card-summary { font-size: 12px; margin-top: 6px; }
-.exp-compact .exp-card-go { margin-top: 12px; }
-@media (max-width: 600px) { .exp-card, .exp-compact .exp-card { flex-basis: 232px; } }
+/* 대문 히어로용. 섬네일 한 장만 보여줍니다.
+   섬네일에 프로그램 내용이 유튜브처럼 적혀 오므로 글자를 겹쳐 적지 않습니다.
+   섬네일이 아직 없는 카드(exp-card-plain)는 빈 칸이 되지 않도록 글자를 그대로 둡니다. */
+.exp-compact .exp-card { flex: 0 0 281px; }
+.exp-compact .exp-card:not(.exp-card-plain) .exp-card-body { display: none; }
+.exp-compact .exp-card-plain .exp-card-body { padding: 20px 18px; }
+.exp-compact .exp-card-plain .exp-card-title { font-size: 15px; margin-top: 8px; }
+.exp-compact .exp-card-plain .exp-card-summary { font-size: 12px; margin-top: 6px; }
+.exp-compact .exp-card-plain .exp-card-go { margin-top: 12px; }
+@media (max-width: 600px) {
+  .exp-card { flex-basis: 232px; }
+  .exp-compact .exp-card { flex-basis: 262px; }
+}
 `;
 
   const ROOM_LABEL = { counseling: 'COUNSELING', education: 'EDUCATION' };
@@ -79,8 +85,11 @@
              alt="" loading="lazy">`
       : '';
 
+    // 대문에서는 글자를 감추므로 링크에 읽어줄 이름을 따로 답니다.
+    // 화면에는 나타나지 않고 화면낭독기와 마우스 올렸을 때만 쓰입니다.
     return `
-      <a class="exp-card${thumb ? '' : ' exp-card-plain'}" href="${escapeHtml(href)}"${target}>
+      <a class="exp-card${thumb ? '' : ' exp-card-plain'}" href="${escapeHtml(href)}"${target}
+         aria-label="${escapeHtml(item.title)}" title="${escapeHtml(item.title)}">
         ${thumb}
         <span class="exp-card-body">
           <span class="exp-card-label">${ROOM_LABEL[item.placement] || 'EXPERIENCE'}</span>
