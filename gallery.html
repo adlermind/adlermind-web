@@ -105,6 +105,8 @@ nav {
 .gallery-card:focus-visible { outline: 2px solid var(--am-sage); outline-offset: 3px; }
 .thumb { position: relative; display: block; aspect-ratio: 16 / 9; overflow: hidden; background: #eceae7; }
 .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+/* 사진은 잘라내지 않고 전체가 보이게 합니다. 영상 썸네일은 지금처럼 꽉 채웁니다. */
+.thumb.photo img { object-fit: contain; }
 .play-mark {
   position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
   width: 58px; height: 58px; border-radius: 50%; background: rgba(255,255,255,0.92);
@@ -329,7 +331,7 @@ function cardHtml(item, index) {
 
   return `
     <button class="gallery-card" type="button" data-index="${index}" aria-label="${escapeHtml(label)}">
-      <span class="thumb">
+      <span class="thumb${item.media_type === 'photo' ? ' photo' : ''}">
         ${thumb ? `<img src="${escapeHtml(thumb)}" alt="" loading="lazy">` : ''}
         <span class="media-badge">${item.media_type === 'video' ? 'VIDEO' : 'PHOTO'}</span>
         ${item.media_type === 'video' ? '<span class="play-mark" aria-hidden="true">&#9654;</span>' : ''}
