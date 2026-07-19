@@ -47,9 +47,6 @@
 .exp-compact .exp-card-title { font-size: 15px; margin-top: 8px; }
 .exp-compact .exp-card-summary { font-size: 12px; margin-top: 6px; }
 .exp-compact .exp-card-go { margin-top: 12px; }
-/* 대문 히어로가 아주 낮은 화면에 들어가야 할 때는 카드 요약을 접습니다.
-   그림과 제목만으로도 무엇인지 알 수 있고, 눌러 들어가면 소개가 다시 나옵니다. */
-@media (max-height: 720px) { .exp-compact .exp-card-summary { display: none; } }
 @media (max-width: 600px) { .exp-card, .exp-compact .exp-card { flex-basis: 232px; } }
 `;
 

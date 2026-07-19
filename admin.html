@@ -222,11 +222,13 @@ tbody tr[aria-selected="true"]{background:#f4faf9}
         </div>
 
         <div class="field">
-          <label class="label" for="expThumb">섬네일</label>
+          <label class="label" for="expThumb">섬네일 &middot; 가로 800 &times; 세로 450 (16:9)</label>
           <input id="expThumb" type="file" accept="image/*">
           <p class="hint" id="expThumbHint">
-            카드에 뜨는 그림입니다. <strong>가로 800 &times; 세로 450 (16:9)</strong> 로 만들어 주세요.
-            더 큰 그림은 자동으로 줄여서 올립니다. 넣지 않으면 글자만 있는 카드가 됩니다.
+            카드에 뜨는 그림입니다. <strong>가로 800 &times; 세로 450 픽셀, 16:9 비율</strong>로 만들어 주세요.
+            카드에는 214 &times; 120 으로 뜨므로 이 크기면 고화질 화면에서도 또렷합니다.
+            더 큰 그림은 자동으로 줄여서 올리고, 비율이 다르면 가운데를 기준으로 잘라 채웁니다.
+            넣지 않으면 글자만 있는 카드가 됩니다.
             고칠 때 파일을 고르지 않으면 지금 그림을 그대로 둡니다.
           </p>
         </div>

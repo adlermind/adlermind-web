@@ -93,43 +93,17 @@ nav {
   text-transform: uppercase;
   margin-bottom: 28px;
 }
-.hero-title {
+/* 대문 첫마디. 큰 제목과 본문의 중간 크기로 다섯 줄을 그대로 앉힙니다.
+   상담 안내·조합 소개 단추는 상단 메뉴에 같은 길이 있어 걷어냈습니다. */
+.hero-statement {
   font-family: 'Noto Serif KR', serif;
-  font-size: clamp(28px, 5vw, 48px);
+  font-size: clamp(15px, 2.1vw, 22px);
   font-weight: 300;
   color: var(--am-gray);
-  line-height: 1.5;
-  margin-bottom: 20px;
+  line-height: 2.2;
   letter-spacing: -0.01em;
+  margin: 0;
 }
-.hero-title em {
-  font-style: normal;
-  color: var(--am-rose);
-}
-.hero-desc {
-  font-size: 14px; color: var(--am-muted);
-  max-width: 480px; line-height: 1.9;
-  margin-bottom: 40px;
-}
-.hero-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-.btn-primary {
-  padding: 12px 32px;
-  background: var(--am-sage); color: #fff;
-  border: none; border-radius: 2px;
-  font-size: 13px; font-family: 'Noto Sans KR', sans-serif;
-  font-weight: 300; cursor: pointer; text-decoration: none;
-  letter-spacing: 0.04em; transition: background 0.15s;
-}
-.btn-primary:hover { background: #6fa8a0; }
-.btn-outline {
-  padding: 12px 32px;
-  background: none; color: var(--am-gray);
-  border: 0.5px solid var(--am-border); border-radius: 2px;
-  font-size: 13px; font-family: 'Noto Sans KR', sans-serif;
-  font-weight: 300; cursor: pointer; text-decoration: none;
-  letter-spacing: 0.04em; transition: all 0.15s;
-}
-.btn-outline:hover { border-color: var(--am-sage); color: var(--am-sage); }
 
 /* ── 마음을 알아가는 창 (히어로 안) ──
    첫 화면에서 스크롤 없이 보여야 하므로 히어로 높이를 넘기지 않게 짜맞췄습니다.
@@ -140,39 +114,28 @@ nav {
   color: var(--am-gray); margin: 0;
 }
 .hero-exp-desc { font-size: 12.5px; color: var(--am-muted); line-height: 1.9; margin: 6px 0 16px; }
-.hero-btns { margin-top: 20px; }
 
-/* 히어로 여백을 줄여 체험 띠와 단추까지 첫 화면에 넣습니다.
+/* 히어로 여백을 줄여 첫마디와 체험 띠가 함께 첫 화면에 들어가게 합니다.
    히어로는 min-height 로 화면을 채우므로, 남는 만큼은 가운데 여백이 되어 답답해지지 않습니다. */
 .hero { padding: 44px 32px; }
-.hero-sub { margin-bottom: 16px; }
-.hero-title { margin-bottom: 14px; }
-.hero-desc { margin-bottom: 24px; }
+.hero-sub { margin-bottom: 24px; }
 
-/* 화면이 더 낮은 노트북에서는 글자까지 한 번 더 줄입니다. */
+/* 화면이 낮은 노트북에서는 여백과 줄간격을 줄입니다. */
 @media (max-height: 860px) {
   .hero { padding: 30px 32px; }
-  .hero-title { font-size: clamp(22px, 3.6vw, 30px); margin-bottom: 12px; }
-  .hero-desc { font-size: 13px; margin-bottom: 18px; }
+  .hero-sub { margin-bottom: 18px; }
+  .hero-statement { line-height: 2; }
   .hero-experience { margin-top: 20px; }
-  .hero-btns { margin-top: 16px; }
 }
-
-/* 아주 낮은 화면(768 노트북 등)에서는 다 들어갈 자리가 없어 무언가는 접어야 합니다.
-   조합을 소개하는 본문 글은 지키고, 띠 설명과 카드 요약만 접습니다.
-   제목과 그림만으로도 무엇인지 알 수 있기 때문입니다. */
+/* 아주 낮은 화면(768 노트북 등). 첫마디 다섯 줄과 체험 띠가 함께 들어가야 하므로
+   띠 설명 한 줄만 접습니다. 첫마디는 다섯 줄 그대로 지킵니다. */
 @media (max-height: 720px) {
-  .hero { padding: 20px 32px; }
-  .hero-sub { margin-bottom: 10px; }
-  .hero-title { font-size: clamp(20px, 3vw, 26px); margin-bottom: 10px; }
-  .hero-desc { font-size: 12.5px; line-height: 1.7; margin-bottom: 14px; }
-  .hero-experience { margin-top: 14px; }
+  .hero { padding: 14px 32px; }
+  .hero-sub { margin-bottom: 8px; }
+  .hero-statement { font-size: clamp(13px, 1.6vw, 15px); line-height: 1.85; }
+  .hero-experience { margin-top: 10px; }
   .hero-exp-desc { display: none; }
-  .hero-exp-title { margin-bottom: 12px; }
-  .hero-btns { margin-top: 12px; }
-}
-@media (max-width: 600px) {
-  .hero-desc br { display: none; }
+  .hero-exp-title { margin-bottom: 10px; }
 }
 
 /* ── 섹션 공통 ── */
@@ -319,27 +282,21 @@ footer {
 <!-- SECTION 01: 히어로 -->
 <section class="hero" id="home">
   <div class="hero-sub">ADLER MIND COOPERATIVE · 2026</div>
-  <h1 class="hero-title">
-    나만의 <em>생활양식</em>을 찾는<br>심리상담 협동조합
-  </h1>
-  <p class="hero-desc">
-    아들러 개인심리학의 가치를 실천하는 협동조합입니다.<br>
+  <h1 class="hero-statement">
+    ADLER MIND 협동조합은<br>
+    아들러 개인심리학의 가치를 실천하는<br>
+    아들러리안 심리전문가들의 협동조합입니다.<br>
     사회적 관심과 공동체 감각을 바탕으로<br>
     심리상담과 교육을 함께 만들어갑니다.
-  </p>
+  </h1>
   <!-- 마음을 알아가는 창 · 2-3
        상담의 방과 배움의 방에 걸어 둔 체험이 여기에 옆으로 늘어섭니다.
        스크롤하지 않아도 첫 화면에서 바로 보이도록 히어로 안에 두었습니다.
-       걸린 체험이 없으면 이 자리는 나타나지 않고 아래 두 단추만 보입니다. -->
+       걸린 체험이 없으면 이 자리는 나타나지 않고 첫마디만 보입니다. -->
   <div class="hero-experience hidden" id="experience">
     <h2 class="hero-exp-title">마음을 알아가는 창</h2>
     <p class="hero-exp-desc">설명을 읽기 전에 먼저 해보시는 자리입니다. 로그인 없이 해보실 수 있습니다.</p>
     <div id="expCards"></div>
-  </div>
-
-  <div class="hero-btns">
-    <a class="btn-primary" href="counseling.html">상담 안내</a>
-    <a class="btn-outline" href="about.html">조합 소개</a>
   </div>
 </section>
 
