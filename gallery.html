@@ -136,11 +136,13 @@ nav {
 }
 
 .video-modal {
-  position: fixed; inset: 0; z-index: 500; display: grid; place-items: center;
+  position: fixed; inset: 0; z-index: 500; display: flex;
   padding: 28px; background: rgba(38,36,34,0.76);
+  overflow-y: auto;   /* 세로로 긴 사진은 스크롤해서 봅니다. */
 }
 .video-modal[hidden] { display: none; }
-.modal-panel { width: min(960px, 100%); position: relative; }
+/* margin auto 로 가운데에 둡니다. align-items:center 와 달리 넘칠 때 위가 잘리지 않습니다. */
+.modal-panel { width: min(960px, 100%); margin: auto; position: relative; }
 .modal-close {
   position: absolute; right: 0; bottom: calc(100% + 10px);
   width: 40px; height: 40px; border: 0.5px solid rgba(255,255,255,0.6);
@@ -149,6 +151,11 @@ nav {
 }
 .video-frame { aspect-ratio: 16 / 9; background: #000; }
 .video-frame iframe { width: 100%; height: 100%; border: 0; display: block; }
+/* 사진은 16:9 틀에 맞추지 않고 가로폭을 채웁니다. 세로는 사진 비율대로 늘어납니다. */
+.video-frame.photo { aspect-ratio: auto; background: transparent; }
+.video-frame.photo img { width: 100%; height: auto; object-fit: initial; }
+/* 긴 사진을 내려 봐도 닫기 버튼이 따라오도록 화면에 고정합니다. 영상은 지금 자리 그대로. */
+.video-modal.photo-mode .modal-close { position: fixed; top: 20px; right: 20px; bottom: auto; }
 .video-frame img { width: 100%; height: 100%; object-fit: contain; display: block; }
 .modal-caption { margin-top: 14px; }
 .modal-title { font-family: 'Noto Serif KR', serif; font-size: 15px; font-weight: 300; color: #fff; line-height: 1.6; }
@@ -296,6 +303,8 @@ function openItem(button) {
   lastTrigger = button;
 
   const fallback = document.getElementById('modalFallback');
+  frame.classList.toggle('photo', item.media_type === 'photo');
+  modal.classList.toggle('photo-mode', item.media_type === 'photo');
   if (item.media_type === 'video') {
     frame.innerHTML = `<iframe src="https://www.youtube.com/embed/${encodeURIComponent(item.youtube_id)}?autoplay=1&rel=0" title="${escapeHtml(item.title)}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>`;
     document.getElementById('youtubeLink').href = `https://youtu.be/${item.youtube_id}`;
@@ -312,6 +321,7 @@ function openItem(button) {
 
   modal.setAttribute('aria-label', item.title);
   modal.hidden = false;
+  modal.scrollTop = 0;   // 앞서 긴 사진을 내려 봤더라도 항상 위에서 시작합니다.
   document.body.classList.add('modal-open');
   closeBtn.focus();
 }
