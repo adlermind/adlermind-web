@@ -71,7 +71,9 @@ function authErrorText(error, fallback) {
   const message=error.message||'';
   if(/already registered|already exists/i.test(message)) return '이미 가입된 이메일입니다. 로그인 탭에서 로그인하시거나 비밀번호를 잊으셨다면 재설정을 이용해 주세요.';
   if(/invalid.*email|email.*invalid/i.test(message)) return '이메일 주소 형식을 확인해 주세요.';
-  if(/password/i.test(message)) return '비밀번호가 조건에 맞지 않습니다. 8자 이상으로 다시 입력해 주세요.';
+  if(/different from the old password/i.test(message)) return '지금 쓰시던 것과 다른 비밀번호를 입력해 주세요.';
+  if(/at least|too short|length/i.test(message)) return '비밀번호가 너무 짧습니다. 더 길게 입력해 주세요.';
+  if(/weak|pwned|compromised/i.test(message)) return '보안상 사용할 수 없는 비밀번호입니다. 다른 비밀번호로 입력해 주세요.';
   return fallback;
 }
 
