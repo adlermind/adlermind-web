@@ -94,6 +94,10 @@ tbody tr[aria-selected="true"]{background:#f4faf9}
         <span class="item-name">체험 콘텐츠 관리</span>
         <span class="item-desc">체험을 등록하고 어느 방에 내보낼지, 공개할지를 정합니다.</span>
       </button>
+      <button class="item" type="button" role="tab" aria-selected="false" data-tab="testimonials">
+        <span class="item-name">체험후기 관리</span>
+        <span class="item-desc">참여자의 후기를 등록하고 첫화면에 보여줄지 정합니다. 후기가 많으면 좌우 스크롤로 나타납니다.</span>
+      </button>
       <button class="item" type="button" role="tab" aria-selected="false" data-tab="members">
         <span class="item-name">회원관리</span>
         <span class="item-desc">계정을 조회하고 검색하며 체험 응답 내용을 확인합니다. 권한을 주고 뺏는 일은 여기서 하지 않습니다.</span>
@@ -325,6 +329,62 @@ tbody tr[aria-selected="true"]{background:#f4faf9}
         <div class="actions" style="margin-top:14px">
           <button class="button" type="button" id="expImport">붙여넣은 글 가져오기</button>
         </div>
+      </div>
+    </section>
+
+    <!-- 체험후기 관리 · 2-5 -->
+    <section class="panel hidden" id="panel-testimonials">
+      <h2 class="panel-title">체험후기 관리</h2>
+
+      <!-- 후기 등록 폼 -->
+      <div class="subpanel">
+        <h3 class="subpanel-title" id="testFormTitle">새 후기 등록</h3>
+
+        <div class="field">
+          <label class="label" for="testAlias">별칭 · 성+이니셜</label>
+          <input id="testAlias" type="text" placeholder="예: 김O">
+          <p class="hint">참여자를 식별할 최소한의 정보만 표시합니다.</p>
+        </div>
+
+        <div class="field">
+          <label class="label" for="testProgram">활용 프로그램</label>
+          <input id="testProgram" type="text" placeholder="예: 상담, 부모교육, 교사연수">
+          <p class="hint">자유입력입니다. 참여자가 어떤 프로그램을 거쳤는지 표시합니다.</p>
+        </div>
+
+        <div class="field">
+          <label class="label" for="testBody">후기 내용</label>
+          <textarea id="testBody" rows="6" placeholder="참여자의 후기를 여기에 붙여넣으세요. 첫화면에서는 2줄만 보이고, 더보기를 누르면 전체가 펼쳐집니다."></textarea>
+          <p class="hint">제한 없습니다. 문장이 길어도 괜찮습니다.</p>
+        </div>
+
+        <div class="field">
+          <label class="label" for="testPhoto">사진 · 가로 800 (선택)</label>
+          <input id="testPhoto" type="file" accept="image/*">
+          <p class="hint">권장 크기는 가로 800px입니다. 첫화면에서는 100×70 크기로 보이고, 사진을 클릭하면 원본이 팝업으로 뜹니다. 넣지 않으면 텍스트만 표시됩니다.</p>
+        </div>
+
+        <div class="actions" style="margin-top:18px">
+          <button class="button" type="button" id="testSave">저장</button>
+          <button class="button hidden" type="button" id="testCancel">고치기 그만두기</button>
+        </div>
+        <p class="hint" id="testStatus"></p>
+      </div>
+
+      <!-- 등록된 후기 -->
+      <div class="subpanel">
+        <h3 class="subpanel-title">등록된 후기</h3>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>순서</th><th>별칭</th><th>프로그램</th><th>미리보기</th><th></th>
+              </tr>
+            </thead>
+            <tbody id="testimonialRows"></tbody>
+          </table>
+        </div>
+        <p class="panel-empty hidden" id="testimonialEmpty">아직 등록된 후기가 없습니다.</p>
       </div>
     </section>
 
@@ -1181,7 +1241,128 @@ document.getElementById('memberRows').addEventListener('click', event => {
   if (row) openAccount(row.dataset.userId);
 });
 
+// ── 체험후기 관리 · 2-5 ──
+let testimonials = [];
+
+async function loadTestimonials() {
+  try {
+    const { data, error } = await client
+      .from('experience_testimonials')
+      .select('*')
+      .order('sort_order', { ascending: true });
+    if (error) throw error;
+    testimonials = data || [];
+    renderTestimonialRows();
+  } catch(e) {
+    console.error('Failed to load testimonials:', e);
+  }
+}
+
+function renderTestimonialRows() {
+  const rows = testimonials.map((item, idx) => `
+    <tr data-id="${item.id}">
+      <td>${item.sort_order}</td>
+      <td>${escapeHtml(item.alias)}</td>
+      <td>${escapeHtml(item.program_label)}</td>
+      <td style="font-size:11.5px;color:#98928d">${escapeHtml(item.body.substring(0, 50))}...</td>
+      <td style="text-align:right;white-space:nowrap">
+        <button class="link-btn" type="button" data-action="up" ${idx === 0 ? 'disabled' : ''}>↑</button>
+        <button class="link-btn" type="button" data-action="down" ${idx === testimonials.length - 1 ? 'disabled' : ''}>↓</button>
+        <button class="link-btn" type="button" data-action="toggle">${item.is_visible ? '🔒' : '👁'}</button>
+        <button class="link-btn danger" type="button" data-action="delete">✕</button>
+      </td>
+    </tr>`).join('');
+
+  document.getElementById('testimonialRows').innerHTML = rows;
+  document.getElementById('testimonialEmpty').classList.toggle('hidden', testimonials.length > 0);
+
+  document.getElementById('testimonialRows').addEventListener('click', handleTestimonialAction);
+}
+
+async function handleTestimonialAction(event) {
+  const btn = event.target.closest('button[data-action]');
+  if (!btn) return;
+
+  const row = btn.closest('tr');
+  const id = row.dataset.id;
+  const item = testimonials.find(t => t.id === id);
+  if (!item) return;
+
+  const action = btn.dataset.action;
+
+  if (action === 'up') {
+    const idx = testimonials.indexOf(item);
+    if (idx > 0) {
+      testimonials[idx].sort_order = testimonials[idx-1].sort_order - 1;
+      await client.from('experience_testimonials').update({ sort_order: testimonials[idx].sort_order }).eq('id', id);
+      loadTestimonials();
+    }
+  } else if (action === 'down') {
+    const idx = testimonials.indexOf(item);
+    if (idx < testimonials.length - 1) {
+      testimonials[idx].sort_order = testimonials[idx+1].sort_order + 1;
+      await client.from('experience_testimonials').update({ sort_order: testimonials[idx].sort_order }).eq('id', id);
+      loadTestimonials();
+    }
+  } else if (action === 'toggle') {
+    await client.from('experience_testimonials').update({ is_visible: !item.is_visible }).eq('id', id);
+    loadTestimonials();
+  } else if (action === 'delete') {
+    if (!confirm('정말 삭제하시겠습니까?')) return;
+    await client.from('experience_testimonials').delete().eq('id', id);
+    loadTestimonials();
+  }
+}
+
+document.getElementById('testSave').addEventListener('click', async () => {
+  const alias = document.getElementById('testAlias').value.trim();
+  const program = document.getElementById('testProgram').value.trim();
+  const body = document.getElementById('testBody').value.trim();
+  const photoFile = document.getElementById('testPhoto').files[0];
+
+  if (!alias || !program || !body) {
+    alert('필수 항목을 채워주세요.');
+    return;
+  }
+
+  let photoPath = null;
+  if (photoFile) {
+    try {
+      const timestamp = Date.now();
+      const ext = photoFile.name.split('.').pop();
+      photoPath = `testimonials/${timestamp}.${ext}`;
+
+      const { error: uploadError } = await client.storage
+        .from('experience-thumbs')
+        .upload(photoPath, photoFile);
+      if (uploadError) throw uploadError;
+    } catch(e) {
+      alert('사진 업로드 실패: ' + e.message);
+      return;
+    }
+  }
+
+  try {
+    const maxSort = testimonials.length > 0 ? Math.max(...testimonials.map(t => t.sort_order)) : 0;
+    const { error } = await client.from('experience_testimonials').insert([{
+      alias, program_label: program, body, photo_path: photoPath,
+      sort_order: maxSort + 1, is_visible: true
+    }]);
+    if (error) throw error;
+
+    document.getElementById('testAlias').value = '';
+    document.getElementById('testProgram').value = '';
+    document.getElementById('testBody').value = '';
+    document.getElementById('testPhoto').value = '';
+
+    loadTestimonials();
+  } catch(e) {
+    alert('저장 실패: ' + e.message);
+  }
+});
+
 init();
+loadTestimonials();
 </script>
 </body>
 </html>

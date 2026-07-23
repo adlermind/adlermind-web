@@ -308,6 +308,14 @@ footer {
     <h2 class="hero-exp-title">마음을 알아가는 창</h2>
     <div id="expCards"></div>
   </div>
+
+  <!-- 체험후기 · 2-5
+       참여자들의 체험 후기를 가로스크롤로 표시합니다.
+       관리자가 골라 등록한 공개 후기만 나타납니다. -->
+  <div class="hero-experience hidden" id="testimonials">
+    <h2 class="hero-exp-title">체험 후기</h2>
+    <div id="amReviews"></div>
+  </div>
 </section>
 
 <hr class="divider-sage">
@@ -458,6 +466,17 @@ AMExperienceCards.render({
   onReady: () => document.getElementById('experience').classList.remove('hidden')
 });
 </script>
+
+<script src="experience-testimonials.js"></script>
+<script>
+// 체험후기 · 2-5
+// 관리자가 등록한 공개 후기를 첫화면에 나타냅니다.
+AMTestimonials.render({
+  into: 'amReviews',
+  onReady: () => document.getElementById('testimonials').classList.remove('hidden')
+});
+</script>
+
 <script src="site-session.js"></script>
 </body>
 </html>
