@@ -2022,8 +2022,10 @@ function downloadCsv() {
 function openPinModal() {
   if (adminMode) {
     adminMode = false;
+    amAdminMode = false;
     document.getElementById('adminDot').classList.remove('active');
     renderAcctTable();
+    if (amCurrentTask && amCurrentStage) renderIdeaCell();
     return;
   }
   document.getElementById('pinInput').value = '';
@@ -2035,9 +2037,11 @@ function closePinModal() { document.getElementById('pinModalOverlay').classList.
 function checkPin() {
   if (document.getElementById('pinInput').value === ADMIN_PIN) {
     adminMode = true;
+    amAdminMode = true;
     document.getElementById('adminDot').classList.add('active');
     closePinModal();
     renderAcctTable();
+    if (amCurrentTask && amCurrentStage) renderIdeaCell();
     showToast('관리자 모드 활성화');
   } else {
     document.getElementById('pinError').style.display = 'block';
@@ -2237,7 +2241,9 @@ let allIdeas = [];
 let amCurrentTask = null, amCurrentStage = null;
 let amEditingId = null;
 let amResources = [];
+let amAdminResources = [];
 let ideasLoaded = false;
+let amAdminMode = false;
 
 async function loadIdeas() {
   try {
@@ -2293,13 +2299,30 @@ function openIdeaCell(task, stage) {
 function renderIdeaCell() {
   const el = document.getElementById('ideaCellPanel');
   const items = allIdeas.filter(i => i.life_task === amCurrentTask && i.life_stage === amCurrentStage);
-  const cards = items.map(renderIdeaCard).join('')
+  const sorted = items.sort((a,b) => {
+    const aIsAdmin = a.source === 'admin' ? 0 : 1;
+    const bIsAdmin = b.source === 'admin' ? 0 : 1;
+    if (aIsAdmin !== bIsAdmin) return aIsAdmin - bIsAdmin;
+    return new Date(b.created_at) - new Date(a.created_at);
+  });
+  const cards = sorted.map(renderIdeaCard).join('')
     || '<div class="idea-empty">아직 등록된 아이디어가 없습니다. 첫 아이디어를 남겨보세요.</div>';
+  const adminPanel = amAdminMode ? `
+    <div style="margin-top:14px;padding:12px;background:rgba(143,175,212,0.08);border:0.5px solid rgba(143,175,212,0.3);border-radius:6px;">
+      <div style="font-size:11px;color:var(--am-muted);margin-bottom:8px;">관리자 자료 추가 (이 셀에만)</div>
+      <div class="idea-res-btns">
+        <button class="btn-outline-sm" type="button" onclick="document.getElementById('amAdminFileInput').click()"><i class="ti ti-paperclip"></i>파일 첨부</button>
+        <button class="btn-outline-sm" type="button" onclick="addAmAdminLink()"><i class="ti ti-link"></i>링크 추가</button>
+      </div>
+      <div class="idea-res-list" id="amAdminResList"></div>
+      <button class="btn-sage" type="button" style="margin-top:8px;width:100%;" onclick="submitAmAdminResource()">자료 저장</button>
+    </div>` : '';
   el.innerHTML = `
     <div class="idea-cell-hd">
       <div class="idea-cell-t"><span>${amCurrentTask}</span> · <span>${amCurrentStage}</span> <span class="idea-cell-cnt">(${items.length})</span></div>
     </div>
     <div class="idea-cards">${cards}</div>
+    ${adminPanel}
     ${renderIdeaForm()}`;
   const editing = amEditingId ? allIdeas.find(i => i.id === amEditingId) : null;
   if (editing) {
@@ -2308,30 +2331,41 @@ function renderIdeaCell() {
     document.getElementById('iContent').value  = editing.content || '';
   }
   renderIdeaResources();
+  if (amAdminMode) renderAmAdminResources();
 }
 
 function renderIdeaCard(i) {
   const date = new Date(i.created_at).toLocaleDateString('ko-KR', { month:'long', day:'numeric' });
+  const isAdmin = i.source === 'admin';
+  const sourceBadge = isAdmin
+    ? '<span class="mc-badge" style="background:rgba(143,175,212,0.12);color:#5a9990;margin-left:8px;">관리자</span>'
+    : '';
   const ses = i.sessions ? `<span class="idea-chip chip-ses">권장 ${esc(i.sessions)}</span>` : '';
   const wel = i.wel_domain ? `<span class="idea-chip chip-wel">5F-Wel · ${esc(i.wel_domain)}</span>` : '';
   const res = (i.resources || []).map(r => {
     const tag = r.kind === 'file' ? '파일' : '링크';
     return `<a class="idea-res-item" href="${esc(r.kind === 'file' ? (r.signed_url || '#') : r.url)}" target="_blank" rel="noopener"><span class="rtag">${tag}</span><span class="nm">${esc(r.name || r.url)}</span></a>`;
   }).join('');
-  return `<div class="idea-card">
-    <div class="idea-card-ttl">${esc(i.program_title)}</div>
+  const actions = isAdmin
+    ? `<button class="btn-outline-sm idea-del" onclick="deleteIdea('${i.id}')"><i class="ti ti-trash"></i>삭제</button>`
+    : `<button class="btn-outline-sm" onclick="editIdea('${i.id}')"><i class="ti ti-pencil"></i>수정</button>
+       <button class="btn-outline-sm idea-del" onclick="deleteIdea('${i.id}')"><i class="ti ti-trash"></i>삭제</button>`;
+  return `<div class="idea-card" style="border-left-color:${isAdmin ? 'var(--am-blue)' : 'var(--am-mauve)'};">
+    <div class="mc-top">
+      <div class="idea-card-ttl">${esc(i.program_title)}</div>${sourceBadge}
+    </div>
     <div class="idea-card-m">${amWho(i.author)}${esc(i.author)} · ${date}</div>
     <div class="idea-chips">${ses}${wel}</div>
     <div class="idea-card-feat">${esc(i.content)}</div>
     ${res ? `<div class="idea-res">${res}</div>` : ''}
     <div class="idea-card-acts">
-      <button class="btn-outline-sm" onclick="editIdea('${i.id}')"><i class="ti ti-pencil"></i>수정</button>
-      <button class="btn-outline-sm idea-del" onclick="deleteIdea('${i.id}')"><i class="ti ti-trash"></i>삭제</button>
+      ${actions}
     </div>
   </div>`;
 }
 
 function renderIdeaForm() {
+  if (amAdminMode) return '';
   const editing = amEditingId ? allIdeas.find(i => i.id === amEditingId) : null;
   const memberOpts = ['<option value="">— 담당자 선택 —</option>']
     .concat(AM_MEMBERS.map(m => `<option${editing && editing.author === m.name ? ' selected' : ''}>${m.name}</option>`)).join('');
@@ -2400,6 +2434,75 @@ document.getElementById('ideaFileInput').addEventListener('change', async functi
   this.value = '';
 });
 
+// ── 관리자 자료 입력 ──
+if (!document.getElementById('amAdminFileInput')) {
+  const input = document.createElement('input');
+  input.id = 'amAdminFileInput';
+  input.type = 'file';
+  input.style.display = 'none';
+  input.multiple = true;
+  document.body.appendChild(input);
+  input.addEventListener('change', async function() {
+    const files = Array.from(this.files); if (!files.length) return;
+    for (const f of files) {
+      showToast(`${f.name} 업로드 중...`);
+      const url = await uploadToStorage(f, 'ideas');
+      if (url) {
+        amAdminResources.push({ kind:'file', name:f.name, size:f.size, url });
+        showToast(`${f.name} 첨부 완료`);
+      }
+    }
+    renderAmAdminResources();
+    this.value = '';
+  });
+}
+
+function renderAmAdminResources() {
+  const el = document.getElementById('amAdminResList');
+  if (!el) return;
+  if (!amAdminResources.length) {
+    el.innerHTML = '<div class="idea-res-empty">첨부한 자료가 없습니다.</div>';
+    return;
+  }
+  el.innerHTML = amAdminResources.map((r, idx) => {
+    const tag = r.kind === 'file' ? '파일' : '링크';
+    return `<div class="idea-res-chip"><span class="rtag">${tag}</span><span class="idea-res-nm">${esc(r.name || r.url)}</span><button class="idea-res-x" type="button" onclick="removeAmAdminResource(${idx})"><i class="ti ti-x"></i></button></div>`;
+  }).join('');
+}
+
+function removeAmAdminResource(i) { amAdminResources.splice(i, 1); renderAmAdminResources(); }
+
+function addAmAdminLink() {
+  const url = prompt('링크 URL을 입력하세요 (https://...)');
+  if (!url) return;
+  const u = url.trim();
+  if (!u) return;
+  amAdminResources.push({ kind:'link', name:u, url:u });
+  renderAmAdminResources();
+}
+
+async function submitAmAdminResource() {
+  if (!amAdminResources.length) { showToast('추가할 자료를 선택해주세요.'); return; }
+  if (!amCurrentTask || !amCurrentStage) return;
+  const body = {
+    life_task: amCurrentTask,
+    life_stage: amCurrentStage,
+    author: '관리자',
+    program_title: `[관리자 자료] ${new Date().toLocaleDateString('ko-KR')}`,
+    content: '관리자가 제공하는 프로그램 자료 및 참고 자료입니다.',
+    resources: amAdminResources,
+    source: 'admin'
+  };
+  try {
+    await fetch(`${SB_URL}/rest/v1/am_ideas`, {
+      method:'POST', headers:{ ...hdrs, 'Prefer':'return=minimal' }, body: JSON.stringify(body)
+    });
+    showToast('자료가 저장되었습니다.');
+    amAdminResources = [];
+    await loadIdeas();
+  } catch(e) { showToast('저장 오류가 발생했습니다.'); }
+}
+
 function editIdea(id) {
   const i = allIdeas.find(x => x.id === id); if (!i) return;
   amCurrentTask = i.life_task; amCurrentStage = i.life_stage;
@@ -2432,6 +2535,7 @@ async function submitIdea() {
     content,
     wel_domain: wel_domain || null,
     resources: amResources,
+    source: 'member'
   };
   try {
     if (amEditingId) {

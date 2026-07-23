@@ -576,15 +576,42 @@ function isToday(d) {
 function slotKey(dateStr, hour) { return `${dateStr}_${String(hour).padStart(2,'0')}`; }
 
 async function initMemberSchedule() {
-  const auth = await memberAuth.requireActiveMember('../members.html');
-  if (!auth) return;
-  currentUser = auth.member.display_name;
-  isAdmin = false;
+  const memberAuth = window.AMMemberAuth;
+  const session = await memberAuth.client.auth.getSession();
+  if (!session.data.session) {
+    window.location.replace('../members.html');
+    return;
+  }
+
+  const member = await memberAuth.getActiveMember();
+  const admin = await memberAuth.getActiveAdmin();
+
+  if (!member && !admin) {
+    window.location.replace('../members.html');
+    return;
+  }
+
+  currentUser = member ? member.member.display_name : admin.admin.user_id;
+  isAdmin = !!admin;
+
   document.getElementById('loginScreen').style.display = 'none';
   document.getElementById('app').classList.add('visible');
   document.getElementById('userAv').textContent = currentUser.charAt(0);
   document.getElementById('userNameDisplay').textContent = currentUser;
   document.getElementById('tabMeeting').style.display = isAdmin ? 'flex' : 'none';
+
+  if (isAdmin) {
+    document.querySelector('.header-tabs').insertAdjacentHTML('beforeend',
+      `<button class="htab" onclick="switchTab('official')" id="tabOfficial" style="display:flex;">
+        <i class="ti ti-pencil"></i>공식 미팅 기록
+      </button>`);
+    const panel = document.createElement('div');
+    panel.id = 'panelOfficial';
+    panel.className = 'panel';
+    panel.innerHTML = renderOfficialMeetingPanel();
+    document.querySelector('.main-panel').appendChild(panel);
+  }
+
   initApp();
 }
 
@@ -594,9 +621,9 @@ async function doLogout() {
 }
 
 function switchTab(tab) {
-  const tabs   = ['avail','status','meeting','history'];
-  const panels = { avail:'panelAvail', status:'panelStatus', meeting:'panelMeeting', history:'panelHistory' };
-  const tabIds = { avail:'tabAvail', status:'tabStatus', meeting:'tabMeeting', history:'tabHistory' };
+  const tabs   = ['avail','status','meeting','history','official'];
+  const panels = { avail:'panelAvail', status:'panelStatus', meeting:'panelMeeting', history:'panelHistory', official:'panelOfficial' };
+  const tabIds = { avail:'tabAvail', status:'tabStatus', meeting:'tabMeeting', history:'tabHistory', official:'tabOfficial' };
   tabs.forEach(t => {
     document.getElementById(tabIds[t])?.classList.remove('active');
     document.getElementById(panels[t])?.classList.remove('active');
@@ -606,6 +633,7 @@ function switchTab(tab) {
   if (tab === 'status')  loadStatusData();
   if (tab === 'meeting') loadMeetings();
   if (tab === 'history') loadHistory();
+  if (tab === 'official') loadOfficialMeetings();
 }
 
 async function initApp() {
@@ -866,6 +894,70 @@ async function loadHistory() {
       <div class="hist-title">${esc(m.title)}</div>
       <div class="hist-meta">확정 일시: <strong style="font-weight:400;color:var(--am-gray);">${esc(m.decided_label||'-')}</strong> · 제안: ${esc(m.proposed_by)} · ${formatDate(m.decided_at)}</div>
     </div>`).join('');
+}
+
+function renderOfficialMeetingPanel() {
+  return `<div class="panel-hd"><div class="panel-title">공식 미팅 기록</div>
+    <button class="new-btn" onclick="openOfficialMeetingModal()"><i class="ti ti-plus"></i>새 미팅 추가</button>
+  </div><div id="officialMeetingList">
+    <div class="empty-state"><i class="ti ti-loader-2"></i>불러오는 중...</div></div>`;
+}
+
+async function loadOfficialMeetings() {
+  const { data } = await sb.from('am_meetings')
+    .select('*')
+    .eq('source', 'official')
+    .order('created_at', { ascending: false });
+  const meetings = data || [];
+  const el = document.getElementById('officialMeetingList');
+  if (!meetings.length) {
+    el.innerHTML = '<div class="empty-state"><i class="ti ti-calendar-off"></i>등록된 공식 미팅이 없습니다.</div>';
+    return;
+  }
+  el.innerHTML = meetings.map(m => {
+    const date = formatDate(m.created_at);
+    return `<div class="meeting-card" style="border-left-color:var(--am-blue);">
+      <div class="mc-top"><div class="mc-title">${esc(m.title)}</div>
+        <span class="mc-badge" style="background:rgba(143,175,212,0.12);color:#5a9990;">공식</span></div>
+      <div class="mc-date">기록: 관리자 · ${date}</div>
+      <div class="mc-date" style="font-size:11px;color:var(--am-muted);">${esc(m.decided_label || '—')}</div>
+      <div class="mc-footer">
+        <button class="btn-outline-sm" onclick="deleteOfficialMeeting('${m.id}')" style="font-size:11px;">
+          <i class="ti ti-trash"></i>삭제</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openOfficialMeetingModal() {
+  const title = prompt('미팅 제목을 입력하세요');
+  if (!title) return;
+  const datetime = prompt('미팅 일시를 입력하세요 (예: 2026년 7월 15일 오후 2시)');
+  if (!datetime) return;
+  submitOfficialMeeting(title.trim(), datetime.trim());
+}
+
+async function submitOfficialMeeting(title, datetime) {
+  const { error } = await sb.from('am_meetings').insert({
+    title,
+    proposed_by: '관리자',
+    candidates: [{ label: datetime, datetime: 'official_' + Date.now() }],
+    status: 'decided',
+    decided_label: datetime,
+    decided_at: new Date().toISOString(),
+    source: 'official'
+  });
+  if (error) { showToast('오류: ' + error.message); return; }
+  showToast('공식 미팅이 기록되었습니다.');
+  loadOfficialMeetings();
+}
+
+async function deleteOfficialMeeting(id) {
+  if (!confirm('이 공식 미팅을 삭제하시겠습니까?')) return;
+  const { error } = await sb.from('am_meetings').delete().eq('id', id);
+  if (error) { showToast('오류: ' + error.message); return; }
+  showToast('삭제되었습니다.');
+  loadOfficialMeetings();
 }
 
 function esc(str) {
