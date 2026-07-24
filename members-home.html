@@ -353,33 +353,16 @@ body {
   max-width: 760px; margin: 0 auto;
   padding: 0 24px 80px;
 }
+/* postViewPage - 게시글 보기 */
 #postViewPage {
-  display: none !important;
-  position: static !important;
-  inset: auto !important;
-  background: var(--am-bg);
   z-index: 800;
-  overflow: visible !important;
-  height: auto !important;
-  min-height: auto !important;
-  flex-direction: column;
-  padding-bottom: 0;
-  max-height: none !important;
 }
 #postViewPage.open {
-  display: flex !important;
+  display: block !important;
 }
-#postViewPage .write-page-inner {
-  max-width: 1080px;
-  padding: 0 32px 120px;
-  min-height: auto;
-}
-#postViewPage .modal-body {
-  overflow: visible !important;
-}
-#postViewPage .modal-body iframe {
+#postViewPage iframe {
+  max-width: 100%;
   width: 100%;
-  border: none;
 }
 .write-page-nav {
   display: flex; align-items: center; justify-content: space-between;
@@ -592,9 +575,8 @@ body {
   .doc-grid { grid-template-columns: 1fr 1fr; }
   .write-page-inner { padding: 0 16px 80px; }
   .write-page-title { font-size: 22px; }
-  #postViewPage .write-page-inner { max-width: 100%; padding: 0 16px 120px; }
-  #postViewPage .modal-body { padding: 16px; }
-  #postViewPage .modal-attachments { padding: 16px; }
+  #postViewPage { padding: 16px 0 60px; }
+  #postViewPage > div { padding: 0 16px; }
 }
 
 /* ── 회계장부 ── */
@@ -1105,10 +1087,10 @@ table.idea-matrix tbody th { background: #f4f2ee; font-size: 13px; font-weight: 
   <iframe class="pdf-frame" id="pdfFrame" src=""></iframe>
 </div>
 
-<!-- 게시글 보기 페이지 (전체 화면) -->
-<div class="write-page" id="postViewPage">
-  <div class="write-page-inner" style="max-width:1080px;">
-    <div class="write-page-nav">
+<!-- 게시글 보기 페이지 (스크롤 없음) -->
+<div id="postViewPage" style="display:none;position:static;background:var(--am-bg);padding:20px 0 60px;width:100%;overflow:visible;">
+  <div style="max-width:1080px;margin:0 auto;padding:0 32px;">
+    <div style="display:flex;align-items:center;gap:6px;margin-bottom:20px;">
       <button class="write-back-btn" onclick="closePostView()">
         <i class="ti ti-arrow-left"></i>게시판으로
       </button>
@@ -1118,24 +1100,14 @@ table.idea-matrix tbody th { background: #f4f2ee; font-size: 13px; font-weight: 
     <div class="modal-cat-row" id="viewCatRow" style="margin:16px 0;"></div>
     <div class="modal-meta" id="viewMeta" style="font-size:12px;color:var(--am-muted);margin-bottom:20px;"></div>
 
-    <div class="modal-body" id="viewBody" style="background:var(--am-white);padding:24px;border:0.5px solid var(--am-border);border-radius:8px;margin-bottom:20px;"></div>
+    <div id="viewBody" style="background:var(--am-white);padding:24px;border:0.5px solid var(--am-border);border-radius:8px;margin-bottom:20px;font-size:14px;color:var(--am-gray);line-height:1.9;"></div>
 
     <div id="viewAttachments"></div>
 
-    <div class="modal-actions" id="viewActions" style="justify-content:flex-start;"></div>
+    <div class="modal-actions" id="viewActions" style="justify-content:flex-start;margin-bottom:20px;"></div>
 
     <div id="viewComments" style="margin-top:40px;"></div>
-
-    <div class="write-footer">
-      <button class="write-back-btn" onclick="closePostView()">
-        <i class="ti ti-arrow-left"></i>게시판으로
-      </button>
-    </div>
   </div>
-</div>
-
-<!-- 게시글 보기 모달 (삭제됨) -->
-<div class="modal-overlay" id="viewModal" style="display:none;">
 </div>
 
 <!-- 관리자 자료 추가 페이지 -->
