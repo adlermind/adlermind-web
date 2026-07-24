@@ -1090,6 +1090,49 @@ table.idea-matrix tbody th { background: #f4f2ee; font-size: 13px; font-weight: 
   </div>
 </div>
 
+<!-- 관리자 자료 추가 페이지 -->
+<div class="write-page" id="amResourcePage">
+  <div class="write-page-inner">
+    <div class="write-page-nav">
+      <button class="write-back-btn" onclick="closeAmResourcePage()">
+        <i class="ti ti-arrow-left"></i>기획마당으로
+      </button>
+      <span class="write-admin-label">ADMIN</span>
+    </div>
+
+    <div class="write-page-title">자료 추가</div>
+    <div class="write-page-sub" id="amResourceSub">삶의 과제 · 생애 단계: — · —</div>
+
+    <div class="form-group">
+      <label class="form-label">자료 제목 *</label>
+      <input class="form-input" type="text" id="amResTitle" placeholder="예: 2026년 프로그램 기획안">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">자료 설명 (선택)</label>
+      <textarea class="form-input" id="amResDesc" rows="3" placeholder="이 자료가 무엇인지 간단히 설명하세요."></textarea>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">첨부 자료</label>
+      <div class="media-btn-row">
+        <button class="media-btn" onclick="document.getElementById('amResourceFileInput').click()"><i class="ti ti-paperclip"></i>파일 첨부</button>
+        <button class="media-btn" onclick="addAmResourceLink()"><i class="ti ti-link"></i>링크 추가</button>
+      </div>
+      <div class="idea-res-list" id="amResourceResList"></div>
+    </div>
+
+    <input type="file" id="amResourceFileInput" style="display:none" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.hwp,.zip">
+
+    <div class="write-footer">
+      <button class="write-back-btn" onclick="closeAmResourcePage()">
+        <i class="ti ti-arrow-left"></i>기획마당으로
+      </button>
+      <button class="write-submit-btn" id="amResourceSubmitBtn" onclick="submitAmResource()">자료 저장</button>
+    </div>
+  </div>
+</div>
+
 <!-- 풀스크린 글쓰기 페이지 -->
 <div class="write-page" id="writePage">
   <div class="write-page-inner">
@@ -1328,20 +1371,61 @@ async function initMemberHome() {
     return;
   }
 
+  amHasMemberRole = !!member;
+  amHasAdminRole = !!admin;
+
   if (member) {
     currentMember = member.member;
     hdrs = memberAuth.restHeaders(member.session.access_token);
-    document.querySelector('.header-title').textContent = `${currentMember.display_name} 조합원 공간`;
   } else if (admin) {
     currentMember = { display_name: admin.admin.user_id };
     hdrs = memberAuth.restHeaders(admin.session.access_token);
+  }
+
+  // 두 권한이 모두 있으면 모드 선택 UI 표시
+  if (amHasMemberRole && amHasAdminRole) {
+    amCurrentMode = 'member';
+    updateHeaderForDualRole();
+  } else if (amHasAdminRole) {
+    amCurrentMode = 'admin';
     document.querySelector('.header-title').textContent = `관리자 · 관리 페이지`;
     amAdminMode = true;
     adminMode = true;
     document.getElementById('adminDot').style.display = 'none';
+  } else {
+    document.querySelector('.header-title').textContent = `${currentMember.display_name} 조합원 공간`;
   }
 
   await loadBoard();
+}
+
+function updateHeaderForDualRole() {
+  const headerInfo = document.querySelector('.header-info');
+  const modeButton = document.createElement('div');
+  modeButton.style.cssText = 'display:flex;gap:6px;margin-top:8px;';
+  modeButton.innerHTML = `
+    <button class="btn-outline-sm" id="amModeMember" onclick="switchAmMode('member')" style="flex:1;border-color:var(--am-sage);color:var(--am-sage);">조합원 모드</button>
+    <button class="btn-outline-sm" id="amModeAdmin" onclick="switchAmMode('admin')" style="flex:1;">관리자 모드</button>`;
+  headerInfo.appendChild(modeButton);
+  document.querySelector('.header-title').textContent = `${currentMember.display_name} · 모드 선택`;
+}
+
+function switchAmMode(mode) {
+  amCurrentMode = mode;
+  amAdminMode = (mode === 'admin');
+  adminMode = (mode === 'admin');
+
+  document.getElementById('amModeMember').style.borderColor = mode === 'member' ? 'var(--am-sage)' : 'var(--am-border)';
+  document.getElementById('amModeMember').style.color = mode === 'member' ? 'var(--am-sage)' : 'var(--am-muted)';
+  document.getElementById('amModeAdmin').style.borderColor = mode === 'admin' ? 'var(--am-sage)' : 'var(--am-border)';
+  document.getElementById('amModeAdmin').style.color = mode === 'admin' ? 'var(--am-sage)' : 'var(--am-muted)';
+
+  if (amCurrentTask && amCurrentStage) {
+    renderIdeaCell();
+  }
+  renderAcctTable();
+
+  showToast(`${mode === 'member' ? '조합원' : '관리자'} 모드로 전환했습니다.`);
 }
 
 async function logoutMember() {
@@ -2267,6 +2351,9 @@ let amResources = [];
 let amAdminResources = [];
 let ideasLoaded = false;
 let amAdminMode = false;
+let amHasMemberRole = false;
+let amHasAdminRole = false;
+let amCurrentMode = 'member'; // 'member' or 'admin'
 
 async function loadIdeas() {
   try {
@@ -2331,15 +2418,9 @@ function renderIdeaCell() {
   const cards = sorted.map(renderIdeaCard).join('')
     || '<div class="idea-empty">아직 등록된 아이디어가 없습니다. 첫 아이디어를 남겨보세요.</div>';
   const adminPanel = amAdminMode ? `
-    <div style="margin-top:14px;padding:12px;background:rgba(143,175,212,0.08);border:0.5px solid rgba(143,175,212,0.3);border-radius:6px;">
-      <div style="font-size:11px;color:var(--am-muted);margin-bottom:8px;">관리자 자료 추가 (이 셀에만)</div>
-      <div class="idea-res-btns">
-        <button class="btn-outline-sm" type="button" onclick="document.getElementById('amAdminFileInput').click()"><i class="ti ti-paperclip"></i>파일 첨부</button>
-        <button class="btn-outline-sm" type="button" onclick="addAmAdminLink()"><i class="ti ti-link"></i>링크 추가</button>
-        <button class="btn-outline-sm" type="button" onclick="openAmAdminTextModal()"><i class="ti ti-notes"></i>텍스트 추가</button>
-      </div>
-      <div class="idea-res-list" id="amAdminResList"></div>
-      <button class="btn-sage" type="button" style="margin-top:8px;width:100%;" onclick="submitAmAdminResource()">자료 저장</button>
+    <div style="margin-top:14px;padding:16px;background:rgba(143,175,212,0.08);border:0.5px solid rgba(143,175,212,0.3);border-radius:6px;text-align:center;">
+      <div style="font-size:12px;color:var(--am-gray);margin-bottom:12px;font-weight:400;">이 셀에 자료를 추가하세요</div>
+      <button class="btn-sage" type="button" style="width:100%;" onclick="openAmResourcePage('${amCurrentTask}', '${amCurrentStage}')"><i class="ti ti-plus"></i>자료 추가</button>
     </div>` : '';
   el.innerHTML = `
     <div class="idea-cell-hd">
@@ -2355,7 +2436,6 @@ function renderIdeaCell() {
     document.getElementById('iContent').value  = editing.content || '';
   }
   renderIdeaResources();
-  if (amAdminMode) renderAmAdminResources();
 }
 
 function renderIdeaCard(i) {
@@ -2478,85 +2558,104 @@ document.getElementById('ideaFileInput').addEventListener('change', async functi
   this.value = '';
 });
 
-// ── 관리자 자료 입력 ──
-if (!document.getElementById('amAdminFileInput')) {
-  const input = document.createElement('input');
-  input.id = 'amAdminFileInput';
-  input.type = 'file';
-  input.style.display = 'none';
-  input.multiple = true;
-  document.body.appendChild(input);
-  input.addEventListener('change', async function() {
-    const files = Array.from(this.files); if (!files.length) return;
-    for (const f of files) {
-      showToast(`${f.name} 업로드 중...`);
-      const url = await uploadToStorage(f, 'ideas');
-      if (url) {
-        amAdminResources.push({ kind:'file', name:f.name, size:f.size, url });
-        showToast(`${f.name} 첨부 완료`);
-      }
+// ── 관리자 자료 추가 페이지 ──
+let amResourceTask = null, amResourceStage = null;
+let amResourceItems = [];
+
+function openAmResourcePage(task, stage) {
+  amResourceTask = task;
+  amResourceStage = stage;
+  amResourceItems = [];
+
+  document.getElementById('amResourceSub').textContent = `삶의 과제 · 생애 단계: ${task} · ${stage}`;
+  document.getElementById('amResTitle').value = '';
+  document.getElementById('amResDesc').value = '';
+  renderAmResourceResList();
+
+  document.getElementById('amResourcePage').classList.add('open');
+  document.getElementById('amResourcePage').scrollTop = 0;
+}
+
+function closeAmResourcePage() {
+  document.getElementById('amResourcePage').classList.remove('open');
+  amResourceItems = [];
+}
+
+document.getElementById('amResourceFileInput').addEventListener('change', async function() {
+  const files = Array.from(this.files); if (!files.length) return;
+  for (const f of files) {
+    showToast(`${f.name} 업로드 중...`);
+    const url = await uploadToStorage(f, 'ideas');
+    if (url) {
+      amResourceItems.push({ kind:'file', name:f.name, size:f.size, url });
+      showToast(`${f.name} 첨부 완료`);
     }
-    renderAmAdminResources();
-    this.value = '';
-  });
-}
-
-function renderAmAdminResources() {
-  const el = document.getElementById('amAdminResList');
-  if (!el) return;
-  if (!amAdminResources.length) {
-    el.innerHTML = '<div class="idea-res-empty">첨부한 자료가 없습니다.</div>';
-    return;
   }
-  el.innerHTML = amAdminResources.map((r, idx) => {
-    let tag = '링크';
-    if (r.kind === 'file') tag = '파일';
-    else if (r.kind === 'text') tag = '텍스트';
-    return `<div class="idea-res-chip"><span class="rtag">${tag}</span><span class="idea-res-nm">${esc(r.name || r.url)}</span><button class="idea-res-x" type="button" onclick="removeAmAdminResource(${idx})"><i class="ti ti-x"></i></button></div>`;
-  }).join('');
-}
+  renderAmResourceResList();
+  this.value = '';
+});
 
-function removeAmAdminResource(i) { amAdminResources.splice(i, 1); renderAmAdminResources(); }
-
-function addAmAdminLink() {
+function addAmResourceLink() {
   const url = prompt('링크 URL을 입력하세요 (https://...)');
   if (!url) return;
   const u = url.trim();
   if (!u) return;
-  amAdminResources.push({ kind:'link', name:u, url:u });
-  renderAmAdminResources();
+  amResourceItems.push({ kind:'link', name:u, url:u });
+  renderAmResourceResList();
 }
 
-function openAmAdminTextModal() {
-  const textName = prompt('텍스트 제목을 입력하세요 (예: 프로그램 개요)');
-  if (!textName) return;
-  const textContent = prompt('텍스트 내용을 입력하세요');
-  if (!textContent) return;
-  amAdminResources.push({ kind:'text', name:textName.trim(), content:textContent.trim() });
-  renderAmAdminResources();
+function renderAmResourceResList() {
+  const el = document.getElementById('amResourceResList');
+  if (!amResourceItems.length) {
+    el.innerHTML = '<div class="idea-res-empty">첨부한 자료가 없습니다.</div>';
+    return;
+  }
+  el.innerHTML = amResourceItems.map((r, idx) => {
+    let tag = '링크';
+    if (r.kind === 'file') tag = '파일';
+    return `<div class="idea-res-chip"><span class="rtag">${tag}</span><span class="idea-res-nm">${esc(r.name)}</span><button class="idea-res-x" type="button" onclick="removeAmResourceItem(${idx})"><i class="ti ti-x"></i></button></div>`;
+  }).join('');
 }
 
-async function submitAmAdminResource() {
-  if (!amAdminResources.length) { showToast('추가할 자료를 선택해주세요.'); return; }
-  if (!amCurrentTask || !amCurrentStage) return;
+function removeAmResourceItem(idx) {
+  amResourceItems.splice(idx, 1);
+  renderAmResourceResList();
+}
+
+async function submitAmResource() {
+  const title = document.getElementById('amResTitle').value.trim();
+  if (!title) { showToast('자료 제목을 입력해주세요.'); return; }
+  if (!amResourceItems.length) { showToast('첨부할 자료를 추가해주세요.'); return; }
+
+  const btn = document.getElementById('amResourceSubmitBtn');
+  btn.disabled = true;
+  btn.textContent = '저장 중...';
+
   const body = {
-    life_task: amCurrentTask,
-    life_stage: amCurrentStage,
+    life_task: amResourceTask,
+    life_stage: amResourceStage,
     author: '관리자',
-    program_title: `[관리자 자료] ${new Date().toLocaleDateString('ko-KR')}`,
-    content: '관리자가 제공하는 프로그램 자료 및 참고 자료입니다.',
-    resources: amAdminResources,
+    program_title: title,
+    content: document.getElementById('amResDesc').value.trim() || '관리자가 제공하는 자료입니다.',
+    resources: amResourceItems,
     source: 'admin'
   };
+
   try {
     await fetch(`${SB_URL}/rest/v1/am_ideas`, {
       method:'POST', headers:{ ...hdrs, 'Prefer':'return=minimal' }, body: JSON.stringify(body)
     });
     showToast('자료가 저장되었습니다.');
-    amAdminResources = [];
+    closeAmResourcePage();
     await loadIdeas();
-  } catch(e) { showToast('저장 오류가 발생했습니다.'); }
+  } catch(e) {
+    showToast('저장 오류가 발생했습니다.');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '자료 저장';
+  }
 }
+
 
 function editIdea(id) {
   const i = allIdeas.find(x => x.id === id); if (!i) return;
