@@ -2409,6 +2409,15 @@ function renderIdeaLegend() {
     AM_MEMBERS.map(m => `<span>${amWho(m.name)}${m.name}</span>`).join('');
 }
 
+function sortIdeasAdminFirst(items) {
+  return items.slice().sort((a,b) => {
+    const aIsAdmin = a.source === 'admin' ? 0 : 1;
+    const bIsAdmin = b.source === 'admin' ? 0 : 1;
+    if (aIsAdmin !== bIsAdmin) return aIsAdmin - bIsAdmin;
+    return new Date(b.created_at) - new Date(a.created_at);
+  });
+}
+
 function renderIdeaMatrix() {
   const table = document.getElementById('ideaMatrix');
   let html = '<thead><tr><th>과제 \\ 단계</th>' +
@@ -2416,7 +2425,7 @@ function renderIdeaMatrix() {
   for (const task of AM_TASKS) {
     html += `<tr><th>${task}</th>`;
     for (const stage of AM_STAGES) {
-      const items = allIdeas.filter(i => i.life_task === task && i.life_stage === stage);
+      const items = sortIdeasAdminFirst(allIdeas.filter(i => i.life_task === task && i.life_stage === stage));
       const active = (task === amCurrentTask && stage === amCurrentStage) ? ' active' : '';
       const inner = items.length
         ? items.map(i => `<span class="ptitle">${amWho(i.author)}<span class="tx">${esc(i.program_title)}</span></span>`).join('')
@@ -2440,12 +2449,7 @@ function openIdeaCell(task, stage) {
 function renderIdeaCell() {
   const el = document.getElementById('ideaCellPanel');
   const items = allIdeas.filter(i => i.life_task === amCurrentTask && i.life_stage === amCurrentStage);
-  const sorted = items.sort((a,b) => {
-    const aIsAdmin = a.source === 'admin' ? 0 : 1;
-    const bIsAdmin = b.source === 'admin' ? 0 : 1;
-    if (aIsAdmin !== bIsAdmin) return aIsAdmin - bIsAdmin;
-    return new Date(b.created_at) - new Date(a.created_at);
-  });
+  const sorted = sortIdeasAdminFirst(items);
   const cards = sorted.map(renderIdeaCard).join('')
     || '<div class="idea-empty">아직 등록된 아이디어가 없습니다. 첫 아이디어를 남겨보세요.</div>';
   const adminPanel = amAdminMode ? `
