@@ -1074,20 +1074,37 @@ table.idea-matrix tbody th { background: #f4f2ee; font-size: 13px; font-weight: 
   <iframe class="pdf-frame" id="pdfFrame" src=""></iframe>
 </div>
 
-<!-- 게시글 보기 모달 -->
-<div class="modal-overlay" id="viewModal">
-  <div class="modal-box">
-    <div class="modal-hd">
-      <div class="modal-title" id="viewTitle"></div>
-      <button class="modal-close" onclick="closeView()"><i class="ti ti-x"></i></button>
+<!-- 게시글 보기 페이지 (전체 화면) -->
+<div class="write-page" id="postViewPage">
+  <div class="write-page-inner" style="max-width:900px;">
+    <div class="write-page-nav">
+      <button class="write-back-btn" onclick="closePostView()">
+        <i class="ti ti-arrow-left"></i>게시판으로
+      </button>
     </div>
-    <div class="modal-cat-row" id="viewCatRow"></div>
-    <div class="modal-meta" id="viewMeta"></div>
-    <div class="modal-body" id="viewBody"></div>
+
+    <div class="write-page-title" id="viewTitle"></div>
+    <div class="modal-cat-row" id="viewCatRow" style="margin:16px 0;"></div>
+    <div class="modal-meta" id="viewMeta" style="font-size:12px;color:var(--am-muted);margin-bottom:20px;"></div>
+
+    <div class="modal-body" id="viewBody" style="background:var(--am-white);padding:24px;border:0.5px solid var(--am-border);border-radius:8px;margin-bottom:20px;"></div>
+
     <div id="viewAttachments"></div>
-    <div class="modal-actions" id="viewActions"></div>
-    <div id="viewComments"></div>
+
+    <div class="modal-actions" id="viewActions" style="justify-content:flex-start;"></div>
+
+    <div id="viewComments" style="margin-top:40px;"></div>
+
+    <div class="write-footer">
+      <button class="write-back-btn" onclick="closePostView()">
+        <i class="ti ti-arrow-left"></i>게시판으로
+      </button>
+    </div>
   </div>
+</div>
+
+<!-- 게시글 보기 모달 (삭제됨) -->
+<div class="modal-overlay" id="viewModal" style="display:none;">
 </div>
 
 <!-- 관리자 자료 추가 페이지 -->
@@ -1618,7 +1635,7 @@ function filterCat(cat, btn) {
   renderBoard();
 }
 
-// ── 보기 모달 ──
+// ── 보기 페이지 (전체 화면) ──
 async function openView(id) {
   const p = allPosts.find(x => x.id === id); if (!p) return;
   history.pushState({}, '', `members-home.html?post=${id}`);
@@ -1640,7 +1657,7 @@ async function openView(id) {
   })));
   if (attachments.length) {
     document.getElementById('viewAttachments').innerHTML = `
-      <div class="modal-attachments">
+      <div class="modal-attachments" style="background:var(--am-white);padding:20px;border:0.5px solid var(--am-border);border-radius:8px;margin-bottom:20px;">
         <div class="modal-attachments-title">첨부파일 ${attachments.length}개</div>
         ${attachments.map(f => `
           <div class="attach-item">
@@ -1658,7 +1675,7 @@ async function openView(id) {
 
   if (p.link_url) {
     document.getElementById('viewAttachments').innerHTML += `
-      <div class="modal-attachments">
+      <div class="modal-attachments" style="background:var(--am-white);padding:20px;border:0.5px solid var(--am-border);border-radius:8px;margin-bottom:20px;">
         <div class="modal-attachments-title">관련 링크</div>
         <div class="attach-item">
           <i class="ti ti-link" style="font-size:13px;color:var(--am-muted);flex-shrink:0;"></i>
@@ -1673,11 +1690,15 @@ async function openView(id) {
     <button class="btn-danger" onclick="deletePost('${p.id}')"><i class="ti ti-trash"></i>삭제</button>`;
 
   loadComments(p.id);
-  document.getElementById('viewModal').classList.add('open');
+  document.getElementById('postViewPage').classList.add('open');
+  document.getElementById('postViewPage').scrollTop = 0;
+}
+function closePostView() {
+  document.getElementById('postViewPage').classList.remove('open');
+  history.pushState({}, '', 'members-home.html');
 }
 function closeView() {
-  document.getElementById('viewModal').classList.remove('open');
-  history.pushState({}, '', 'members-home.html');
+  closePostView();
 }
 function copyPostLink(id) {
   const url = `${window.location.origin}/members-home.html?post=${id}`;
@@ -1826,7 +1847,8 @@ function openContact(id) {
   document.getElementById('viewAttachments').innerHTML = '';
   document.getElementById('viewActions').innerHTML =
     `<button class="btn-danger" onclick="deleteContact('${r.id}')"><i class="ti ti-trash"></i>삭제</button>`;
-  document.getElementById('viewModal').classList.add('open');
+  document.getElementById('postViewPage').classList.add('open');
+  document.getElementById('postViewPage').scrollTop = 0;
 }
 
 async function deleteContact(id) {
@@ -1883,9 +1905,6 @@ function showToast(msg) {
 }
 
 // 모달 바깥 클릭 닫기
-document.getElementById('viewModal').addEventListener('click', e => {
-  if (e.target === document.getElementById('viewModal')) closeView();
-});
 document.getElementById('videoModal').addEventListener('click', e => {
   if (e.target === document.getElementById('videoModal')) closeVideoModal();
 });
@@ -2485,7 +2504,8 @@ function openTextResourceModal(title, content) {
   document.getElementById('viewBody').textContent = content;
   document.getElementById('viewAttachments').innerHTML = '';
   document.getElementById('viewActions').innerHTML = '';
-  document.getElementById('viewModal').classList.add('open');
+  document.getElementById('postViewPage').classList.add('open');
+  document.getElementById('postViewPage').scrollTop = 0;
 }
 
 function renderIdeaForm() {
