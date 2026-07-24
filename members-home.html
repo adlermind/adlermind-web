@@ -2313,6 +2313,7 @@ function renderIdeaCell() {
       <div class="idea-res-btns">
         <button class="btn-outline-sm" type="button" onclick="document.getElementById('amAdminFileInput').click()"><i class="ti ti-paperclip"></i>파일 첨부</button>
         <button class="btn-outline-sm" type="button" onclick="addAmAdminLink()"><i class="ti ti-link"></i>링크 추가</button>
+        <button class="btn-outline-sm" type="button" onclick="openAmAdminTextModal()"><i class="ti ti-notes"></i>텍스트 추가</button>
       </div>
       <div class="idea-res-list" id="amAdminResList"></div>
       <button class="btn-sage" type="button" style="margin-top:8px;width:100%;" onclick="submitAmAdminResource()">자료 저장</button>
@@ -2343,8 +2344,18 @@ function renderIdeaCard(i) {
   const ses = i.sessions ? `<span class="idea-chip chip-ses">권장 ${esc(i.sessions)}</span>` : '';
   const wel = i.wel_domain ? `<span class="idea-chip chip-wel">5F-Wel · ${esc(i.wel_domain)}</span>` : '';
   const res = (i.resources || []).map(r => {
-    const tag = r.kind === 'file' ? '파일' : '링크';
-    return `<a class="idea-res-item" href="${esc(r.kind === 'file' ? (r.signed_url || '#') : r.url)}" target="_blank" rel="noopener"><span class="rtag">${tag}</span><span class="nm">${esc(r.name || r.url)}</span></a>`;
+    if (r.kind === 'text') {
+      return `<a class="idea-res-item" href="#" onclick="openTextResourceModal('${esc(r.name)}', '${esc(r.content)}');return false;"><span class="rtag">텍스트</span><span class="nm">${esc(r.name)}</span></a>`;
+    } else if (r.kind === 'file') {
+      const isPdf = r.name && r.name.toLowerCase().endsWith('.pdf');
+      if (isPdf && r.signed_url) {
+        return `<a class="idea-res-item" href="#" onclick="openPdf('${esc(r.signed_url)}', '${esc(r.name)}');return false;"><span class="rtag">PDF</span><span class="nm">${esc(r.name)}</span></a>`;
+      } else {
+        return `<a class="idea-res-item" href="${esc(r.signed_url || '#')}" target="_blank" rel="noopener"><span class="rtag">파일</span><span class="nm">${esc(r.name)}</span></a>`;
+      }
+    } else {
+      return `<a class="idea-res-item" href="${esc(r.url)}" target="_blank" rel="noopener"><span class="rtag">링크</span><span class="nm">${esc(r.name || r.url)}</span></a>`;
+    }
   }).join('');
   const actions = isAdmin
     ? `<button class="btn-outline-sm idea-del" onclick="deleteIdea('${i.id}')"><i class="ti ti-trash"></i>삭제</button>`
@@ -2362,6 +2373,16 @@ function renderIdeaCard(i) {
       ${actions}
     </div>
   </div>`;
+}
+
+function openTextResourceModal(title, content) {
+  document.getElementById('viewTitle').textContent = title;
+  document.getElementById('viewCatRow').innerHTML = '<span class="modal-cat-badge" style="background:rgba(143,175,212,0.12);color:#5a9990;">텍스트</span>';
+  document.getElementById('viewMeta').textContent = '관리자 제공 자료';
+  document.getElementById('viewBody').textContent = content;
+  document.getElementById('viewAttachments').innerHTML = '';
+  document.getElementById('viewActions').innerHTML = '';
+  document.getElementById('viewModal').classList.add('open');
 }
 
 function renderIdeaForm() {
@@ -2465,7 +2486,9 @@ function renderAmAdminResources() {
     return;
   }
   el.innerHTML = amAdminResources.map((r, idx) => {
-    const tag = r.kind === 'file' ? '파일' : '링크';
+    let tag = '링크';
+    if (r.kind === 'file') tag = '파일';
+    else if (r.kind === 'text') tag = '텍스트';
     return `<div class="idea-res-chip"><span class="rtag">${tag}</span><span class="idea-res-nm">${esc(r.name || r.url)}</span><button class="idea-res-x" type="button" onclick="removeAmAdminResource(${idx})"><i class="ti ti-x"></i></button></div>`;
   }).join('');
 }
@@ -2478,6 +2501,15 @@ function addAmAdminLink() {
   const u = url.trim();
   if (!u) return;
   amAdminResources.push({ kind:'link', name:u, url:u });
+  renderAmAdminResources();
+}
+
+function openAmAdminTextModal() {
+  const textName = prompt('텍스트 제목을 입력하세요 (예: 프로그램 개요)');
+  if (!textName) return;
+  const textContent = prompt('텍스트 내용을 입력하세요');
+  if (!textContent) return;
+  amAdminResources.push({ kind:'text', name:textName.trim(), content:textContent.trim() });
   renderAmAdminResources();
 }
 
