@@ -354,16 +354,20 @@ body {
   padding: 0 24px 80px;
 }
 #postViewPage {
-  position: relative !important;
+  display: none !important;
+  position: static !important;
   inset: auto !important;
+  background: var(--am-bg);
+  z-index: 800;
+  overflow: visible !important;
   height: auto !important;
   min-height: auto !important;
-  overflow-y: visible !important;
-  overflow-x: hidden;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: auto !important;
+  flex-direction: column;
+  padding-bottom: 0;
+  max-height: none !important;
+}
+#postViewPage.open {
+  display: flex !important;
 }
 #postViewPage .write-page-inner {
   max-width: 1080px;
