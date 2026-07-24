@@ -994,7 +994,7 @@ table.idea-matrix tbody th { background: #f4f2ee; font-size: 13px; font-weight: 
   <div class="panel-hd">
     <div class="panel-title">문의 관리</div>
   </div>
-  <div class="board-list" id="contactList">
+  <div id="contactList">
     <div class="board-empty">불러오는 중...</div>
   </div>
 </div>
@@ -1591,6 +1591,7 @@ async function uploadToStorage(file, folder) {
 
 // ── 탭 전환 ──
 function switchTab(tab) {
+  closePostView();
   ['board','schedule','ideas','contact','accounting'].forEach(t => {
     document.getElementById('tab' + cap(t)).classList.remove('active');
     document.getElementById('panel' + cap(t)).classList.remove('active');
