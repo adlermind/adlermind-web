@@ -354,8 +354,16 @@ body {
   padding: 0 24px 80px;
 }
 #postViewPage {
-  min-height: 100vh;
-  height: auto;
+  position: relative !important;
+  inset: auto !important;
+  height: auto !important;
+  min-height: auto !important;
+  overflow-y: visible !important;
+  overflow-x: hidden;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: auto !important;
 }
 #postViewPage .write-page-inner {
   max-width: 1080px;
