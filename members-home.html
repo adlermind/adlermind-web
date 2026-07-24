@@ -1313,11 +1313,34 @@ const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
 let hdrs = null;
 
 async function initMemberHome() {
-  const auth = await memberAuth.requireActiveMember('members.html');
-  if (!auth) return;
-  currentMember = auth.member;
-  hdrs = memberAuth.restHeaders(auth.session.access_token);
-  document.querySelector('.header-title').textContent = `${currentMember.display_name} 조합원 공간`;
+  const memberAuth = window.AMMemberAuth;
+  const { data: { session } } = await memberAuth.client.auth.getSession();
+  if (!session) {
+    window.location.replace('members.html');
+    return;
+  }
+
+  const member = await memberAuth.getActiveMember();
+  const admin = await memberAuth.getActiveAdmin();
+
+  if (!member && !admin) {
+    window.location.replace('members.html');
+    return;
+  }
+
+  if (member) {
+    currentMember = member.member;
+    hdrs = memberAuth.restHeaders(member.session.access_token);
+    document.querySelector('.header-title').textContent = `${currentMember.display_name} 조합원 공간`;
+  } else if (admin) {
+    currentMember = { display_name: admin.admin.user_id };
+    hdrs = memberAuth.restHeaders(admin.session.access_token);
+    document.querySelector('.header-title').textContent = `관리자 · 관리 페이지`;
+    amAdminMode = true;
+    adminMode = true;
+    document.getElementById('adminDot').style.display = 'none';
+  }
+
   await loadBoard();
 }
 
