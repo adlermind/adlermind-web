@@ -353,6 +353,10 @@ body {
   max-width: 760px; margin: 0 auto;
   padding: 0 24px 80px;
 }
+#postViewPage .write-page-inner {
+  max-width: 1080px;
+  padding: 0 32px 80px;
+}
 .write-page-nav {
   display: flex; align-items: center; justify-content: space-between;
   padding: 16px 0 0;
@@ -564,6 +568,9 @@ body {
   .doc-grid { grid-template-columns: 1fr 1fr; }
   .write-page-inner { padding: 0 16px 80px; }
   .write-page-title { font-size: 22px; }
+  #postViewPage .write-page-inner { max-width: 100%; padding: 0 16px 80px; }
+  #postViewPage .modal-body { padding: 16px; }
+  #postViewPage .modal-attachments { padding: 16px; }
 }
 
 /* ── 회계장부 ── */
@@ -1076,7 +1083,7 @@ table.idea-matrix tbody th { background: #f4f2ee; font-size: 13px; font-weight: 
 
 <!-- 게시글 보기 페이지 (전체 화면) -->
 <div class="write-page" id="postViewPage">
-  <div class="write-page-inner" style="max-width:900px;">
+  <div class="write-page-inner" style="max-width:1080px;">
     <div class="write-page-nav">
       <button class="write-back-btn" onclick="closePostView()">
         <i class="ti ti-arrow-left"></i>게시판으로
