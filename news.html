@@ -311,7 +311,7 @@ function openDetail(id) {
         ${attachments.map(f => `
           <div class="attach-item">
             <span class="attach-item-name">${esc(f.name)}</span>
-            <a class="attach-dl" href="${esc(f.url)}?download=${encodeURIComponent(f.name)}" download="${esc(f.name)}" target="_blank">다운로드</a>
+            <a class="attach-dl" href="${esc(publicFileUrl(f.url))}?download=${encodeURIComponent(f.name)}" download="${esc(f.name)}" target="_blank">다운로드</a>
           </div>`).join('')}
       </div>`;
   } else {
@@ -329,6 +329,16 @@ function backToList() {
 }
 
 function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// 첨부파일은 board-files:경로 형태로 저장된다. 이 페이지는 로그인 없이 보는 곳이라
+// 서명 주소를 발급할 수 없으므로 공개 주소로 바꾼다. 공개로 돌린 글의 첨부만 여기에 나온다.
+const BOARD_FILES_PREFIX = 'board-files:';
+function publicFileUrl(value) {
+  if (!value) return '#';
+  return value.startsWith(BOARD_FILES_PREFIX)
+    ? `${SB_URL}/storage/v1/object/public/board-files/${value.slice(BOARD_FILES_PREFIX.length)}`
+    : value;
+}
 
 function hasHtmlTag(content) {
   return /<\/?[a-z][\s\S]*>/i.test(String(content || ''));
@@ -363,8 +373,18 @@ function renderPostBody(target, content) {
     try {
       const doc = frame.contentDocument;
       const body = doc && doc.body;
-      if (body) {
-        frame.style.height = (body.scrollHeight + 24) + 'px';
+      if (!body) return;
+      const fit = () => { frame.style.height = (body.scrollHeight + 24) + 'px'; };
+      fit();
+      // 사진은 iframe 로드 뒤에 도착한다. 그때 높이를 다시 재지 않으면 사진 아래가 잘린다.
+      if (window.ResizeObserver) {
+        new ResizeObserver(fit).observe(body);
+      } else {
+        body.querySelectorAll('img').forEach(img => {
+          if (img.complete) return;
+          img.addEventListener('load', fit);
+          img.addEventListener('error', fit);
+        });
       }
     } catch(e) {}
   };

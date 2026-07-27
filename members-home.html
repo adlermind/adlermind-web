@@ -1503,7 +1503,11 @@ document.getElementById('imageInput').addEventListener('change', async function(
     const range = quill.getSelection(true);
     quill.insertEmbed(range.index, 'image', url);
     quill.setSelection(range.index + 1);
-    showToast('사진이 삽입되었습니다.');
+    // Quill 은 받아들이지 못한 주소를 "//:0" 으로 바꿔 버린다.
+    // 여기서 알리지 않으면 사진 없는 글이 그대로 저장된다.
+    showToast(quill.root.querySelector('img[src="//:0"]')
+      ? '사진을 넣지 못했습니다. 저장하지 마시고 관리자에게 알려주세요.'
+      : '사진이 삽입되었습니다.');
   }
   this.value = '';
 });
@@ -1782,6 +1786,12 @@ async function submitPost() {
     : quill.root.innerHTML;
 
   if (!title || !author) { showToast('제목과 작성자를 입력해주세요.'); return; }
+
+  // 주소를 잃은 사진("//:0")이 있으면 저장을 막는다. 저장한 뒤에는 되살릴 단서가 없다.
+  if (content.includes('//:0')) {
+    showToast('사진이 제대로 붙지 않았습니다. 그 사진을 지우고 다시 넣어주세요.');
+    return;
+  }
 
   const btn = document.getElementById('writeSubmitBtn');
   btn.disabled = true; btn.textContent = '저장 중...';
