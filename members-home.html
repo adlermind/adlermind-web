@@ -1661,21 +1661,26 @@ async function openView(id) {
   document.getElementById('viewMeta').textContent =
     `${p.author} · ` + new Date(p.created_at).toLocaleDateString('ko-KR', { year:'numeric', month:'long', day:'numeric', hour:'2-digit', minute:'2-digit' });
 
-  renderPostBody(document.getElementById('viewBody'), p.content || '');
+  await renderPostBody(document.getElementById('viewBody'), p.content || '');
 
   const attachments = await Promise.all((p.attachments || []).map(async file => ({
     ...file,
     signedUrl: await memberAuth.signedStorageUrl(file.url, 'board-files')
   })));
+  openedAttachments = attachments;
   if (attachments.length) {
     document.getElementById('viewAttachments').innerHTML = `
       <div class="modal-attachments" style="background:var(--am-white);padding:20px;border:0.5px solid var(--am-border);border-radius:8px;margin-bottom:20px;">
         <div class="modal-attachments-title">첨부파일 ${attachments.length}개</div>
-        ${attachments.map(f => `
+        ${attachments.map((f, i) => `
           <div class="attach-item">
             <i class="ti ti-paperclip" style="font-size:13px;color:var(--am-muted);flex-shrink:0;"></i>
             <span class="attach-item-name">${esc(f.name)}</span>
             <span style="font-size: 13px;color:var(--am-muted);font-family:Raleway,sans-serif;flex-shrink:0;margin-right:6px;">${formatSize(f.size||0)}</span>
+            ${canViewInPage(f.name) ? `
+            <a class="attach-dl" href="#" onclick="openAttachment(${i});return false;">
+              <i class="ti ti-eye"></i>바로 보기
+            </a>` : ''}
             <a class="attach-dl" href="${esc(f.signedUrl || '#')}" download="${esc(f.name)}" target="_blank" rel="noopener">
               <i class="ti ti-download"></i>다운로드
             </a>
@@ -1873,14 +1878,87 @@ async function deleteContact(id) {
 
 // ── PDF 뷰어 ──
 function openPdf(path, title) {
+  const frame = document.getElementById('pdfFrame');
+  frame.removeAttribute('srcdoc');
   document.getElementById('pdfTitle').textContent = title;
-  document.getElementById('pdfFrame').src = path;
+  frame.src = path;
   document.getElementById('pdfDownload').href = path;
   document.getElementById('pdfOverlay').classList.add('open');
 }
 function closePdf() {
+  const frame = document.getElementById('pdfFrame');
   document.getElementById('pdfOverlay').classList.remove('open');
-  document.getElementById('pdfFrame').src = '';
+  frame.removeAttribute('srcdoc');
+  frame.src = '';
+}
+
+// ── 첨부파일 바로 보기 ──
+// 서명 주소는 10분이면 만료된다. 목록을 그릴 때가 아니라 누를 때 새로 발급한다.
+let openedAttachments = [];
+
+function canViewInPage(name) {
+  return /\.(pdf|png|jpe?g|gif|webp|docx)$/i.test(String(name || ''));
+}
+
+async function openAttachment(index) {
+  const file = openedAttachments[index];
+  if (!file) return;
+  const url = await memberAuth.signedStorageUrl(file.url, 'board-files');
+  if (!url) { showToast('파일을 여는 데 실패했습니다. 다운로드해 주세요.'); return; }
+  if (/\.docx$/i.test(file.name || '')) {
+    await openDocx(url, file.name);
+  } else {
+    openPdf(url, file.name);
+  }
+}
+
+// docx 는 브라우저가 직접 열지 못한다. 파일을 밖으로 보내지 않고 이 자리에서 글로 바꾼다.
+// 640KB 라 첨부를 실제로 열 때만 내려받는다.
+let mammothLoading = null;
+function loadMammoth() {
+  if (window.mammoth) return Promise.resolve();
+  if (!mammothLoading) {
+    mammothLoading = new Promise((resolve, reject) => {
+      const s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js';
+      s.onload = resolve;
+      s.onerror = () => { mammothLoading = null; reject(new Error('mammoth load failed')); };
+      document.head.appendChild(s);
+    });
+  }
+  return mammothLoading;
+}
+
+const DOCX_VIEW_STYLE = `<style>
+body { margin: 0; padding: 40px 24px; background: #fff;
+  font-family: 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+  font-size: 15px; font-weight: 400; line-height: 1.9; color: #3a3a3a; }
+.docx-page { max-width: 800px; margin: 0 auto; }
+img { max-width: 100%; height: auto; }
+table { border-collapse: collapse; max-width: 100%; }
+td, th { border: 1px solid #ddd; padding: 6px 10px; }
+h1, h2, h3 { font-weight: 400; margin: 20px 0 10px; }
+h1 { font-size: 22px; } h2 { font-size: 19px; } h3 { font-size: 16px; }
+p { margin: 0 0 10px; }
+</style>`;
+
+async function openDocx(url, name) {
+  showToast('문서를 여는 중입니다...');
+  try {
+    await loadMammoth();
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('download failed');
+    const result = await mammoth.convertToHtml({ arrayBuffer: await res.arrayBuffer() });
+    const frame = document.getElementById('pdfFrame');
+    document.getElementById('pdfTitle').textContent = name;
+    document.getElementById('pdfDownload').href = url;
+    frame.removeAttribute('src');
+    frame.srcdoc = DOCX_VIEW_STYLE +
+      '<div class="docx-page">' + (result.value || '<p>내용을 읽지 못했습니다.</p>') + '</div>';
+    document.getElementById('pdfOverlay').classList.add('open');
+  } catch(e) {
+    showToast('문서를 여는 데 실패했습니다. 다운로드해 주세요.');
+  }
 }
 
 // ── 유틸 ──
@@ -1890,13 +1968,36 @@ function esc(s) {
 function hasHtmlTag(content) {
   return /<\/?[a-z][\s\S]*>/i.test(String(content || ''));
 }
-function renderPostBody(target, content) {
+// board-files 버킷은 비공개다. 본문 사진은 저장된 표시값을 볼 때마다 서명 주소로 바꾼다.
+// 서명 주소는 만료되므로 글 내용에 저장하지 않는다.
+async function signBodyImages(content) {
+  const doc = new DOMParser().parseFromString(String(content || ''), 'text/html');
+  const images = Array.from(doc.querySelectorAll('img')).filter(img => {
+    const src = img.getAttribute('src') || '';
+    return src.startsWith('board-files:') || src.includes('/storage/v1/object/public/board-files/');
+  });
+  if (!images.length) return String(content || '');
+
+  await Promise.all(images.map(async img => {
+    const signed = await memberAuth.signedStorageUrl(img.getAttribute('src'), 'board-files');
+    if (signed) img.setAttribute('src', signed);
+  }));
+  // HTML 모드로 붙여넣은 글은 <style> 이 head 로 옮겨진다. 빠뜨리면 서식이 사라진다.
+  return doc.head.innerHTML + doc.body.innerHTML;
+}
+
+// 본문은 전역 CSS 오염을 피하려고 iframe 안에서 그린다. iframe 안에는 바깥 스타일이 닿지 않으므로
+// 사진이 본문 폭을 넘지 않도록 최소 규칙을 함께 넣는다.
+const POST_BODY_STYLE = '<style>img,video{max-width:100%;height:auto;}iframe,table{max-width:100%;}</style>';
+
+async function renderPostBody(target, content) {
   target.innerHTML = '';
   if (!hasHtmlTag(content)) {
     target.textContent = content || '';
     return;
   }
 
+  const html = await signBodyImages(content);
   const frame = document.createElement('iframe');
   frame.className = 'modal-body-frame';
   frame.setAttribute('sandbox', 'allow-same-origin');
@@ -1904,10 +2005,22 @@ function renderPostBody(target, content) {
     try {
       const doc = frame.contentDocument;
       const body = doc && doc.body;
-      if (body) frame.style.height = body.scrollHeight + 'px';
+      if (!body) return;
+      const fit = () => { frame.style.height = body.scrollHeight + 'px'; };
+      fit();
+      // 사진은 iframe 로드 뒤에 도착한다. 그때 높이를 다시 재지 않으면 사진 아래가 잘린다.
+      if (window.ResizeObserver) {
+        new ResizeObserver(fit).observe(body);
+      } else {
+        body.querySelectorAll('img').forEach(img => {
+          if (img.complete) return;
+          img.addEventListener('load', fit);
+          img.addEventListener('error', fit);
+        });
+      }
     } catch(e) {}
   };
-  frame.srcdoc = String(content || '');
+  frame.srcdoc = POST_BODY_STYLE + html;
   target.appendChild(frame);
 }
 function showToast(msg) {
