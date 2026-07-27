@@ -134,6 +134,15 @@ hr.divider {
 }
 .card-badge.soon { color: var(--am-muted); border-color: var(--am-border); }
 
+a.card-link { display: block; text-decoration: none; transition: border-color 0.15s; }
+a.card-link:hover { border-color: var(--am-sage); }
+.account-note {
+  font-size: 12px; color: var(--am-muted);
+  line-height: 1.9; margin-top: -36px; margin-bottom: 56px;
+  border-left: 2px solid var(--am-border); padding-left: 12px;
+}
+.account-note a { color: var(--am-sage); }
+
 /* ── 반응형 ── */
 @media (max-width: 640px) {
   nav { padding: 0 16px; gap: 12px; }
@@ -215,16 +224,20 @@ hr.divider {
 
   <div class="section-label">ACCOUNT</div>
   <div class="card-grid">
-    <div class="card">
-      <div class="card-tag">Password</div>
-      <div class="card-title">비밀번호 변경</div>
+    <a class="card card-link" href="account-settings.html">
+      <div class="card-tag">Settings</div>
+      <div class="card-title">계정 설정</div>
       <div class="card-desc">
-        별칭은 변경할 수 없습니다.<br>
-        비밀번호만 변경 가능합니다.
+        비밀번호를 바꾸거나<br>
+        계정을 삭제할 수 있습니다.
       </div>
-      <div class="card-badge soon">준비 중</div>
-    </div>
+    </a>
   </div>
+  <p class="account-note">
+    별칭은 변경할 수 없습니다. 이 계정은 임시 계정이 아니며 직접 지우실 때까지 유지됩니다.<br>
+    상품 구매·프로그램 신청·조합원 가입에는 <a href="account.html">이메일 회원계정</a>이 따로 필요하며,
+    별칭계정과는 서로 다른 계정이라 기록이 합쳐지지 않습니다.
+  </p>
 
 </div>
 

@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<!-- 별칭계정과 이메일 회원계정이 함께 사용하는 계정 설정 페이지입니다. -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<title>계정 설정 · ADLER MIND 협동조합</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400&family=Noto+Sans+KR:wght@300;400&family=Raleway:wght@200;300;400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root {
+  --am-rose:   #E8929A;
+  --am-sage:   #8FBFB8;
+  --am-gray:   #6B6B6B;
+  --am-pale:   #D8D8DC;
+  --am-bg:     #FAFAF8;
+  --am-muted:  #9a9490;
+  --am-border: #e8e4e0;
+  --am-white:  #ffffff;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 300;
+  color: var(--am-gray);
+  background: var(--am-bg);
+  line-height: 1.7;
+  min-height: 100vh;
+}
+
+nav {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--am-white);
+  border-bottom: 0.5px solid var(--am-border);
+  padding: 0 32px;
+  display: flex; align-items: center; gap: 16px;
+  height: 60px;
+}
+.nav-logo img { height: 40px; display: block; margin-top: 4px; }
+.nav-right { display: flex; align-items: center; gap: 12px; margin-left: auto; }
+.nav-nick { font-size: 12px; color: var(--am-sage); letter-spacing: 0.04em; font-weight: 400; }
+.nav-logout-btn {
+  padding: 6px 14px;
+  background: none; color: var(--am-muted);
+  border: 0.5px solid var(--am-border); border-radius: 2px;
+  font-size: 12px; font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 300; cursor: pointer; letter-spacing: 0.04em;
+  transition: all 0.15s;
+}
+.nav-logout-btn:hover { border-color: var(--am-rose); color: var(--am-rose); }
+
+.page-wrap { max-width: 640px; margin: 0 auto; padding: 56px 32px 80px; }
+.page-title {
+  font-family: 'Noto Serif KR', serif;
+  font-size: clamp(20px, 4vw, 28px);
+  font-weight: 300; margin-bottom: 10px;
+}
+.page-desc { font-size: 13px; color: var(--am-muted); margin-bottom: 44px; }
+
+.panel {
+  background: var(--am-white);
+  border: 0.5px solid var(--am-border);
+  padding: 30px 28px;
+  margin-bottom: 22px;
+}
+.panel-label {
+  font-family: 'Raleway', sans-serif;
+  font-size: 10px; font-weight: 300;
+  letter-spacing: 0.2em; color: var(--am-muted);
+  text-transform: uppercase; margin-bottom: 10px;
+}
+.panel-title {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 16px; margin-bottom: 14px;
+}
+.panel-desc { font-size: 12.5px; color: var(--am-muted); line-height: 1.9; margin-bottom: 18px; }
+
+.info-row { font-size: 13px; line-height: 2.1; }
+.info-key { display: inline-block; width: 92px; color: var(--am-muted); font-size: 12px; }
+
+.field { margin-bottom: 14px; }
+.field-label { font-size: 11px; color: var(--am-muted); margin-bottom: 6px; }
+.field-input {
+  width: 100%;
+  border: 0.5px solid var(--am-border); border-radius: 0;
+  padding: 11px 13px;
+  font-size: 14px; font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 300; background: var(--am-bg); color: var(--am-gray);
+  letter-spacing: 0.06em;
+  transition: border-color 0.15s;
+}
+.field-input:focus { outline: none; border-color: var(--am-sage); }
+
+.msg { font-size: 12px; margin-top: 10px; line-height: 1.8; display: none; }
+.msg.err { color: var(--am-rose); }
+.msg.ok  { color: var(--am-sage); }
+
+.submit-btn {
+  margin-top: 8px; padding: 12px 22px;
+  background: var(--am-sage); color: #fff; border: none;
+  font-size: 13px; font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 300; letter-spacing: 0.06em;
+  cursor: pointer; transition: background 0.15s;
+}
+.submit-btn:hover { background: #6fa8a0; }
+.submit-btn:disabled { background: var(--am-pale); cursor: default; }
+.submit-btn.danger { background: var(--am-rose); }
+.submit-btn.danger:hover { background: #d97e87; }
+
+.panel.danger-panel { border-color: #f0d5d8; }
+.scope-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+  border: 0.5px solid var(--am-border); margin-bottom: 18px;
+}
+.scope-col { padding: 16px 18px; }
+.scope-col + .scope-col { border-left: 0.5px solid var(--am-border); }
+.scope-head { font-size: 11px; letter-spacing: 0.1em; margin-bottom: 10px; }
+.scope-head.gone { color: var(--am-rose); }
+.scope-head.stay { color: var(--am-sage); }
+.scope-list { list-style: none; font-size: 12px; line-height: 2; color: var(--am-muted); }
+.scope-list li::before { content: '· '; }
+
+.back-link {
+  display: inline-block; margin-top: 12px;
+  font-size: 12px; color: var(--am-muted); text-decoration: none;
+}
+.back-link:hover { color: var(--am-sage); }
+.hidden { display: none; }
+
+@media (max-width: 640px) {
+  nav { padding: 0 16px; }
+  .page-wrap { padding: 36px 16px 60px; }
+  .scope-grid { grid-template-columns: 1fr; }
+  .scope-col + .scope-col { border-left: none; border-top: 0.5px solid var(--am-border); }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">
+    <img src="image/adlermind_logo.png" alt="ADLER MIND 협동조합 로고">
+  </a>
+  <div class="nav-right">
+    <span class="nav-nick" id="navNick"></span>
+    <button class="nav-logout-btn" onclick="doLogout()">로그아웃</button>
+  </div>
+</nav>
+
+<div class="page-wrap">
+  <h1 class="page-title">계정 설정</h1>
+  <p class="page-desc">비밀번호를 바꾸거나 계정을 삭제할 수 있습니다.</p>
+
+  <!-- 계정 정보 -->
+  <section class="panel">
+    <div class="panel-label">Account</div>
+    <div class="panel-title">내 계정</div>
+    <div class="info-row" id="accountInfo"></div>
+    <p class="panel-desc" id="accountNote" style="margin-top:16px; margin-bottom:0;"></p>
+  </section>
+
+  <!-- 비밀번호 변경 -->
+  <section class="panel">
+    <div class="panel-label">Password</div>
+    <div class="panel-title">비밀번호 변경</div>
+    <p class="panel-desc">새 비밀번호는 8자 이상으로 정해 주세요.</p>
+    <div class="field">
+      <div class="field-label">현재 비밀번호</div>
+      <input class="field-input" type="password" id="curPw" autocomplete="current-password">
+    </div>
+    <div class="field">
+      <div class="field-label">새 비밀번호</div>
+      <input class="field-input" type="password" id="newPw" autocomplete="new-password" placeholder="8자 이상">
+    </div>
+    <div class="field">
+      <div class="field-label">새 비밀번호 확인</div>
+      <input class="field-input" type="password" id="newPw2" autocomplete="new-password">
+    </div>
+    <button class="submit-btn" id="pwBtn" onclick="changePassword()">비밀번호 변경</button>
+    <p class="msg err" id="pwErr"></p>
+    <p class="msg ok" id="pwOk"></p>
+  </section>
+
+  <!-- 계정 삭제 -->
+  <section class="panel danger-panel">
+    <div class="panel-label">Delete</div>
+    <div class="panel-title">계정 삭제</div>
+    <p class="panel-desc">되돌릴 수 없습니다. 지운 계정과 기록은 되살릴 수 없습니다.</p>
+
+    <div class="scope-grid">
+      <div class="scope-col">
+        <div class="scope-head gone">함께 지워지는 것</div>
+        <ul class="scope-list">
+          <li>로그인 계정</li>
+          <li id="scopeName">별칭</li>
+          <li>체험 기록</li>
+          <li>내가 남긴 공개 후기</li>
+        </ul>
+      </div>
+      <div class="scope-col">
+        <div class="scope-head stay">남는 것</div>
+        <ul class="scope-list">
+          <li>조합원 명부의 기록</li>
+          <li>홈페이지에 실린 체험후기</li>
+          <li>보내주신 문의 내용</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="field-label" id="confirmLabel">확인을 위해 그대로 입력해 주세요</div>
+      <input class="field-input" type="text" id="delConfirm" autocomplete="off">
+    </div>
+    <div class="field">
+      <div class="field-label">비밀번호</div>
+      <input class="field-input" type="password" id="delPw" autocomplete="current-password">
+    </div>
+    <button class="submit-btn danger" id="delBtn" onclick="deleteAccount()">계정 삭제</button>
+    <p class="msg err" id="delErr"></p>
+    <p class="msg ok" id="delOk"></p>
+  </section>
+
+  <a class="back-link" id="backLink" href="mypage.html">&larr; 돌아가기</a>
+</div>
+
+<script>
+const SB_URL = 'https://jboceiacgczkqkhqcmqu.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impib2NlaWFjZ2N6a3FraHFjbXF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI1OTg1MTYsImV4cCI6MjA5ODE3NDUxNn0.9jHLNB8PVDrWlSc5CDGz5j6ZF9yaKwrnzICvvvsFbvA';
+const _sb = supabase.createClient(SB_URL, SB_KEY);
+
+// 로그인 아이디로 쓰이는 값. 별칭계정은 별칭에서 계산한 내부 주소, 이메일계정은 실제 이메일입니다.
+let loginEmail = '';
+// 삭제 확인란에 그대로 입력해야 하는 값. 별칭계정은 별칭, 이메일계정은 이메일입니다.
+let confirmWord = '';
+
+function show(id, text) { const el = document.getElementById(id); el.textContent = text; el.style.display = 'block'; }
+function hide(id) { document.getElementById(id).style.display = 'none'; }
+
+// login.html 과 같은 계산이어야 별칭계정의 내부 주소가 맞습니다.
+async function nicknameToEmail(nickname) {
+  const normalized = nickname.normalize('NFKC').trim().toLowerCase();
+  const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(normalized));
+  const hex = Array.from(new Uint8Array(hash), byte => byte.toString(16).padStart(2, '0')).join('');
+  return `u${hex.slice(0, 40)}@adlermind.co.kr`;
+}
+
+(async () => {
+  const { data: { session } } = await _sb.auth.getSession();
+  if (!session) { window.location.replace('login.html'); return; }
+
+  const { data: experienceProfile } = await _sb
+    .from('site_users').select('nickname').eq('user_id', session.user.id).maybeSingle();
+
+  if (experienceProfile) {
+    const nick = experienceProfile.nickname;
+    loginEmail  = await nicknameToEmail(nick);
+    confirmWord = nick;
+    document.getElementById('navNick').textContent = nick + '님의 Life Style';
+    document.getElementById('accountInfo').innerHTML =
+      `<span class="info-key">별칭</span>${nick}<br><span class="info-key">계정 종류</span>별칭계정`;
+    document.getElementById('accountNote').textContent =
+      '임시 계정이 아닙니다. 직접 지우실 때까지 유지됩니다. 별칭은 변경할 수 없습니다. ' +
+      '이메일이 없어 비밀번호를 잊으면 되찾아 드릴 수 없으니 이 화면에서 미리 바꿔 두셔도 됩니다. ' +
+      '상품 구매·프로그램 신청·조합원 가입에는 이메일 회원계정을 따로 만드셔야 하며, 두 계정은 기록이 합쳐지지 않습니다.';
+    document.getElementById('confirmLabel').textContent = `확인을 위해 별칭 "${nick}" 을 그대로 입력해 주세요`;
+    document.getElementById('backLink').href = 'mypage.html';
+    return;
+  }
+
+  const { data: formalProfile } = await _sb
+    .from('site_profiles').select('display_name, nickname').eq('user_id', session.user.id).maybeSingle();
+  if (!formalProfile) { window.location.replace('login.html'); return; }
+
+  const name = formalProfile.nickname || formalProfile.display_name;
+  loginEmail  = session.user.email;
+  confirmWord = session.user.email;
+  document.getElementById('navNick').textContent = name + '님의 Life Style';
+  document.getElementById('accountInfo').innerHTML =
+    `<span class="info-key">이름</span>${formalProfile.display_name}<br>` +
+    `<span class="info-key">별칭</span>${formalProfile.nickname}<br>` +
+    `<span class="info-key">이메일</span>${session.user.email}<br>` +
+    `<span class="info-key">계정 종류</span>이메일 회원계정`;
+  document.getElementById('accountNote').textContent =
+    '비밀번호를 잊으셨을 때는 로그인 화면의 재설정 메일도 이용하실 수 있습니다.';
+  document.getElementById('scopeName').textContent = '이름과 별칭';
+  document.getElementById('confirmLabel').textContent = '확인을 위해 이메일 주소를 그대로 입력해 주세요';
+  document.getElementById('backLink').href = 'account-home.html';
+})();
+
+// 지나가던 사람이 아니라 본인임을 확인합니다. 실패해도 지금 로그인 상태는 유지됩니다.
+async function checkPassword(password) {
+  const { error } = await _sb.auth.signInWithPassword({ email: loginEmail, password });
+  return !error;
+}
+
+async function changePassword() {
+  hide('pwErr'); hide('pwOk');
+  const cur = document.getElementById('curPw').value;
+  const next = document.getElementById('newPw').value;
+  const next2 = document.getElementById('newPw2').value;
+
+  if (!cur) { show('pwErr', '현재 비밀번호를 입력해 주세요.'); return; }
+  if (next.length < 8) { show('pwErr', '새 비밀번호는 8자 이상 입력해 주세요.'); return; }
+  if (next !== next2) { show('pwErr', '새 비밀번호가 서로 다릅니다.'); return; }
+  if (next === cur) { show('pwErr', '지금 쓰시는 것과 다른 비밀번호를 입력해 주세요.'); return; }
+
+  const btn = document.getElementById('pwBtn');
+  btn.disabled = true; btn.textContent = '변경 중...';
+
+  if (!await checkPassword(cur)) {
+    btn.disabled = false; btn.textContent = '비밀번호 변경';
+    show('pwErr', '현재 비밀번호가 맞지 않습니다.');
+    return;
+  }
+
+  const { error } = await _sb.auth.updateUser({ password: next });
+  btn.disabled = false; btn.textContent = '비밀번호 변경';
+  if (error) {
+    console.error('password update failed', error);
+    show('pwErr', error.status === 429
+      ? '요청이 몰려 잠시 제한되었습니다. 10분쯤 뒤에 다시 시도해 주세요.'
+      : '비밀번호를 바꾸지 못했습니다. 잠시 후 다시 시도해 주세요.');
+    return;
+  }
+  document.getElementById('curPw').value = '';
+  document.getElementById('newPw').value = '';
+  document.getElementById('newPw2').value = '';
+  show('pwOk', '비밀번호를 바꿨습니다.');
+}
+
+async function deleteAccount() {
+  hide('delErr'); hide('delOk');
+  const typed = document.getElementById('delConfirm').value.normalize('NFKC').trim();
+  const password = document.getElementById('delPw').value;
+
+  if (typed !== confirmWord) { show('delErr', '확인 문구가 맞지 않습니다. 위에 안내된 그대로 입력해 주세요.'); return; }
+  if (!password) { show('delErr', '비밀번호를 입력해 주세요.'); return; }
+  if (!confirm('계정과 기록이 모두 지워집니다. 되돌릴 수 없습니다. 그래도 삭제하시겠습니까?')) return;
+
+  const btn = document.getElementById('delBtn');
+  btn.disabled = true; btn.textContent = '삭제 중...';
+
+  if (!await checkPassword(password)) {
+    btn.disabled = false; btn.textContent = '계정 삭제';
+    show('delErr', '비밀번호가 맞지 않습니다.');
+    return;
+  }
+
+  const { data: { session } } = await _sb.auth.getSession();
+  const res = await fetch(`${SB_URL}/functions/v1/delete-own-account`, {
+    method: 'POST',
+    headers: {
+      apikey: SB_KEY,
+      Authorization: `Bearer ${session.access_token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({})
+  });
+
+  if (!res.ok) {
+    btn.disabled = false; btn.textContent = '계정 삭제';
+    const result = await res.json().catch(() => ({}));
+    console.error('account delete failed', res.status, result);
+    show('delErr', result.message || '계정을 지우지 못했습니다. 잠시 후 다시 시도해 주세요.');
+    return;
+  }
+
+  show('delOk', '계정을 삭제했습니다. 그동안 함께해 주셔서 고맙습니다.');
+  await _sb.auth.signOut();
+  setTimeout(() => window.location.replace('index.html'), 2000);
+}
+
+async function doLogout() {
+  await _sb.auth.signOut();
+  window.location.href = 'index.html';
+}
+</script>
+</body>
+</html>
