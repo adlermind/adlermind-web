@@ -260,7 +260,9 @@ async function save(record) {
     feedback_text: record.note,
     // 걸린 자리와 판 번호는 저장 시점의 값을 베껴 담습니다. 나중에 되짚지 않습니다.
     placement: expItem.placement,
-    experience_version: typeof expItem.version === 'number' ? expItem.version : null
+    experience_version: typeof expItem.version === 'number' ? expItem.version : null,
+    // 지도 구역도 저장 시점의 값을 베껴 담습니다. 자료가 보낸 값이 아니라 걸린 자리에서 옵니다 (1-I).
+    map_regions: Array.isArray(expItem.map_regions) ? expItem.map_regions : []
   });
 
   if (error) {

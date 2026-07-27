@@ -11,6 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400&family=Noto+Sans+KR:wght@300;400&family=Raleway:wght@300&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="member-auth.js"></script>
+<script src="self-map.js"></script>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#FAFAF8;color:#6B6B6B;font-family:'Noto Sans KR',sans-serif;font-weight:300}
@@ -280,8 +281,10 @@ tbody tr[aria-selected="true"]{background:#f4faf9}
         </div>
 
         <div class="field">
-          <label class="label" for="expRegion">지도 구역</label>
-          <input id="expRegion" type="text" placeholder="9주차에 정합니다. 지금은 비워 두세요.">
+          <span class="label">지도 구역</span>
+          <div id="expRegions"></div>
+          <p class="hint">이 체험을 저장하면 고른 구역에 불이 들어옵니다. 여러 곳을 골라도 됩니다.
+            고르지 않으면 지도에 나타나지 않습니다.</p>
         </div>
 
         <div class="field">
@@ -908,13 +911,36 @@ let editingExpId = null;   // null 이면 새 체험 등록, 아니면 그 체�
 let expLoaded = false;
 let testimonialsLoaded = false;
 
+/* 지도 구역 고르는 자리 · 1-I
+   구역 이름은 self-map.js 한 곳에만 적혀 있습니다. 여기에 다시 적지 않습니다. */
+(function buildRegionBoxes() {
+  const into = document.getElementById('expRegions');
+  into.innerHTML = window.AMSelfMap.REGIONS.map(region => `
+    <label style="display:inline-flex;align-items:center;gap:6px;margin:0 14px 6px 0;font-size:13px">
+      <input type="checkbox" class="exp-region" value="${region.key}">
+      ${escapeHtml(region.name)}
+    </label>`).join('');
+})();
+
+function getExpRegions() {
+  return Array.from(document.querySelectorAll('.exp-region'))
+    .filter(box => box.checked).map(box => box.value);
+}
+
+function setExpRegions(values) {
+  const chosen = window.AMSelfMap.toRegions(values);
+  document.querySelectorAll('.exp-region').forEach(box => {
+    box.checked = chosen.indexOf(box.value) !== -1;
+  });
+}
+
 function expStatus(message) {
   document.getElementById('expStatus').textContent = message || '';
 }
 
 async function loadExperiences() {
   const { data, error } = await client.from('experiences')
-    .select('id,experience_key,title,summary,placement,content_type,body_html,link_url,thumb_path,map_region,sort_order')
+    .select('id,experience_key,title,summary,placement,content_type,body_html,link_url,thumb_path,map_regions,sort_order')
     .order('sort_order').order('created_at');
 
   if (error) {
@@ -958,9 +984,10 @@ function resetExpForm() {
   editingExpId = null;
   document.getElementById('expFormTitle').textContent = '새 체험 등록';
   document.getElementById('expCancel').classList.add('hidden');
-  ['expKey', 'expTitle', 'expSummary', 'expBody', 'expLink', 'expRegion'].forEach(id => {
+  ['expKey', 'expTitle', 'expSummary', 'expBody', 'expLink'].forEach(id => {
     document.getElementById(id).value = '';
   });
+  setExpRegions([]);
   document.getElementById('expFile').value = '';
   document.getElementById('expThumb').value = '';
   document.getElementById('expKey').readOnly = false;
@@ -987,7 +1014,7 @@ function editExperience(id) {
   document.getElementById('expType').value = item.content_type;
   document.getElementById('expBody').value = item.body_html || '';
   document.getElementById('expLink').value = item.link_url || '';
-  document.getElementById('expRegion').value = item.map_region || '';
+  setExpRegions(item.map_regions);
   document.getElementById('expOrder').value = item.sort_order;
   document.getElementById('expFile').value = '';
   document.getElementById('expThumb').value = '';
@@ -1044,7 +1071,7 @@ async function saveExperience() {
     body_html: contentType === 'html' ? bodyHtml : null,
     link_url: contentType === 'link' ? linkUrl : null,
     thumb_path: thumbPath,
-    map_region: document.getElementById('expRegion').value.trim() || null,
+    map_regions: getExpRegions(),
     sort_order: Number(document.getElementById('expOrder').value) || 0
   };
 

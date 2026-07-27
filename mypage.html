@@ -7,6 +7,7 @@
 <title>마이페이지 · ADLER MIND 협동조합</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400&family=Noto+Sans+KR:wght@300;400&family=Raleway:wght@200;300;400&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="self-map.js"></script>
 <script src="experience-records.js"></script>
 <style>
 :root {
@@ -225,6 +226,9 @@ a.card-link:hover { border-color: var(--am-sage); }
 
   </div>
 
+  <div class="section-label">MY MAP</div>
+  <div id="amMap"></div>
+
   <div class="section-label">MY RECORDS</div>
   <div class="records-area" id="amRecords"></div>
 
@@ -289,6 +293,7 @@ document.getElementById('navHam').addEventListener('click', () => {
   // 저장한 체험 기록. 조회 조건의 user_id 는 experience-records.js 안에서 함께 겁니다.
   window.AMRecords.render({
     into: document.getElementById('amRecords'),
+    mapInto: document.getElementById('amMap'),
     client: _sb,
     userId: session.user.id
   });
