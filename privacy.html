@@ -1,0 +1,237 @@
+<!-- 아들러마인드 협동조합의 개인정보처리방침을 제공하는 공개 페이지 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="image/favicon.png">
+<link rel="icon" type="image/webp" href="image/favicon.webp">
+<title>개인정보처리방침 · ADLER MIND 협동조합</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400&family=Noto+Sans+KR:wght@300;400&family=Raleway:wght@200;300;400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --am-rose: #E8929A;
+  --am-sage: #8FBFB8;
+  --am-gray: #6B6B6B;
+  --am-bg: #FAFAF8;
+  --am-muted: #9a9490;
+  --am-border: #e8e4e0;
+  --am-white: #ffffff;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Noto Sans KR', sans-serif; font-weight: 300; color: var(--am-gray); background: var(--am-white); }
+nav {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--am-white); border-bottom: 0.5px solid var(--am-border);
+  padding: 0 32px; display: flex; align-items: center; gap: 32px; height: 60px;
+}
+.nav-logo img { height: 40px; display: block; margin-top: 4px; }
+.nav-links { display: flex; align-items: center; gap: 18px; flex: 1; }
+.nav-links a { font-size: 13px; color: var(--am-gray); text-decoration: none; transition: color 0.15s; }
+.nav-links a:hover { color: var(--am-sage); }
+.nav-login-link {
+  margin-left: auto; font-size: 12px; color: var(--am-muted);
+  text-decoration: none; letter-spacing: 0.04em; white-space: nowrap;
+}
+.nav-login-link:hover { color: var(--am-sage); }
+.nav-login-mobile { display: none; }
+.nav-member-btn {
+  padding: 7px 18px; background: var(--am-sage); color: #fff;
+  border-radius: 2px; font-size: 12px; text-decoration: none; white-space: nowrap;
+}
+.nav-member-btn:hover { background: #6fa8a0; }
+.nav-ham { display: none; border: none; background: none; cursor: pointer; font-size: 22px; color: var(--am-gray); }
+.page-hero {
+  background: var(--am-bg); padding: 56px 32px 48px;
+  border-bottom: 0.5px solid var(--am-border);
+}
+.page-hero-inner { max-width: 760px; margin: 0 auto; }
+.page-label {
+  font-family: 'Raleway', sans-serif; font-size: 10px; letter-spacing: 0.22em;
+  color: var(--am-rose); margin-bottom: 12px;
+}
+.page-title { font-family: 'Noto Serif KR', serif; font-size: 28px; font-weight: 300; color: var(--am-gray); margin-bottom: 10px; }
+.page-desc { font-size: 13px; color: var(--am-muted); line-height: 1.8; }
+.page-body { max-width: 820px; margin: 0 auto; padding: 48px 32px 80px; }
+.intro { font-size: 13px; line-height: 2; margin-bottom: 40px; }
+.policy-section { margin-bottom: 42px; }
+.policy-section h2 {
+  font-family: 'Noto Serif KR', serif; font-size: 19px; font-weight: 400;
+  color: var(--am-gray); margin-bottom: 16px;
+}
+.policy-section p { font-size: 13px; line-height: 2; }
+.table-wrap { overflow-x: auto; }
+table { width: 100%; min-width: 680px; border-collapse: collapse; font-size: 12px; line-height: 1.8; }
+th, td { padding: 12px; border-bottom: 0.5px solid var(--am-border); text-align: left; vertical-align: top; }
+th { color: var(--am-gray); font-weight: 400; border-top: 0.5px solid var(--am-border); background: var(--am-bg); }
+td:first-child { color: var(--am-gray); font-weight: 400; }
+.note { margin-top: 14px; color: var(--am-muted); font-size: 12px !important; }
+.contact-box { border: 0.5px solid var(--am-border); background: var(--am-bg); padding: 20px 22px; }
+.contact-box a { color: var(--am-gray); text-underline-offset: 3px; }
+.effective { border-top: 0.5px solid var(--am-border); padding-top: 18px; color: var(--am-muted); font-size: 12px; line-height: 1.8; }
+footer { background: var(--am-bg); border-top: 0.5px solid var(--am-border); padding: 48px 32px; }
+.footer-inner { max-width: 900px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 32px; justify-content: space-between; }
+.footer-logo img { height: 32px; margin-bottom: 10px; }
+.footer-info { font-size: 12px; color: var(--am-muted); line-height: 2; }
+.footer-nav { display: flex; flex-direction: column; gap: 8px; }
+.footer-nav a { font-size: 12px; color: var(--am-muted); text-decoration: none; }
+.footer-nav a:hover { color: var(--am-sage); }
+.footer-copy { max-width: 900px; margin: 24px auto 0; font-size: 11px; color: var(--am-muted); font-family: 'Raleway', sans-serif; border-top: 0.5px solid var(--am-border); padding-top: 16px; }
+@media (max-width: 900px) {
+  nav { padding: 0 20px; }
+  .nav-links { display: none; }
+  .nav-links.open {
+    display: flex; flex-direction: column; position: fixed; top: 60px; left: 0; right: 0;
+    background: var(--am-white); border-bottom: 0.5px solid var(--am-border);
+    padding: 20px; gap: 16px; z-index: 99;
+  }
+  .nav-ham { display: block; margin-left: auto; }
+  .nav-login-link { display: none; }
+  .nav-login-mobile { display: block !important; }
+  .page-body { padding: 36px 20px 60px; }
+  .page-hero { padding: 40px 20px 32px; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">
+    <img src="image/adlermind_logo.png" alt="ADLER MIND 협동조합">
+  </a>
+  <div class="nav-links" id="navLinks">
+    <a href="about.html">협동조합 소개</a>
+    <a href="counseling.html">심리상담</a>
+    <a href="education.html">교육·연수</a>
+    <a href="news.html">소식</a>
+    <a href="gallery.html">갤러리</a>
+    <a href="contact.html">문의</a>
+    <a class="nav-login-mobile" href="login.html">로그인</a>
+  </div>
+  <a class="nav-login-link" href="login.html">로그인</a>
+  <a class="nav-member-btn" href="members.html">조합원 마당</a>
+  <button class="nav-ham" id="navHam" type="button" aria-label="메뉴 열기">&#9776;</button>
+</nav>
+
+<header class="page-hero">
+  <div class="page-hero-inner">
+    <div class="page-label">PRIVACY POLICY</div>
+    <h1 class="page-title">개인정보처리방침</h1>
+    <p class="page-desc">시행일 2026년 7월 27일.</p>
+  </div>
+</header>
+
+<main class="page-body">
+  <p class="intro">
+    아들러마인드 협동조합은 홈페이지의 체험계정, 정식계정, 문의와 공개 후기를 위해
+    아래와 같이 개인정보를 처리합니다. 심리상담연구소 심지의 계정과 데이터는 공유하지 않습니다.
+  </p>
+
+  <section class="policy-section">
+    <h2>1. 처리하는 개인정보</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>서비스</th><th>처리 항목</th><th>이용 목적</th><th>보유기간</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>체험계정</td><td>별칭, 인증정보, 내부 계정 식별자</td><td>체험계정 생성과 로그인</td><td>계정 삭제 요청 시까지</td></tr>
+          <tr><td>정식계정</td><td>이름, 별칭, 이메일, 인증정보와 계정 식별자</td><td>회원가입, 로그인, 정식 회원 서비스 제공</td><td>계정 삭제 요청 시까지</td></tr>
+          <tr><td>현재 체험</td><td>체험 응답과 결과</td><td>이용 중인 브라우저에서 결과 표시</td><td>현재 브라우저 창을 닫을 때까지</td></tr>
+          <tr><td>기관·교육 문의</td><td>이름, 선택 입력한 연락처, 문의 분야와 내용</td><td>기관 상담과 후속 논의</td><td>마지막 연락 후 5년</td></tr>
+          <tr><td>기타 문의</td><td>이름, 선택 입력한 연락처, 문의 분야와 내용</td><td>문의 확인과 답변</td><td>답변 완료 후 2년</td></tr>
+          <tr><td>공개 후기</td><td>공개 별칭, 프로그램명, 후기 내용, 선택 사진</td><td>동의한 후기 공개</td><td>공개 철회 요청 시까지</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">현재 체험 응답과 결과는 브라우저의 sessionStorage에만 임시보관하며 서버에 저장하지 않습니다.</p>
+  </section>
+
+  <section class="policy-section">
+    <h2>2. 파기</h2>
+    <p>
+      보유기간이 끝나거나 계정·정보 삭제 요청을 받으면 전자 기록을 복구하기 어렵게 삭제합니다.
+      관계 법령에 따라 보존할 정보는 다른 정보와 분리하여 필요한 기간만 보관하며,
+      외부 서비스의 백업은 각 서비스의 백업 교체·삭제 절차에 따라 삭제됩니다.
+    </p>
+  </section>
+
+  <section class="policy-section">
+    <h2>3. 제3자 제공</h2>
+    <p>이용자의 동의나 법령상 근거 없이 개인정보를 제3자에게 제공하지 않습니다.</p>
+  </section>
+
+  <section class="policy-section">
+    <h2>4. 처리위탁과 국외 처리</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>업체</th><th>업무</th><th>처리 지역</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Supabase</td><td>회원 인증과 데이터베이스 저장</td><td>주 저장 지역 일본 도쿄</td></tr>
+          <tr><td>GitHub Pages</td><td>정적 홈페이지 호스팅과 보안 로그 처리</td><td>미국 등 서비스 운영 지역</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">
+      국외 처리는 해당 기능을 이용할 때 암호화된 네트워크로 전송되며,
+      본 방침의 보유기간 또는 위탁계약 종료 시까지 처리됩니다.
+      국외 처리를 원하지 않으면 아래 이메일로 요청할 수 있으나 계정과 홈페이지 이용이 제한될 수 있습니다.
+    </p>
+  </section>
+
+  <section class="policy-section">
+    <h2>5. 자동 생성 정보와 보호조치</h2>
+    <p>
+      서비스 이용 과정에서 IP 주소, 접속기록, 브라우저·기기 정보가 보안과 오류 확인을 위해 자동 생성될 수 있습니다.
+      협동조합은 광고 목적의 맞춤형 추적정보를 운영하지 않으며, 접근 권한 제한과 전송구간 암호화 등 필요한 보호조치를 적용합니다.
+    </p>
+  </section>
+
+  <section class="policy-section">
+    <h2>6. 이용자의 권리</h2>
+    <p>
+      이용자는 개인정보의 열람, 정정, 삭제, 처리정지와 계정 삭제를 요청할 수 있습니다.
+      아래 이메일로 요청하면 계정 또는 문의 정보로 본인 여부를 확인한 뒤 처리합니다.
+    </p>
+  </section>
+
+  <section class="policy-section">
+    <h2>7. 개인정보 보호책임자</h2>
+    <div class="contact-box">
+      <p>이경숙 이사장.</p>
+      <p>이메일 <a href="mailto:adlermindcoop@gmail.com">adlermindcoop@gmail.com</a>.</p>
+    </div>
+  </section>
+
+  <p class="effective">이 방침은 2026년 7월 27일부터 시행하며, 중요한 변경은 홈페이지에서 알립니다.</p>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-logo"><img src="image/adlermind_logo.png" alt="ADLER MIND 협동조합"></div>
+      <div class="footer-info">
+        ADLER MIND 협동조합 (일반협동조합)<br>
+        경기도 광주시 남종면 산수로 1652-16<br>
+        adlermindcoop@gmail.com
+      </div>
+    </div>
+    <div class="footer-nav" aria-label="하단 메뉴">
+      <a href="index.html">홈</a>
+      <a href="contact.html">문의</a>
+      <a href="privacy.html">개인정보처리방침</a>
+    </div>
+  </div>
+  <div class="footer-copy">&copy; 2026 ADLER MIND 협동조합. All rights reserved.</div>
+</footer>
+
+<script>
+document.getElementById('navHam').addEventListener('click', function () {
+  document.getElementById('navLinks').classList.toggle('open');
+});
+</script>
+</body>
+</html>
