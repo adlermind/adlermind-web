@@ -197,6 +197,18 @@ const _sb = supabase.createClient(SB_URL, SB_KEY, {
   }
 });
 
+/* 로그인을 마친 뒤 돌아갈 자리.
+   체험 화면에서 온 경우에만 그 체험으로 되돌려 보내고, 그 밖에는 언제나 mypage.html 입니다.
+   주소를 통째로 받지 않고 이름표만 받습니다. 받은 주소로 그대로 보내면 열린 되돌림이 됩니다. */
+function afterLoginPage() {
+  const params = new URLSearchParams(location.search);
+  const key = params.get('key') || '';
+  if (params.get('next') === 'experience' && /^[a-z0-9][a-z0-9-]*$/.test(key)) {
+    return 'experience.html?key=' + encodeURIComponent(key);
+  }
+  return 'mypage.html';
+}
+
 async function nicknameToEmail(nickname) {
   const normalized = nickname.normalize('NFKC').trim().toLowerCase();
   const bytes = new TextEncoder().encode(normalized);
@@ -213,7 +225,7 @@ _sb.auth.getSession().then(async ({ data: { session } }) => {
     .select('user_id')
     .eq('user_id', session.user.id)
     .maybeSingle();
-  if (profile) window.location.href = 'mypage.html';
+  if (profile) window.location.href = afterLoginPage();
 });
 
 function switchTab(tab) {
@@ -252,7 +264,7 @@ async function doLogin() {
     showErr('loginErr', '별칭 또는 비밀번호가 맞지 않습니다.');
     return;
   }
-  window.location.href = 'mypage.html';
+  window.location.href = afterLoginPage();
 }
 
 // ── 회원가입 ──
@@ -287,7 +299,7 @@ async function doSignup() {
   const { error } = await _sb.auth.signInWithPassword({ email, password: pw });
   btn.disabled = false; btn.textContent = '가입하기';
   if (error) { showErr('signupErr', '가입은 완료됐지만 자동 로그인하지 못했습니다. 로그인 탭에서 입장해 주세요.'); return; }
-  window.location.href = 'mypage.html';
+  window.location.href = afterLoginPage();
 }
 </script>
 </body>

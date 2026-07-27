@@ -57,7 +57,12 @@
 const authClient = window.AMMemberAuth.client;
 const allowedNext = new Set(['account-home.html','members.html','members-home.html','admin.html']);
 const requestedNext = new URLSearchParams(location.search).get('next');
-const nextPage = allowedNext.has(requestedNext) ? requestedNext : 'account-home.html';
+// 체험 화면에서 저장하려고 온 경우에만 그 체험으로 되돌려 보낸다.
+// 주소를 통째로 받지 않고 이름표만 받는다. 받은 주소로 그대로 보내면 열린 되돌림이 된다.
+const requestedKey = new URLSearchParams(location.search).get('key') || '';
+const nextPage = (requestedNext === 'experience' && /^[a-z0-9][a-z0-9-]*$/.test(requestedKey))
+  ? `experience.html?key=${encodeURIComponent(requestedKey)}`
+  : (allowedNext.has(requestedNext) ? requestedNext : 'account-home.html');
 
 function showMessage(id, text) { const el=document.getElementById(id); el.textContent=text; el.style.display='block'; }
 function hideMessage(id) { document.getElementById(id).style.display='none'; }

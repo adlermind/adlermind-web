@@ -7,6 +7,7 @@
 <title>마이페이지 · ADLER MIND 협동조합</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400&family=Noto+Sans+KR:wght@300;400&family=Raleway:wght@200;300;400&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="experience-records.js"></script>
 <style>
 :root {
   --am-rose:   #E8929A;
@@ -142,6 +143,8 @@ a.card-link:hover { border-color: var(--am-sage); }
   border-left: 2px solid var(--am-border); padding-left: 12px;
 }
 .account-note a { color: var(--am-sage); }
+.records-area { margin-bottom: 56px; }
+.hidden { display: none; }
 
 /* ── 반응형 ── */
 @media (max-width: 640px) {
@@ -222,6 +225,9 @@ a.card-link:hover { border-color: var(--am-sage); }
 
   </div>
 
+  <div class="section-label">MY RECORDS</div>
+  <div class="records-area" id="amRecords"></div>
+
   <div class="section-label">ACCOUNT</div>
   <div class="card-grid">
     <a class="card card-link" href="account-settings.html">
@@ -233,9 +239,14 @@ a.card-link:hover { border-color: var(--am-sage); }
       </div>
     </a>
   </div>
-  <p class="account-note">
+  <p class="account-note" id="noteExperience">
     별칭은 변경할 수 없습니다. 이 계정은 임시 계정이 아니며 직접 지우실 때까지 유지됩니다.<br>
     상품 구매·프로그램 신청·조합원 가입에는 <a href="account.html">이메일 회원계정</a>이 따로 필요하며,
+    별칭계정과는 서로 다른 계정이라 기록이 합쳐지지 않습니다.
+  </p>
+  <p class="account-note hidden" id="noteFormal">
+    이메일 회원계정으로 보고 계십니다. 조합원 가입·프로그램 신청은 이 계정으로 하십니다.<br>
+    계정 상태와 조합원 마당은 <a href="account-home.html">내 계정</a>에서 확인하실 수 있으며,
     별칭계정과는 서로 다른 계정이라 기록이 합쳐지지 않습니다.
   </p>
 
@@ -252,20 +263,35 @@ document.getElementById('navHam').addEventListener('click', () => {
 });
 
 // 세션 확인 및 닉네임 표시
+// 별칭계정과 이메일 회원계정이 이 페이지를 함께 씁니다 (1-H).
+// 계정 종류로 화면을 나누지 않고 안내 문구만 바꿉니다 — account-settings.html 과 같은 판정 순서입니다.
 (async () => {
   const { data: { session } } = await _sb.auth.getSession();
   if (!session) { window.location.href = 'login.html'; return; }
 
-  const res = await fetch(
-    `${SB_URL}/rest/v1/site_users?user_id=eq.${session.user.id}&select=nickname`,
-    { headers: { apikey: SB_KEY, Authorization: `Bearer ${session.access_token}` } }
-  );
-  const rows = res.ok ? await res.json() : [];
-  const [u] = rows;
-  if (!u) { window.location.replace('account-home.html'); return; }
-  const nick = u.nickname;
+  const { data: experienceProfile } = await _sb
+    .from('site_users').select('nickname').eq('user_id', session.user.id).maybeSingle();
+
+  let nick = experienceProfile ? experienceProfile.nickname : '';
+
+  if (!experienceProfile) {
+    const { data: formalProfile } = await _sb
+      .from('site_profiles').select('nickname, display_name').eq('user_id', session.user.id).maybeSingle();
+    if (!formalProfile) { window.location.replace('account.html'); return; }
+    nick = formalProfile.nickname || formalProfile.display_name;
+    document.getElementById('noteExperience').classList.add('hidden');
+    document.getElementById('noteFormal').classList.remove('hidden');
+  }
+
   document.getElementById('nickDisplay').textContent = nick;
   document.getElementById('navNick').textContent = nick + '님의 Life Style';
+
+  // 저장한 체험 기록. 조회 조건의 user_id 는 experience-records.js 안에서 함께 겁니다.
+  window.AMRecords.render({
+    into: document.getElementById('amRecords'),
+    client: _sb,
+    userId: session.user.id
+  });
 })();
 
 async function doLogout() {
