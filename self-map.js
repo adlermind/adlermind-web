@@ -110,7 +110,7 @@
                   vector-effect: non-scaling-stroke; filter: drop-shadow(0 0 2px rgba(232,146,154,0.7)); }
 .ams-marker { position: absolute; z-index: 2; display: grid;
               grid-template-areas: 'light count' 'label label';
-              justify-items: center; color: #6B6B6B; text-decoration: none;
+              justify-items: center; color: #4A4A4A; text-decoration: none;
               transform: translate(-50%, -50%); }
 .ams-light { grid-area: light; width: 11px; height: 11px; border: 1px solid rgba(255,255,255,0.95);
              border-radius: 50%; background: rgba(255,255,255,0.88);
@@ -128,12 +128,12 @@
 .ams-index-card { min-width: 0; padding: 14px 15px 16px; border: 0.5px solid #e8e4e0;
                   background: #fff; scroll-margin-top: 90px; }
 .ams-index-card h3 { margin: 0; font-family: 'Noto Serif KR', serif; font-size: 14px;
-                     font-weight: 400; color: #6B6B6B; }
-.ams-index-card p { min-height: 38px; margin: 5px 0 8px; font-size: 10px; line-height: 1.7; color: #9a9490; }
+                     font-weight: 400; color: #4A4A4A; }
+.ams-index-card p { min-height: 38px; margin: 5px 0 8px; font-size: 10px; line-height: 1.7; color: #6E6763; }
 .ams-index-card ul, .ams-names { margin: 0; padding: 0; list-style: none; }
-.ams-index-card li, .ams-names li { font-size: 10px; line-height: 1.7; color: #6B6B6B; }
-.ams-index-card li::before, .ams-names li::before { content: '·'; margin-right: 5px; color: #9a9490; }
-.ams-soft { border: 0.5px solid #e8e4e0; background: #fff; color: #6B6B6B;
+.ams-index-card li, .ams-names li { font-size: 10px; line-height: 1.7; color: #4A4A4A; }
+.ams-index-card li::before, .ams-names li::before { content: '·'; margin-right: 5px; color: #6E6763; }
+.ams-soft { border: 0.5px solid #e8e4e0; background: #fff; color: #4A4A4A;
             font-family: 'Noto Sans KR', sans-serif; font-weight: 300; font-size: 11.5px;
             padding: 5px 12px; cursor: pointer; transition: all 0.15s; }
 .ams-soft:hover { border-color: #8FBFB8; color: #8FBFB8; }
@@ -149,10 +149,10 @@
   .ams-mobile-card > img { display: block; width: 100%; height: auto; }
   .ams-card-body { padding: 18px 18px 20px; }
   .ams-card-body h3 { margin: 0; font-family: 'Noto Serif KR', serif; font-size: 19px;
-                      font-weight: 400; color: #6B6B6B; }
-  .ams-academic { margin: 3px 0 0; font-size: 10px; color: #9a9490; }
-  .ams-factors { margin: 13px 0 0; font-size: 10px; line-height: 1.7; color: #9a9490; }
-  .ams-desc { margin: 5px 0 0; font-size: 12px; line-height: 1.75; color: #6B6B6B; }
+                      font-weight: 400; color: #4A4A4A; }
+  .ams-academic { margin: 3px 0 0; font-size: 10px; color: #6E6763; }
+  .ams-factors { margin: 13px 0 0; font-size: 10px; line-height: 1.7; color: #6E6763; }
+  .ams-desc { margin: 5px 0 0; font-size: 12px; line-height: 1.75; color: #4A4A4A; }
   .ams-names { margin-top: 12px; padding-top: 10px; border-top: 0.5px solid #e8e4e0; }
 }
 `;

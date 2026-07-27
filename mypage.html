@@ -15,10 +15,10 @@
   --am-sage:   #8FBFB8;
   --am-mauve:  #C48DA0;
   --am-blue:   #8FAFD4;
-  --am-gray:   #6B6B6B;
+  --am-gray:   #4A4A4A;
   --am-pale:   #D8D8DC;
   --am-bg:     #FAFAF8;
-  --am-muted:  #9a9490;
+  --am-muted:  #6E6763;
   --am-border: #e8e4e0;
   --am-white:  #ffffff;
 }
@@ -53,7 +53,9 @@ nav {
 .nav-nick {
   font-size: 12px; color: var(--am-sage);
   letter-spacing: 0.04em; font-weight: 400;
+  text-decoration: none; transition: color 0.15s;
 }
+.nav-nick:hover { color: var(--am-rose); }
 .nav-logout-btn {
   padding: 6px 14px;
   background: none; color: var(--am-muted);
@@ -144,6 +146,8 @@ a.card-link:hover { border-color: var(--am-sage); }
   border-left: 2px solid var(--am-border); padding-left: 12px;
 }
 .account-note a { color: var(--am-sage); }
+/* 계정 설정 카드를 감춘 이메일 회원 화면에서는 카드 자리만큼 당기던 여백도 없앱니다. */
+#accountGrid.hidden ~ .account-note { margin-top: 0; }
 .records-area { margin-bottom: 56px; }
 .hidden { display: none; }
 
@@ -177,7 +181,7 @@ a.card-link:hover { border-color: var(--am-sage); }
     <a href="contact.html">문의</a>
   </div>
   <div class="nav-right">
-    <span class="nav-nick" id="navNick"></span>
+    <a class="nav-nick" id="navNick" href="mypage.html"></a>
     <button class="nav-logout-btn" onclick="doLogout()">로그아웃</button>
   </div>
   <button class="nav-ham" id="navHam" aria-label="메뉴">&#9776;</button>
@@ -185,46 +189,11 @@ a.card-link:hover { border-color: var(--am-sage); }
 
 <div class="page-wrap">
 
-  <h1 class="greeting-title">안녕하세요, <span id="nickDisplay">···</span>님</h1>
+  <h1 class="greeting-title"><span id="nickDisplay">···</span>님의 마음여정</h1>
   <p class="greeting-desc">
     아들러 심리학을 기반으로 한 자기탐색 활동들을 이곳에서 확인하고 기록할 수 있습니다.
   </p>
   <hr class="divider">
-
-  <div class="section-label">MY ACTIVITIES</div>
-  <div class="card-grid">
-
-    <div class="card">
-      <div class="card-tag">Self Exploration</div>
-      <div class="card-title">자기탐색 웹앱</div>
-      <div class="card-desc">
-        나의 생활양식과 초기 기억을 탐색하는<br>
-        인터랙티브 활동입니다.
-      </div>
-      <div class="card-badge soon">준비 중</div>
-    </div>
-
-    <div class="card">
-      <div class="card-tag">Activity Sheet</div>
-      <div class="card-title">활동지</div>
-      <div class="card-desc">
-        강의·상담 과정에서 작성한 활동지를<br>
-        저장하고 다시 확인할 수 있습니다.
-      </div>
-      <div class="card-badge soon">준비 중</div>
-    </div>
-
-    <div class="card">
-      <div class="card-tag">My Record</div>
-      <div class="card-title">나의 기록</div>
-      <div class="card-desc">
-        활동 참여 이력과 소감을<br>
-        시간순으로 모아 볼 수 있습니다.
-      </div>
-      <div class="card-badge soon">준비 중</div>
-    </div>
-
-  </div>
 
   <div class="section-label">MY MAP</div>
   <div id="amMap"></div>
@@ -232,8 +201,10 @@ a.card-link:hover { border-color: var(--am-sage); }
   <div class="section-label">MY RECORDS</div>
   <div class="records-area" id="amRecords"></div>
 
-  <div class="section-label">ACCOUNT</div>
-  <div class="card-grid">
+  <!-- 이메일 회원은 account-home.html 에 같은 단추가 있어 여기서 감춥니다.
+       별칭계정은 그 페이지에 들어갈 수 없으므로 이 자리가 계정 설정으로 가는 유일한 길입니다. -->
+  <div class="section-label" id="accountLabel">ACCOUNT</div>
+  <div class="card-grid" id="accountGrid">
     <a class="card card-link" href="account-settings.html">
       <div class="card-tag">Settings</div>
       <div class="card-title">계정 설정</div>
@@ -285,6 +256,10 @@ document.getElementById('navHam').addEventListener('click', () => {
     nick = formalProfile.nickname || formalProfile.display_name;
     document.getElementById('noteExperience').classList.add('hidden');
     document.getElementById('noteFormal').classList.remove('hidden');
+    // 이메일 회원의 집은 account-home.html 입니다. 계정 설정 단추가 그곳에 있습니다.
+    document.getElementById('navNick').href = 'account-home.html';
+    document.getElementById('accountLabel').classList.add('hidden');
+    document.getElementById('accountGrid').classList.add('hidden');
   }
 
   document.getElementById('nickDisplay').textContent = nick;

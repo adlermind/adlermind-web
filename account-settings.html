@@ -12,10 +12,10 @@
 :root {
   --am-rose:   #E8929A;
   --am-sage:   #8FBFB8;
-  --am-gray:   #6B6B6B;
+  --am-gray:   #4A4A4A;
   --am-pale:   #D8D8DC;
   --am-bg:     #FAFAF8;
-  --am-muted:  #9a9490;
+  --am-muted:  #6E6763;
   --am-border: #e8e4e0;
   --am-white:  #ffffff;
 }
@@ -39,7 +39,9 @@ nav {
 }
 .nav-logo img { height: 40px; display: block; margin-top: 4px; }
 .nav-right { display: flex; align-items: center; gap: 12px; margin-left: auto; }
-.nav-nick { font-size: 12px; color: var(--am-sage); letter-spacing: 0.04em; font-weight: 400; }
+.nav-nick { font-size: 12px; color: var(--am-sage); letter-spacing: 0.04em; font-weight: 400;
+            text-decoration: none; transition: color 0.15s; }
+.nav-nick:hover { color: var(--am-rose); }
 .nav-logout-btn {
   padding: 6px 14px;
   background: none; color: var(--am-muted);
@@ -143,7 +145,7 @@ nav {
     <img src="image/adlermind_logo.png" alt="ADLER MIND 협동조합 로고">
   </a>
   <div class="nav-right">
-    <span class="nav-nick" id="navNick"></span>
+    <a class="nav-nick" id="navNick" href="mypage.html"></a>
     <button class="nav-logout-btn" onclick="doLogout()">로그아웃</button>
   </div>
 </nav>
@@ -286,6 +288,7 @@ async function nicknameToEmail(nickname) {
   document.getElementById('scopeName').textContent = '이름과 별칭';
   document.getElementById('confirmLabel').textContent = '확인을 위해 이메일 주소를 그대로 입력해 주세요';
   document.getElementById('backLink').href = 'account-home.html';
+  document.getElementById('navNick').href = 'account-home.html';
 })();
 
 // 지나가던 사람이 아니라 본인임을 확인합니다. 실패해도 지금 로그인 상태는 유지됩니다.
