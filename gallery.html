@@ -29,7 +29,7 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
   font-family: 'Noto Sans KR', sans-serif;
-  font-weight: 300; color: var(--am-gray); background: var(--am-white);
+  font-weight: 400; color: var(--am-gray); background: var(--am-white);
 }
 body.modal-open { overflow: hidden; }
 button { font: inherit; }
@@ -44,14 +44,14 @@ nav {
 .nav-links a { font-size: 13px; color: var(--am-gray); text-decoration: none; transition: color 0.15s; }
 .nav-links a:hover, .nav-links a.active { color: var(--am-sage); }
 .nav-login-link {
-  margin-left: auto; font-size: 12px; color: var(--am-muted);
+  margin-left: auto; font-size: 13px; color: var(--am-muted);
   text-decoration: none; letter-spacing: 0.04em; transition: color 0.15s; white-space: nowrap;
 }
 .nav-login-link:hover { color: var(--am-sage); }
 .nav-login-mobile, .nav-member-mobile { display: none; }
 .nav-member-btn {
   padding: 7px 18px; background: var(--am-sage); color: #fff;
-  border: none; border-radius: 2px; font-size: 12px; font-weight: 300;
+  border: none; border-radius: 2px; font-size: 13px; font-weight: 400;
   cursor: pointer; text-decoration: none; transition: background 0.15s; white-space: nowrap;
 }
 .nav-member-btn:hover { background: #6fa8a0; }
@@ -63,12 +63,12 @@ nav {
 }
 .page-hero-inner, .page-body { max-width: 1040px; margin: 0 auto; }
 .page-label {
-  font-family: 'Raleway', sans-serif; font-size: 10px; font-weight: 300;
+  font-family: 'Raleway', sans-serif; font-size: 13px; font-weight: 400;
   letter-spacing: 0.22em; color: var(--am-rose); text-transform: uppercase; margin-bottom: 12px;
 }
 .page-title {
   font-family: 'Noto Serif KR', serif; font-size: 28px;
-  font-weight: 300; color: var(--am-gray); margin-bottom: 10px;
+  font-weight: 400; color: var(--am-gray); margin-bottom: 10px;
 }
 .page-desc { font-size: 13px; color: var(--am-muted); line-height: 1.8; }
 .page-body { padding: 48px 32px 88px; }
@@ -79,7 +79,7 @@ nav {
 }
 .gallery-heading {
   font-family: 'Noto Serif KR', serif; font-size: 19px;
-  font-weight: 300; color: var(--am-gray);
+  font-weight: 400; color: var(--am-gray);
 }
 .carousel-controls { display: flex; gap: 8px; }
 .carousel-btn {
@@ -116,23 +116,23 @@ nav {
 .media-badge {
   position: absolute; left: 14px; top: 14px; padding: 5px 9px;
   background: rgba(255,255,255,0.92); color: var(--am-rose);
-  font-family: 'Raleway', sans-serif; font-size: 9px; letter-spacing: 0.12em;
+  font-family: 'Raleway', sans-serif; font-size: 13px; letter-spacing: 0.12em;
 }
 .card-body { display: block; padding: 20px 20px 22px; }
 .card-title {
   display: block;
-  font-family: 'Noto Serif KR', serif; font-size: 17px; font-weight: 300;
+  font-family: 'Noto Serif KR', serif; font-size: 17px; font-weight: 400;
   color: var(--am-gray); line-height: 1.55; margin-bottom: 8px;
 }
-.card-meta { display: block; font-family: 'Raleway', sans-serif; font-size: 10px; color: var(--am-muted); letter-spacing: 0.06em; }
-.gallery-note { margin-top: 16px; font-size: 11px; color: var(--am-muted); }
+.card-meta { display: block; font-family: 'Raleway', sans-serif; font-size: 13px; color: var(--am-muted); letter-spacing: 0.06em; }
+.gallery-note { margin-top: 16px; font-size: 13px; color: var(--am-muted); }
 .gallery-section + .gallery-section { margin-top: 44px; }
-.gallery-state { padding: 40px 0; font-size: 12.5px; color: var(--am-muted); text-align: center; }
+.gallery-state { padding: 40px 0; font-size: 13px; color: var(--am-muted); text-align: center; }
 .gallery-state[hidden] { display: none; }
 .visibility-badge {
   position: absolute; right: 14px; top: 14px; padding: 5px 9px;
   background: rgba(255,255,255,0.92); color: var(--am-sage);
-  font-family: 'Raleway', sans-serif; font-size: 9px; letter-spacing: 0.12em;
+  font-family: 'Raleway', sans-serif; font-size: 13px; letter-spacing: 0.12em;
 }
 
 .video-modal {
@@ -158,21 +158,21 @@ nav {
 .video-modal.photo-mode .modal-close { position: fixed; top: 20px; right: 20px; bottom: auto; }
 .video-frame img { width: 100%; height: 100%; object-fit: contain; display: block; }
 .modal-caption { margin-top: 14px; }
-.modal-title { font-family: 'Noto Serif KR', serif; font-size: 15px; font-weight: 300; color: #fff; line-height: 1.6; }
-.modal-desc { margin-top: 8px; font-size: 12.5px; color: rgba(255,255,255,0.82); line-height: 1.85; white-space: pre-wrap; }
+.modal-title { font-family: 'Noto Serif KR', serif; font-size: 15px; font-weight: 400; color: #fff; line-height: 1.6; }
+.modal-desc { margin-top: 8px; font-size: 13px; color: rgba(255,255,255,0.82); line-height: 1.85; white-space: pre-wrap; }
 .modal-desc[hidden] { display: none; }
 .modal-fallback { margin-top: 12px; text-align: right; }
 .modal-fallback[hidden] { display: none; }
-.modal-fallback a { color: #fff; font-size: 12px; text-underline-offset: 3px; }
+.modal-fallback a { color: #fff; font-size: 13px; text-underline-offset: 3px; }
 
 footer { background: var(--am-bg); border-top: 0.5px solid var(--am-border); padding: 48px 32px; }
 .footer-inner { max-width: 900px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 32px; justify-content: space-between; }
 .footer-logo img { height: 32px; margin-bottom: 10px; }
-.footer-info { font-size: 12px; color: var(--am-muted); line-height: 2; }
+.footer-info { font-size: 13px; color: var(--am-muted); line-height: 2; }
 .footer-nav { display: flex; flex-direction: column; gap: 8px; }
-.footer-nav a { font-size: 12px; color: var(--am-muted); text-decoration: none; }
+.footer-nav a { font-size: 13px; color: var(--am-muted); text-decoration: none; }
 .footer-nav a:hover { color: var(--am-sage); }
-.footer-copy { max-width: 900px; margin: 24px auto 0; font-size: 11px; color: var(--am-muted); font-family: 'Raleway', sans-serif; border-top: 0.5px solid var(--am-border); padding-top: 16px; }
+.footer-copy { max-width: 900px; margin: 24px auto 0; font-size: 13px; color: var(--am-muted); font-family: 'Raleway', sans-serif; border-top: 0.5px solid var(--am-border); padding-top: 16px; }
 
 @media (max-width: 900px) {
   nav { padding: 0 20px; }

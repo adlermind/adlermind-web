@@ -34,7 +34,7 @@
 body {
   font-family: 'Noto Sans KR', sans-serif;
   background: var(--am-bg); color: var(--am-gray);
-  font-weight: 300; line-height: 1.7; min-height: 100vh;
+  font-weight: 400; line-height: 1.7; min-height: 100vh;
 }
 .login-screen {
   position: fixed; inset: 0; background: var(--am-bg);
@@ -49,20 +49,20 @@ body {
 .login-logo { text-align: center; margin-bottom: 18px; }
 .login-logo img { height: 54px; }
 .login-sub {
-  font-family: 'Raleway', sans-serif; font-size: 9px;
+  font-family: 'Raleway', sans-serif; font-size: 13px;
   letter-spacing: 0.18em; color: var(--am-muted);
   text-align: center; margin-bottom: 22px;
 }
-.login-label { font-size: 11px; color: var(--am-muted); margin-bottom: 7px; }
+.login-label { font-size: 13px; color: var(--am-muted); margin-bottom: 7px; }
 .member-grid {
   display: grid; grid-template-columns: 1fr 1fr 1fr;
   gap: 6px; margin-bottom: 16px;
 }
 .member-btn {
-  padding: 10px 6px; font-size: 12px;
+  padding: 10px 6px; font-size: 13px;
   border: 0.5px solid var(--am-border); border-radius: 7px;
   cursor: pointer; background: var(--am-white); color: var(--am-gray);
-  font-family: 'Noto Sans KR', sans-serif; font-weight: 300;
+  font-family: 'Noto Sans KR', sans-serif; font-weight: 400;
   text-align: center; transition: all 0.15s;
 }
 .member-btn:hover { border-color: var(--am-sage); color: var(--am-sage); }
@@ -72,7 +72,7 @@ body {
 .pw-area { display: none; margin-bottom: 6px; }
 .pw-area.visible { display: block; }
 .pw-hint {
-  font-size: 10px; color: var(--am-muted); margin-bottom: 6px;
+  font-size: 13px; color: var(--am-muted); margin-bottom: 6px;
   padding: 7px 10px; background: rgba(143,191,184,0.08);
   border-radius: 6px; border-left: 2px solid var(--am-sage);
 }
@@ -80,19 +80,19 @@ body {
   width: 100%; border: 0.5px solid var(--am-border);
   border-radius: 7px; padding: 9px 12px; font-size: 13px;
   background: var(--am-bg); color: var(--am-gray); margin-bottom: 6px;
-  font-family: 'Noto Sans KR', sans-serif; font-weight: 300;
+  font-family: 'Noto Sans KR', sans-serif; font-weight: 400;
 }
 .pw-input:focus { outline: none; border-color: var(--am-sage); }
-.login-err { font-size: 11px; color: var(--am-rose); margin-bottom: 8px; display: none; }
+.login-err { font-size: 13px; color: var(--am-rose); margin-bottom: 8px; display: none; }
 .login-btn {
   width: 100%; padding: 11px; background: var(--am-sage); color: #fff;
   border: none; border-radius: 8px; font-size: 13px; cursor: pointer;
-  font-family: 'Noto Sans KR', sans-serif; font-weight: 300; transition: background 0.15s;
+  font-family: 'Noto Sans KR', sans-serif; font-weight: 400; transition: background 0.15s;
 }
 .login-btn:hover { background: #6fa8a0; }
 .back-link {
   display: block; text-align: center; margin-top: 14px;
-  font-size: 11px; color: var(--am-muted); text-decoration: none;
+  font-size: 13px; color: var(--am-muted); text-decoration: none;
 }
 .back-link:hover { color: var(--am-sage); }
 .app { display: none; flex-direction: column; min-height: 100vh; }
@@ -104,8 +104,8 @@ body {
 .header-top { padding: 10px 16px; display: flex; align-items: center; gap: 10px; }
 .header-logo img { height: 31px; margin-top: 3px; }
 .header-info { flex: 1; }
-.header-info h1 { font-size: 12px; font-weight: 300; color: var(--am-gray); }
-.header-sub { font-size: 9px; color: var(--am-muted); font-family: 'Raleway', sans-serif; letter-spacing: 0.08em; }
+.header-info h1 { font-size: 13px; font-weight: 400; color: var(--am-gray); }
+.header-sub { font-size: 13px; color: var(--am-muted); font-family: 'Raleway', sans-serif; letter-spacing: 0.08em; }
 .user-chip {
   display: flex; align-items: center; gap: 6px;
   background: var(--am-bg); border: 0.5px solid var(--am-border);
@@ -114,20 +114,20 @@ body {
 .user-av {
   width: 22px; height: 22px; border-radius: 50%;
   background: rgba(143,191,184,0.25); color: var(--am-sage);
-  display: flex; align-items: center; justify-content: center; font-size: 10px;
+  display: flex; align-items: center; justify-content: center; font-size: 13px;
 }
-.user-chip span { font-size: 11px; color: var(--am-gray); }
+.user-chip span { font-size: 13px; color: var(--am-gray); }
 .logout-btn {
   border: none; background: none; cursor: pointer;
   color: var(--am-muted); padding: 0 0 0 4px; font-size: 14px;
 }
 .logout-btn:hover { color: var(--am-rose); }
 .members-link {
-  font-size: 11px; color: var(--am-muted);
+  font-size: 13px; color: var(--am-muted);
   background: none; border: 0.5px solid var(--am-border);
   padding: 5px 10px; cursor: pointer;
   font-family: 'Noto Sans KR', sans-serif;
-  font-weight: 300; transition: all 0.15s;
+  font-weight: 400; transition: all 0.15s;
   text-decoration: none; white-space: nowrap;
   display: inline-flex; align-items: center; gap: 4px;
 }
@@ -135,8 +135,8 @@ body {
 .header-tabs { display: flex; border-top: 0.5px solid var(--am-pale); }
 .htab {
   flex: 1; padding: 9px 4px; border: none; background: none;
-  color: var(--am-muted); font-size: 10px; cursor: pointer;
-  font-family: 'Noto Sans KR', sans-serif; font-weight: 300;
+  color: var(--am-muted); font-size: 13px; cursor: pointer;
+  font-family: 'Noto Sans KR', sans-serif; font-weight: 400;
   display: flex; align-items: center; justify-content: center; gap: 3px;
   border-bottom: 2px solid transparent; transition: all 0.15s;
 }
@@ -160,7 +160,7 @@ body {
 }
 .date-nav:hover { background: var(--am-bg); }
 .date-label {
-  flex: 1; text-align: center; font-size: 12px; color: var(--am-gray);
+  flex: 1; text-align: center; font-size: 13px; color: var(--am-gray);
   font-family: 'Noto Serif KR', serif;
 }
 .avail-wrap { overflow-x: auto; }
@@ -170,12 +170,12 @@ body {
   gap: 3px; min-width: 360px;
 }
 .ag-head {
-  text-align: center; font-size: 10px; color: var(--am-muted);
+  text-align: center; font-size: 13px; color: var(--am-muted);
   padding: 4px 0; font-family: 'Raleway', sans-serif;
 }
 .ag-head.today { color: var(--am-rose); font-weight: 400; }
 .ag-time {
-  font-size: 9px; color: var(--am-muted); text-align: right;
+  font-size: 13px; color: var(--am-muted); text-align: right;
   padding-right: 5px; display: flex; align-items: center; justify-content: flex-end;
   height: 28px;
 }
@@ -191,14 +191,14 @@ body {
   width: 100%; margin-top: 14px; padding: 11px;
   background: var(--am-sage); color: #fff; border: none;
   border-radius: 8px; font-size: 13px; cursor: pointer;
-  font-family: 'Noto Sans KR', sans-serif; font-weight: 300;
+  font-family: 'Noto Sans KR', sans-serif; font-weight: 400;
   transition: background 0.15s;
 }
 .save-avail-btn:hover { background: #6fa8a0; }
 .avail-legend {
   display: flex; gap: 12px; margin-top: 10px; flex-wrap: wrap;
 }
-.leg-item { display: flex; align-items: center; gap: 5px; font-size: 10px; color: var(--am-muted); }
+.leg-item { display: flex; align-items: center; gap: 5px; font-size: 13px; color: var(--am-muted); }
 .leg-dot { width: 12px; height: 12px; border-radius: 3px; border: 0.5px solid; }
 .heatmap-wrap { overflow-x: auto; }
 .heatmap-grid {
@@ -207,19 +207,19 @@ body {
   gap: 3px; min-width: 320px;
 }
 .hm-head {
-  text-align: center; font-size: 9px; color: var(--am-muted);
+  text-align: center; font-size: 13px; color: var(--am-muted);
   padding: 4px 2px; font-family: 'Raleway', sans-serif; line-height: 1.4;
 }
 .hm-head.today { color: var(--am-rose); }
 .hm-time {
-  font-size: 9px; color: var(--am-muted); text-align: right;
+  font-size: 13px; color: var(--am-muted); text-align: right;
   padding-right: 5px; display: flex; align-items: center; justify-content: flex-end;
   height: 34px;
 }
 .hm-cell {
   height: 34px; border-radius: 5px; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  font-size: 12px; font-weight: 400; color: rgba(255,255,255,0.9);
+  font-size: 13px; font-weight: 400; color: rgba(255,255,255,0.9);
   border: 0.5px solid transparent; transition: transform 0.1s, box-shadow 0.1s;
   position: relative;
 }
@@ -230,15 +230,15 @@ body {
 .hm-info {
   margin-top: 10px; padding: 10px 14px;
   background: var(--am-white); border: 0.5px solid var(--am-border);
-  border-radius: 8px; font-size: 11px; color: var(--am-gray); line-height: 1.7;
+  border-radius: 8px; font-size: 13px; color: var(--am-gray); line-height: 1.7;
   display: none;
 }
 .hm-info.visible { display: block; }
-.hm-info-time { font-size: 10px; color: var(--am-muted); margin-bottom: 3px; }
+.hm-info-time { font-size: 13px; color: var(--am-muted); margin-bottom: 3px; }
 .hm-info-names { color: var(--am-gray); }
 .hm-legend {
   display: flex; align-items: center; gap: 6px; margin-top: 10px;
-  font-size: 9px; color: var(--am-muted);
+  font-size: 13px; color: var(--am-muted);
 }
 .hm-legend-bar {
   display: flex; gap: 2px;
@@ -257,26 +257,26 @@ body {
 .mc-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 6px; }
 .mc-title { font-size: 13px; color: var(--am-gray); }
 .mc-badge {
-  font-size: 9px; padding: 2px 8px; border-radius: 10px;
+  font-size: 13px; padding: 2px 8px; border-radius: 10px;
   font-family: 'Raleway', sans-serif; flex-shrink: 0; margin-left: 8px;
 }
 .badge-open    { background: rgba(232,146,154,0.12); color: var(--am-rose); }
 .badge-decided { background: rgba(143,191,184,0.18); color: #5a9990; }
-.mc-date { font-size: 10px; color: var(--am-muted); margin-bottom: 10px; }
+.mc-date { font-size: 13px; color: var(--am-muted); margin-bottom: 10px; }
 .mc-votes { display: flex; flex-direction: column; gap: 5px; }
 .mv-row { display: flex; align-items: center; gap: 8px; }
-.mv-label { font-size: 10px; color: var(--am-gray); min-width: 130px; flex-shrink: 0; }
+.mv-label { font-size: 13px; color: var(--am-gray); min-width: 130px; flex-shrink: 0; }
 .mv-bar-bg { flex: 1; height: 5px; border-radius: 3px; background: var(--am-pale); overflow: hidden; }
 .mv-bar-fill { height: 100%; border-radius: 3px; background: var(--am-sage); }
 .mv-bar-fill.top { background: var(--am-rose); }
-.mv-count { font-size: 10px; color: var(--am-muted); min-width: 32px; text-align: right; }
+.mv-count { font-size: 13px; color: var(--am-muted); min-width: 32px; text-align: right; }
 .mc-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; }
-.mc-resp { font-size: 10px; color: var(--am-muted); }
+.mc-resp { font-size: 13px; color: var(--am-muted); }
 .new-btn {
   display: flex; align-items: center; gap: 4px;
   padding: 6px 12px; background: var(--am-sage); color: #fff;
-  border: none; border-radius: 6px; font-size: 11px; cursor: pointer;
-  font-family: 'Noto Sans KR', sans-serif; font-weight: 300; transition: background 0.15s;
+  border: none; border-radius: 6px; font-size: 13px; cursor: pointer;
+  font-family: 'Noto Sans KR', sans-serif; font-weight: 400; transition: background 0.15s;
 }
 .new-btn:hover { background: #6fa8a0; }
 .panel-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
@@ -308,30 +308,30 @@ body {
 .vote-option:hover { border-color: var(--am-sage); }
 .vote-option.yes { border-color: var(--am-sage); background: rgba(143,191,184,0.08); }
 .vo-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
-.vo-label { font-size: 12px; color: var(--am-gray); }
+.vo-label { font-size: 13px; color: var(--am-gray); }
 .vo-bar-row { display: flex; align-items: center; gap: 6px; }
 .vo-bar-bg { flex: 1; height: 4px; border-radius: 2px; background: var(--am-pale); overflow: hidden; }
 .vo-bar-fill { height: 100%; border-radius: 2px; background: var(--am-sage); }
-.vo-count { font-size: 10px; color: var(--am-muted); }
-.vo-names { font-size: 10px; color: var(--am-muted); margin-top: 4px; }
+.vo-count { font-size: 13px; color: var(--am-muted); }
+.vo-names { font-size: 13px; color: var(--am-muted); margin-top: 4px; }
 .submit-btn {
   width: 100%; padding: 12px; background: var(--am-sage); color: #fff;
   border: none; border-radius: 8px; font-size: 13px; cursor: pointer;
-  font-family: 'Noto Sans KR', sans-serif; font-weight: 300; margin-top: 16px;
+  font-family: 'Noto Sans KR', sans-serif; font-weight: 400; margin-top: 16px;
 }
 .submit-btn:hover { background: #6fa8a0; }
 .decide-btn {
   padding: 5px 12px; border: 0.5px solid var(--am-sage);
   border-radius: 6px; background: none; color: var(--am-sage);
-  font-size: 11px; cursor: pointer; font-family: 'Noto Sans KR', sans-serif;
-  font-weight: 300; transition: all 0.15s;
+  font-size: 13px; cursor: pointer; font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 400; transition: all 0.15s;
 }
 .decide-btn:hover { background: var(--am-sage); color: #fff; }
-.form-label { font-size: 11px; color: var(--am-muted); margin-bottom: 5px; margin-top: 12px; }
+.form-label { font-size: 13px; color: var(--am-muted); margin-bottom: 5px; margin-top: 12px; }
 .form-input {
   width: 100%; border: 0.5px solid var(--am-border); border-radius: 7px;
-  padding: 9px 12px; font-size: 12px; background: var(--am-bg); color: var(--am-gray);
-  font-family: 'Noto Sans KR', sans-serif; font-weight: 300;
+  padding: 9px 12px; font-size: 13px; background: var(--am-bg); color: var(--am-gray);
+  font-family: 'Noto Sans KR', sans-serif; font-weight: 400;
 }
 .form-input:focus { outline: none; border-color: var(--am-sage); }
 .candidate-row { display: flex; gap: 6px; margin-bottom: 6px; align-items: center; }
@@ -339,38 +339,38 @@ body {
 .remove-btn { border: none; background: none; cursor: pointer; color: var(--am-pale); font-size: 16px; }
 .remove-btn:hover { color: var(--am-rose); }
 .add-candidate-btn {
-  font-size: 11px; color: var(--am-sage); border: 0.5px solid var(--am-sage);
+  font-size: 13px; color: var(--am-sage); border: 0.5px solid var(--am-sage);
   background: none; border-radius: 6px; padding: 5px 10px;
   cursor: pointer; font-family: 'Noto Sans KR', sans-serif; margin-top: 2px;
 }
 .add-candidate-btn:hover { background: rgba(143,191,184,0.1); }
 .admin-badge {
-  font-size: 9px; padding: 1px 6px; border-radius: 8px;
+  font-size: 13px; padding: 1px 6px; border-radius: 8px;
   background: rgba(232,146,154,0.12); color: var(--am-rose);
   font-family: 'Raleway', sans-serif; margin-left: 4px;
 }
 .info-box {
   background: rgba(143,191,184,0.08); border: 0.5px solid rgba(143,191,184,0.4);
   border-radius: 8px; padding: 11px 13px; margin-bottom: 12px;
-  font-size: 11px; color: var(--am-gray); line-height: 1.7;
+  font-size: 13px; color: var(--am-gray); line-height: 1.7;
 }
 .hist-card {
   background: var(--am-white); border: 0.5px solid var(--am-border);
   border-left: 2px solid var(--am-sage);
   border-radius: 10px; padding: 14px 16px; margin-bottom: 8px;
 }
-.hist-title { font-size: 12px; color: var(--am-gray); margin-bottom: 4px; }
-.hist-meta { font-size: 10px; color: var(--am-muted); }
+.hist-title { font-size: 13px; color: var(--am-gray); margin-bottom: 4px; }
+.hist-meta { font-size: 13px; color: var(--am-muted); }
 .toast {
   position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
   background: var(--am-dark); color: #fff; padding: 9px 20px;
-  border-radius: 20px; font-size: 12px; z-index: 9999;
+  border-radius: 20px; font-size: 13px; z-index: 9999;
   display: none; white-space: nowrap;
 }
 .toast.show { display: block; }
 .empty-state {
   text-align: center; padding: 40px 20px;
-  color: var(--am-muted); font-size: 12px; line-height: 1.8;
+  color: var(--am-muted); font-size: 13px; line-height: 1.8;
 }
 .empty-state i { font-size: 28px; color: var(--am-pale); display: block; margin-bottom: 10px; }
 </style>
@@ -515,7 +515,7 @@ body {
     </div>
     <div class="form-label" style="margin-top:0;">모임 이름</div>
     <input class="form-input" type="text" id="meetingTitle" placeholder="예) 창립총회 준비 모임">
-    <div class="form-label">후보 일시 <span style="font-size:10px;color:var(--am-muted);">(최소 1개·최대 4개)</span></div>
+    <div class="form-label">후보 일시 <span style="font-size: 13px;color:var(--am-muted);">(최소 1개·최대 4개)</span></div>
     <div id="candidateInputs">
       <div class="candidate-row">
         <input class="form-input" type="text" placeholder="예) 7월 10일(목) 오후 2시">
@@ -651,7 +651,7 @@ function renderAvailGrid() {
   const grid = document.getElementById('availGrid');
   let html = '<div class="ag-head"></div>';
   days.forEach(d => {
-    html += `<div class="ag-head${isToday(d)?' today':''}">${DAYS_KR[d.getDay()]}<br><span style="font-size:11px;">${d.getDate()}</span></div>`;
+    html += `<div class="ag-head${isToday(d)?' today':''}">${DAYS_KR[d.getDay()]}<br><span style="font-size: 13px;">${d.getDate()}</span></div>`;
   });
   HOURS.forEach(h => {
     html += `<div class="ag-time">${h}:00</div>`;
@@ -727,7 +727,7 @@ function renderStatusGrid() {
 
   let html = '<div></div>';
   days.forEach(d => {
-    html += `<div class="hm-head${isToday(d)?' today':''}">${DAYS_KR[d.getDay()]}<br><span style="font-size:9px;">${d.getDate()}</span></div>`;
+    html += `<div class="hm-head${isToday(d)?' today':''}">${DAYS_KR[d.getDay()]}<br><span style="font-size: 13px;">${d.getDate()}</span></div>`;
   });
 
   HOURS.forEach(h => {
@@ -800,7 +800,7 @@ function renderMeetings() {
       <div class="mc-votes">${rows}</div>
       <div class="mc-footer">
         <div class="mc-resp">${totalVotes.length}명 응답</div>
-        <div style="font-size:11px;color:var(--am-sage);">상세 보기 <i class="ti ti-chevron-right" style="font-size:12px;"></i></div>
+        <div style="font-size: 13px;color:var(--am-sage);">상세 보기 <i class="ti ti-chevron-right" style="font-size: 13px;"></i></div>
       </div>
     </div>`;
   }).join('');
@@ -832,10 +832,10 @@ function renderVoteModal(m) {
 
   const adminSection = isAdmin ? `
     <div style="margin-top:20px; padding-top:14px; border-top:0.5px solid var(--am-pale);">
-      <div style="font-size:10px;color:var(--am-muted);margin-bottom:10px;">일정 확정 <span class="admin-badge">담당자 전용</span></div>
+      <div style="font-size: 13px;color:var(--am-muted);margin-bottom:10px;">일정 확정 <span class="admin-badge">담당자 전용</span></div>
       ${candidates.map(c=>`
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px;">
-          <span style="font-size:11px;color:var(--am-gray);flex:1;">${esc(c.label)}</span>
+          <span style="font-size: 13px;color:var(--am-gray);flex:1;">${esc(c.label)}</span>
           <button class="decide-btn" onclick="decideMeeting('${m.id}','${c.datetime}','${esc(c.label)}')">이 일시로 확정</button>
         </div>`).join('')}
     </div>` : '';
@@ -920,9 +920,9 @@ async function loadOfficialMeetings() {
       <div class="mc-top"><div class="mc-title">${esc(m.title)}</div>
         <span class="mc-badge" style="background:rgba(143,175,212,0.12);color:#5a9990;">공식</span></div>
       <div class="mc-date">기록: 관리자 · ${date}</div>
-      <div class="mc-date" style="font-size:11px;color:var(--am-muted);">${esc(m.decided_label || '—')}</div>
+      <div class="mc-date" style="font-size: 13px;color:var(--am-muted);">${esc(m.decided_label || '—')}</div>
       <div class="mc-footer">
-        <button class="btn-outline-sm" onclick="deleteOfficialMeeting('${m.id}')" style="font-size:11px;">
+        <button class="btn-outline-sm" onclick="deleteOfficialMeeting('${m.id}')" style="font-size: 13px;">
           <i class="ti ti-trash"></i>삭제</button>
       </div>
     </div>`;

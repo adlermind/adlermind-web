@@ -37,19 +37,19 @@
   color: #5e7773;
 }
 .test-program {
-  font-size: 11px; color: #98928d; letter-spacing: .04em;
+  font-size: 13px; color: #98928d; letter-spacing: .04em;
 }
 .test-body {
-  font-size: 12px; line-height: 1.6; color: #4A4A4A;
+  font-size: 13px; line-height: 1.6; color: #4A4A4A;
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
   overflow: hidden; word-break: break-word;
   margin-bottom: 6px;
 }
 .test-more {
-  font-size: 11px; color: #8FBFB8; cursor: pointer;
+  font-size: 13px; color: #8FBFB8; cursor: pointer;
   text-decoration: underline; letter-spacing: .04em;
 }
-.test-empty { font-size: 12.5px; line-height: 2; color: #6E6763; text-align: center; padding: 20px; }
+.test-empty { font-size: 13px; line-height: 2; color: #6E6763; text-align: center; padding: 20px; }
 
 /* 팝업 모달 */
 .test-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -73,8 +73,8 @@
 @media (max-width: 600px) {
   .test-card { flex-basis: 240px; }
   .test-photo { width: 80px; height: 56px; }
-  .test-alias { font-size: 12px; }
-  .test-program { font-size: 10px; }
+  .test-alias { font-size: 13px; }
+  .test-program { font-size: 13px; }
 }
 `;
 

@@ -18,7 +18,7 @@
   --am-bg: #FAFAF8; --am-muted: #6E6763; --am-border: #e8e4e0; --am-white: #ffffff;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Noto Sans KR', sans-serif; font-weight: 300; color: var(--am-gray); background: var(--am-white); min-height: 100vh; display: flex; flex-direction: column; }
+body { font-family: 'Noto Sans KR', sans-serif; font-weight: 400; color: var(--am-gray); background: var(--am-white); min-height: 100vh; display: flex; flex-direction: column; }
 nav {
   position: sticky; top: 0; z-index: 100; background: var(--am-white);
   border-bottom: 0.5px solid var(--am-border); padding: 0 32px;
@@ -28,29 +28,29 @@ nav {
 .nav-links { display: flex; align-items: center; gap: 18px; flex: 1; }
 .nav-links a { font-size: 13px; color: var(--am-gray); text-decoration: none; transition: color 0.15s; }
 .nav-links a:hover, .nav-links a.active { color: var(--am-sage); }
-.nav-login-link { margin-left: auto; font-size: 12px; color: var(--am-muted); text-decoration: none; letter-spacing: 0.04em; transition: color 0.15s; white-space: nowrap; }
+.nav-login-link { margin-left: auto; font-size: 13px; color: var(--am-muted); text-decoration: none; letter-spacing: 0.04em; transition: color 0.15s; white-space: nowrap; }
 .nav-login-link:hover { color: var(--am-sage); }
 .nav-login-mobile { display: none; }
-.nav-member-btn { padding: 7px 18px; background: var(--am-sage); color: #fff; border: none; border-radius: 2px; font-size: 12px; font-weight: 300; cursor: pointer; text-decoration: none; transition: background 0.15s; white-space: nowrap; }
+.nav-member-btn { padding: 7px 18px; background: var(--am-sage); color: #fff; border: none; border-radius: 2px; font-size: 13px; font-weight: 400; cursor: pointer; text-decoration: none; transition: background 0.15s; white-space: nowrap; }
 .nav-member-btn:hover { background: #6fa8a0; }
 .nav-ham { display: none; border: none; background: none; cursor: pointer; font-size: 22px; color: var(--am-gray); }
 
 main { flex: 1; background: var(--am-bg); padding: 44px 32px 80px; }
 .inner { max-width: 900px; margin: 0 auto; }
-.crumb { font-size: 12px; color: var(--am-muted); text-decoration: none; }
+.crumb { font-size: 13px; color: var(--am-muted); text-decoration: none; }
 .crumb:hover { color: var(--am-sage); }
-.exp-label { font-family: 'Raleway', sans-serif; font-size: 10px; font-weight: 200; letter-spacing: 0.3em; color: var(--am-muted); text-transform: uppercase; margin-top: 26px; }
-.exp-title { font-family: 'Noto Serif KR', serif; font-size: 22px; font-weight: 300; margin-top: 14px; }
+.exp-label { font-family: 'Raleway', sans-serif; font-size: 13px; font-weight: 400; letter-spacing: 0.3em; color: var(--am-muted); text-transform: uppercase; margin-top: 26px; }
+.exp-title { font-family: 'Noto Serif KR', serif; font-size: 22px; font-weight: 400; margin-top: 14px; }
 .exp-summary { font-size: 13px; line-height: 2; color: var(--am-muted); margin-top: 12px; }
 .stage { margin-top: 30px; background: var(--am-white); border: 0.5px solid var(--am-border); }
 .stage iframe { display: block; width: 100%; border: 0; min-height: 460px; }
-.note { margin-top: 22px; padding: 18px 20px; background: var(--am-white); border: 0.5px solid var(--am-border); font-size: 12.5px; line-height: 2; color: var(--am-muted); }
+.note { margin-top: 22px; padding: 18px 20px; background: var(--am-white); border: 0.5px solid var(--am-border); font-size: 13px; line-height: 2; color: var(--am-muted); }
 .note strong { color: var(--am-gray); font-weight: 400; }
 .note a { color: var(--am-sage); }
 .note-btns { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
-.note-btn { display: inline-block; padding: 9px 16px; border: 0.5px solid var(--am-sage); background: var(--am-white); color: #5e7773; font-family: 'Noto Sans KR', sans-serif; font-weight: 300; font-size: 12px; text-decoration: none; cursor: pointer; }
+.note-btn { display: inline-block; padding: 9px 16px; border: 0.5px solid var(--am-sage); background: var(--am-white); color: #5e7773; font-family: 'Noto Sans KR', sans-serif; font-weight: 400; font-size: 13px; text-decoration: none; cursor: pointer; }
 .note-btn.primary { background: var(--am-sage); color: #fff; }
-.note-fine { margin-top: 14px; padding-top: 12px; border-top: 0.5px solid var(--am-border); font-size: 11.5px; line-height: 1.9; }
+.note-fine { margin-top: 14px; padding-top: 12px; border-top: 0.5px solid var(--am-border); font-size: 13px; line-height: 1.9; }
 .state { padding: 70px 20px; text-align: center; font-size: 13px; line-height: 2; color: var(--am-muted); }
 .hidden { display: none; }
 @media (max-width: 900px) {

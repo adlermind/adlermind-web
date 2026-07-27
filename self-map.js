@@ -122,19 +122,19 @@
              font-size: 13px; white-space: nowrap; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
 .ams-count { grid-area: count; min-width: 16px; height: 16px; margin: -4px 0 0 -2px; padding: 0 4px;
              border-radius: 999px; background: rgba(107,107,107,0.88);
-             font-size: 11px; line-height: 16px; color: #fff; text-align: center; }
+             font-size: 13px; line-height: 16px; color: #fff; text-align: center; }
 .ams-mobile-intro, .ams-mobile-cards { display: none; }
 .ams-index { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 14px; }
 .ams-index-card { min-width: 0; padding: 14px 15px 16px; border: 0.5px solid #e8e4e0;
                   background: #fff; scroll-margin-top: 90px; }
 .ams-index-card h3 { margin: 0; font-family: 'Noto Serif KR', serif; font-size: 16px;
                      font-weight: 400; color: #4A4A4A; }
-.ams-index-card p { min-height: 38px; margin: 5px 0 8px; font-size: 12px; line-height: 1.7; color: #6E6763; }
+.ams-index-card p { min-height: 38px; margin: 5px 0 8px; font-size: 13px; line-height: 1.7; color: #6E6763; }
 .ams-index-card ul, .ams-names { margin: 0; padding: 0; list-style: none; }
-.ams-index-card li, .ams-names li { font-size: 12px; line-height: 1.7; color: #4A4A4A; }
+.ams-index-card li, .ams-names li { font-size: 13px; line-height: 1.7; color: #4A4A4A; }
 .ams-index-card li::before, .ams-names li::before { content: '·'; margin-right: 5px; color: #6E6763; }
 .ams-soft { border: 0.5px solid #e8e4e0; background: #fff; color: #4A4A4A;
-            font-family: 'Noto Sans KR', sans-serif; font-weight: 300; font-size: 13.5px;
+            font-family: 'Noto Sans KR', sans-serif; font-weight: 400; font-size: 13.5px;
             padding: 5px 12px; cursor: pointer; transition: all 0.15s; }
 .ams-soft:hover { border-color: #8FBFB8; color: #8FBFB8; }
 
@@ -150,8 +150,8 @@
   .ams-card-body { padding: 18px 18px 20px; }
   .ams-card-body h3 { margin: 0; font-family: 'Noto Serif KR', serif; font-size: 21px;
                       font-weight: 400; color: #4A4A4A; }
-  .ams-academic { margin: 3px 0 0; font-size: 12px; color: #6E6763; }
-  .ams-factors { margin: 13px 0 0; font-size: 12px; line-height: 1.7; color: #6E6763; }
+  .ams-academic { margin: 3px 0 0; font-size: 13px; color: #6E6763; }
+  .ams-factors { margin: 13px 0 0; font-size: 13px; line-height: 1.7; color: #6E6763; }
   .ams-desc { margin: 5px 0 0; font-size: 14px; line-height: 1.75; color: #4A4A4A; }
   .ams-names { margin-top: 12px; padding-top: 10px; border-top: 0.5px solid #e8e4e0; }
 }

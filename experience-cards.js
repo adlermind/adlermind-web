@@ -27,20 +27,20 @@
 }
 .exp-card-body { padding: 20px 20px 22px; display: flex; flex-direction: column; flex: 1; }
 .exp-card-label {
-  font-family: 'Raleway', sans-serif; font-size: 9.5px; font-weight: 300;
+  font-family: 'Raleway', sans-serif; font-size: 13px; font-weight: 400;
   letter-spacing: .22em; color: #6E6763; text-transform: uppercase;
 }
 .exp-card-title {
-  font-family: 'Noto Serif KR', serif; font-size: 16px; font-weight: 300;
+  font-family: 'Noto Serif KR', serif; font-size: 16px; font-weight: 400;
   color: #4A4A4A; margin: 10px 0 0; line-height: 1.6;
 }
-.exp-card-summary { font-size: 12.5px; line-height: 1.9; color: #6E6763; margin: 8px 0 0; }
+.exp-card-summary { font-size: 13px; line-height: 1.9; color: #6E6763; margin: 8px 0 0; }
 .exp-card-go {
-  font-size: 11.5px; color: #8FBFB8; margin: 16px 0 0; letter-spacing: .04em;
+  font-size: 13px; color: #8FBFB8; margin: 16px 0 0; letter-spacing: .04em;
 }
 /* 그림이 없는 카드는 위가 허전하지 않게 여백을 조금 더 줍니다. */
 .exp-card-plain .exp-card-body { padding-top: 26px; }
-.exp-empty { font-size: 12.5px; line-height: 2; color: #6E6763; }
+.exp-empty { font-size: 13px; line-height: 2; color: #6E6763; }
 /* 대문 히어로용. 섬네일 한 장만 보여줍니다.
    섬네일에 프로그램 내용이 유튜브처럼 적혀 오므로 글자를 겹쳐 적지 않습니다.
    섬네일이 아직 없는 카드(exp-card-plain)는 빈 칸이 되지 않도록 글자를 그대로 둡니다. */
@@ -53,7 +53,7 @@
 .exp-compact .exp-card:not(.exp-card-plain) .exp-card-body { display: none; }
 .exp-compact .exp-card-plain .exp-card-body { padding: 20px 18px; }
 .exp-compact .exp-card-plain .exp-card-title { font-size: 15px; margin-top: 8px; }
-.exp-compact .exp-card-plain .exp-card-summary { font-size: 12px; margin-top: 6px; }
+.exp-compact .exp-card-plain .exp-card-summary { font-size: 13px; margin-top: 6px; }
 .exp-compact .exp-card-plain .exp-card-go { margin-top: 12px; }
 @media (max-width: 600px) {
   .exp-card { flex-basis: 232px; }

@@ -33,7 +33,7 @@
 .amr-exp p { margin: 4px 0 0; font-size: 14px; line-height: 1.8; color: #6E6763; }
 .amr-foot { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
 .amr-btn { border: 0.5px solid #e8e4e0; background: none; color: #6E6763; font-family: 'Noto Sans KR', sans-serif;
-           font-weight: 300; font-size: 13.5px; padding: 5px 12px; cursor: pointer; transition: all 0.15s; }
+           font-weight: 400; font-size: 13.5px; padding: 5px 12px; cursor: pointer; transition: all 0.15s; }
 .amr-btn:hover { border-color: #8FBFB8; color: #8FBFB8; }
 .amr-del:hover { border-color: #E8929A; color: #E8929A; }
 .amr-btn:disabled { opacity: 0.5; cursor: default; }
@@ -44,7 +44,7 @@
 .amr-egroup input, .amr-egroup textarea {
   display: block; width: 100%; margin-top: 5px; padding: 8px 10px;
   border: 0.5px solid #e8e4e0; background: #fff; font-family: 'Noto Sans KR', sans-serif;
-  font-weight: 300; font-size: 14.5px; line-height: 1.7; color: #4A4A4A; }
+  font-weight: 400; font-size: 14.5px; line-height: 1.7; color: #4A4A4A; }
 .amr-egroup textarea { min-height: 72px; resize: vertical; }
 .amr-example { margin-top: 7px; font-size: 13px; line-height: 1.7; color: #6E6763; }
 .amr-status { margin-bottom: 12px; padding: 10px 14px; border: 0.5px solid #e8e4e0;
