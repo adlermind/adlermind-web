@@ -16,7 +16,7 @@
   display: flex; flex-direction: row; align-items: flex-start; gap: 12px;
   background: #fff; border: 0.5px solid #e8e4e0;
   padding: 14px 16px;
-  color: #6B6B6B; text-decoration: none;
+  color: #4A4A4A; text-decoration: none;
   transition: border-color .15s, background .15s;
   cursor: default;
 }
@@ -40,7 +40,7 @@
   font-size: 11px; color: #98928d; letter-spacing: .04em;
 }
 .test-body {
-  font-size: 12px; line-height: 1.6; color: #6B6B6B;
+  font-size: 12px; line-height: 1.6; color: #4A4A4A;
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
   overflow: hidden; word-break: break-word;
   margin-bottom: 6px;
@@ -49,7 +49,7 @@
   font-size: 11px; color: #8FBFB8; cursor: pointer;
   text-decoration: underline; letter-spacing: .04em;
 }
-.test-empty { font-size: 12.5px; line-height: 2; color: #9a9490; text-align: center; padding: 20px; }
+.test-empty { font-size: 12.5px; line-height: 2; color: #6E6763; text-align: center; padding: 20px; }
 
 /* 팝업 모달 */
 .test-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -62,7 +62,7 @@
 .test-modal-img { max-width: 100%; max-height: 70vh; object-fit: contain; }
 .test-modal-close {
   align-self: flex-end; padding: 8px 12px;
-  background: none; border: none; font-size: 20px; color: #6B6B6B;
+  background: none; border: none; font-size: 20px; color: #4A4A4A;
   cursor: pointer; line-height: 1;
 }
 

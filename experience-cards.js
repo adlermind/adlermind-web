@@ -15,7 +15,7 @@
   flex: 0 0 262px; scroll-snap-align: start;
   display: flex; flex-direction: column; text-align: left;
   background: #fff; border: 0.5px solid #e8e4e0;
-  color: #6B6B6B; text-decoration: none;
+  color: #4A4A4A; text-decoration: none;
   transition: border-color .15s, transform .15s;
   overflow: hidden;
 }
@@ -28,19 +28,19 @@
 .exp-card-body { padding: 20px 20px 22px; display: flex; flex-direction: column; flex: 1; }
 .exp-card-label {
   font-family: 'Raleway', sans-serif; font-size: 9.5px; font-weight: 300;
-  letter-spacing: .22em; color: #9a9490; text-transform: uppercase;
+  letter-spacing: .22em; color: #6E6763; text-transform: uppercase;
 }
 .exp-card-title {
   font-family: 'Noto Serif KR', serif; font-size: 16px; font-weight: 300;
-  color: #6B6B6B; margin: 10px 0 0; line-height: 1.6;
+  color: #4A4A4A; margin: 10px 0 0; line-height: 1.6;
 }
-.exp-card-summary { font-size: 12.5px; line-height: 1.9; color: #9a9490; margin: 8px 0 0; }
+.exp-card-summary { font-size: 12.5px; line-height: 1.9; color: #6E6763; margin: 8px 0 0; }
 .exp-card-go {
   font-size: 11.5px; color: #8FBFB8; margin: 16px 0 0; letter-spacing: .04em;
 }
 /* 그림이 없는 카드는 위가 허전하지 않게 여백을 조금 더 줍니다. */
 .exp-card-plain .exp-card-body { padding-top: 26px; }
-.exp-empty { font-size: 12.5px; line-height: 2; color: #9a9490; }
+.exp-empty { font-size: 12.5px; line-height: 2; color: #6E6763; }
 /* 대문 히어로용. 섬네일 한 장만 보여줍니다.
    섬네일에 프로그램 내용이 유튜브처럼 적혀 오므로 글자를 겹쳐 적지 않습니다.
    섬네일이 아직 없는 카드(exp-card-plain)는 빈 칸이 되지 않도록 글자를 그대로 둡니다. */
