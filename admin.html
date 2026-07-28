@@ -174,7 +174,7 @@ tbody tr[aria-selected="true"]{background:#f4faf9}
           <label class="label" for="itemVisibility">공개 범위</label>
           <select id="itemVisibility">
             <option value="public">공개 — 누구나</option>
-            <option value="members">조합원 공개 — 활성 조합원만</option>
+            <option value="members">조합원 공개 — 조합원만</option>
             <option value="private">비공개 — 관리자만</option>
           </select>
         </div>
@@ -1238,7 +1238,7 @@ async function init() {
   if (!admin) {
     document.getElementById('title').textContent = '관리자 권한이 없습니다.';
     document.getElementById('lead').textContent =
-      '로그인은 확인되었지만 이 계정에는 관리자 권한이 없습니다. 조합원 자격과 관리자 권한은 별개이며, 관리자 권한은 홈페이지를 관리하는 사람에게만 따로 부여됩니다.';
+      '이 계정에는 관리자 권한이 없습니다.';
     // 이메일 회원은 내 계정으로, 별칭 체험계정은 마이페이지로 보낸다.
     addButton(profile
       ? '<a class="button" href="account-home.html">내 계정</a>'

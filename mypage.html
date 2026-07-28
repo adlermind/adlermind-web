@@ -140,14 +140,6 @@ hr.divider {
 
 a.card-link { display: block; text-decoration: none; transition: border-color 0.15s; }
 a.card-link:hover { border-color: var(--am-sage); }
-.account-note {
-  font-size: 14px; color: var(--am-muted);
-  line-height: 1.9; margin-top: -36px; margin-bottom: 56px;
-  border-left: 2px solid var(--am-border); padding-left: 12px;
-}
-.account-note a { color: var(--am-sage); }
-/* 계정 설정 카드를 감춘 이메일 회원 화면에서는 카드 자리만큼 당기던 여백도 없앱니다. */
-#accountGrid.hidden ~ .account-note { margin-top: 0; }
 .records-area { margin-bottom: 56px; }
 .hidden { display: none; }
 
@@ -214,16 +206,6 @@ a.card-link:hover { border-color: var(--am-sage); }
       </div>
     </a>
   </div>
-  <p class="account-note" id="noteExperience">
-    별칭은 변경할 수 없습니다. 이 계정은 임시 계정이 아니며 직접 지우실 때까지 유지됩니다.<br>
-    상품 구매·프로그램 신청·조합원 가입에는 <a href="account.html">이메일 회원계정</a>이 따로 필요하며,
-    별칭계정과는 서로 다른 계정이라 기록이 합쳐지지 않습니다.
-  </p>
-  <p class="account-note hidden" id="noteFormal">
-    이메일 회원계정으로 보고 계십니다. 조합원 가입·프로그램 신청은 이 계정으로 하십니다.<br>
-    계정 상태와 조합원 마당은 <a href="account-home.html">내 계정</a>에서 확인하실 수 있으며,
-    별칭계정과는 서로 다른 계정이라 기록이 합쳐지지 않습니다.
-  </p>
 
 </div>
 
@@ -254,8 +236,6 @@ document.getElementById('navHam').addEventListener('click', () => {
       .from('site_profiles').select('nickname, display_name').eq('user_id', session.user.id).maybeSingle();
     if (!formalProfile) { window.location.replace('account.html'); return; }
     nick = formalProfile.nickname || formalProfile.display_name;
-    document.getElementById('noteExperience').classList.add('hidden');
-    document.getElementById('noteFormal').classList.remove('hidden');
     // 이메일 회원의 집은 account-home.html 입니다. 계정 설정 단추가 그곳에 있습니다.
     document.getElementById('navNick').href = 'account-home.html';
     document.getElementById('accountLabel').classList.add('hidden');
