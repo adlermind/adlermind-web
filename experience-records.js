@@ -217,7 +217,7 @@
         nowLabel.appendChild(nowInput);
         group.appendChild(nowLabel);
 
-        const meanLabel = element('label', null, '나에게 이 말은 어떤 의미인가요?');
+        const meanLabel = element('label', null, '구체적으로 나를 이해한 언어로 표현해보세요.');
         const meanInput = element('textarea');
         meanInput.value = edit ? toText(edit.meaning) : '';
         meanInput.placeholder = '예: 서두르지 않아도 내 속도를 믿는다는 뜻이에요.';

@@ -915,9 +915,12 @@ let testimonialsLoaded = false;
    구역 이름은 self-map.js 한 곳에만 적혀 있습니다. 여기에 다시 적지 않습니다. */
 (function buildRegionBoxes() {
   const into = document.getElementById('expRegions');
+  // 한 줄에 나란히 놓습니다. 이름이 세로로 쪼개지지 않게 nowrap 과 flex-shrink:0 을 함께 겁니다.
+  into.style.cssText = 'display:flex;flex-wrap:wrap;gap:10px 20px;align-items:center';
   into.innerHTML = window.AMSelfMap.REGIONS.map(region => `
-    <label style="display:inline-flex;align-items:center;gap:6px;margin:0 14px 6px 0;font-size:13px">
-      <input type="checkbox" class="exp-region" value="${region.key}">
+    <label style="display:inline-flex;align-items:center;gap:7px;flex:0 0 auto;
+                  white-space:nowrap;font-size:13px;cursor:pointer">
+      <input type="checkbox" class="exp-region" value="${region.key}" style="flex:0 0 auto;margin:0">
       ${escapeHtml(region.name)}
     </label>`).join('');
 })();

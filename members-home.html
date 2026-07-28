@@ -65,6 +65,30 @@ body {
 }
 .logout-btn:hover { color: var(--am-rose); border-color: var(--am-rose); }
 
+/* 관리자 모드 토글 — 조합원·관리자 권한을 둘 다 가진 사람에게만 나타난다 (2026-07-28).
+   화면을 차지하던 큰 버튼 2개를 이 토글 하나로 대신한다. */
+.mode-toggle {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 13px; color: var(--am-muted);
+  cursor: pointer; user-select: none; white-space: nowrap;
+}
+.mode-toggle input { position: absolute; width: 0; height: 0; opacity: 0; }
+.mode-track {
+  position: relative; flex: 0 0 auto;
+  width: 38px; height: 20px; border-radius: 999px;
+  background: var(--am-pale); transition: background 0.15s;
+}
+.mode-knob {
+  position: absolute; top: 2px; left: 2px;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--am-white); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.22);
+  transition: transform 0.15s;
+}
+.mode-toggle input:checked + .mode-track { background: var(--am-sage); }
+.mode-toggle input:checked + .mode-track .mode-knob { transform: translateX(18px); }
+.mode-toggle input:checked ~ .mode-text { color: var(--am-sage); }
+.mode-toggle input:focus-visible + .mode-track { outline: 2px solid var(--am-sage); outline-offset: 2px; }
+
 /* ── 탭 ── */
 .header-tabs {
   display: flex;
@@ -1410,7 +1434,7 @@ async function initMemberHome() {
     hdrs = memberAuth.restHeaders(admin.session.access_token);
   }
 
-  // 두 권한이 모두 있으면 모드 선택 UI 표시
+  // 두 권한이 모두 있으면 헤더에 관리자 모드 토글을 단다
   if (amHasMemberRole && amHasAdminRole) {
     amCurrentMode = 'member';
     updateHeaderForDualRole();
@@ -1427,15 +1451,25 @@ async function initMemberHome() {
   await loadBoard();
 }
 
+// 큰 버튼 2개 대신 로그아웃 옆에 토글 하나를 둔다 (2026-07-28 트리님 지시).
+// 꺼져 있으면 조합원 모드, 켜면 관리자 모드다. 기본값은 조합원 모드.
 function updateHeaderForDualRole() {
-  const headerInfo = document.querySelector('.header-info');
-  const modeButton = document.createElement('div');
-  modeButton.style.cssText = 'display:flex;gap:6px;margin-top:8px;';
-  modeButton.innerHTML = `
-    <button class="btn-outline-sm" id="amModeMember" onclick="switchAmMode('member')" style="flex:1;border-color:var(--am-sage);color:var(--am-sage);">조합원 모드</button>
-    <button class="btn-outline-sm" id="amModeAdmin" onclick="switchAmMode('admin')" style="flex:1;">관리자 모드</button>`;
-  headerInfo.appendChild(modeButton);
-  document.querySelector('.header-title').textContent = `${currentMember.display_name} · 모드 선택`;
+  const toggle = document.createElement('label');
+  toggle.className = 'mode-toggle';
+  toggle.title = '켜면 관리자 권한으로 봅니다.';
+  toggle.innerHTML = `
+    <input type="checkbox" id="amModeSwitch" aria-label="관리자 모드">
+    <span class="mode-track"><span class="mode-knob"></span></span>
+    <span class="mode-text">관리자 모드</span>`;
+
+  const logout = document.querySelector('.header-top .logout-btn');
+  logout.parentNode.insertBefore(toggle, logout);
+
+  document.getElementById('amModeSwitch').addEventListener('change', event => {
+    switchAmMode(event.target.checked ? 'admin' : 'member');
+  });
+
+  document.querySelector('.header-title').textContent = `${currentMember.display_name} 조합원 공간`;
 }
 
 function switchAmMode(mode) {
@@ -1443,10 +1477,9 @@ function switchAmMode(mode) {
   amAdminMode = (mode === 'admin');
   adminMode = (mode === 'admin');
 
-  document.getElementById('amModeMember').style.borderColor = mode === 'member' ? 'var(--am-sage)' : 'var(--am-border)';
-  document.getElementById('amModeMember').style.color = mode === 'member' ? 'var(--am-sage)' : 'var(--am-muted)';
-  document.getElementById('amModeAdmin').style.borderColor = mode === 'admin' ? 'var(--am-sage)' : 'var(--am-border)';
-  document.getElementById('amModeAdmin').style.color = mode === 'admin' ? 'var(--am-sage)' : 'var(--am-muted)';
+  // 코드에서 직접 부를 때도 토글 모양이 실제 상태와 어긋나지 않게 맞춰 둡니다.
+  const box = document.getElementById('amModeSwitch');
+  if (box) box.checked = (mode === 'admin');
 
   if (amCurrentTask && amCurrentStage) {
     renderIdeaCell();
