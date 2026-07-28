@@ -106,7 +106,7 @@ select '1. am_agenda 표가 생겼다' as item,
        exists (select 1 from information_schema.tables
                 where table_schema = 'public' and table_name = 'am_agenda') as passed
 union all
-select '2. 칸 다섯이 모두 있다',
+select '2. 칸 여섯이 모두 있다',
        (select count(*) = 6 from information_schema.columns
          where table_schema = 'public' and table_name = 'am_agenda'
            and column_name in ('id','author','title','reason','created_at','updated_at'))
