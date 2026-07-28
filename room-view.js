@@ -21,9 +21,17 @@
 .amr-room { max-width: 1000px; margin: 0 auto; }
 .amr-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
 .amr-card { display: block; background: #fff; border: 0.5px solid #e8e4e0;
-            padding: 26px 24px; text-decoration: none; color: #4A4A4A;
+            text-decoration: none; color: #4A4A4A; overflow: hidden;
             transition: border-color 0.15s, transform 0.15s; }
 .amr-card:hover { border-color: #8FBFB8; transform: translateY(-2px); }
+/* 그림 자리를 16:9 로 미리 잡아 둡니다. 그림이 늦게 떠도 카드가 덜컹이지 않습니다.
+   그림 파일이 아직 없는 분야는 이 자리가 아예 그려지지 않고 글자 카드로 남습니다. */
+.amr-card-thumb { display: block; width: 100%; aspect-ratio: 16 / 9;
+                  object-fit: cover; background: #FAFAF8;
+                  border-bottom: 0.5px solid #e8e4e0; }
+.amr-card-body { padding: 22px 24px 26px; }
+.amr-detail-thumb { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover;
+                    background: #FAFAF8; border: 0.5px solid #e8e4e0; margin-bottom: 26px; }
 .amr-card-name { font-family: 'Noto Serif KR', serif; font-size: 17px; font-weight: 400; }
 .amr-card-sub { font-size: 13px; color: #6E6763; margin-top: 4px; }
 .amr-card-lead { font-size: 13.5px; line-height: 1.9; color: #6E6763; margin-top: 12px; }
@@ -107,10 +115,21 @@
       fields.forEach(field => {
         const card = element('a', 'amr-card');
         card.href = page + '?field=' + encodeURIComponent(field.key);
-        card.appendChild(element('div', 'amr-card-name', field.name));
-        if (field.sub) card.appendChild(element('div', 'amr-card-sub', field.sub));
-        card.appendChild(element('p', 'amr-card-lead', field.lead));
-        card.appendChild(element('div', 'amr-card-more', '자세히 보기 →'));
+
+        if (field.image) {
+          const thumb = element('img', 'amr-card-thumb');
+          thumb.src = field.image;
+          thumb.alt = '';              // 카드 이름이 바로 아래에 있어 화면낭독기에 두 번 읽히지 않게 둡니다.
+          thumb.loading = 'lazy';
+          card.appendChild(thumb);
+        }
+
+        const body = element('div', 'amr-card-body');
+        body.appendChild(element('div', 'amr-card-name', field.name));
+        if (field.sub) body.appendChild(element('div', 'amr-card-sub', field.sub));
+        body.appendChild(element('p', 'amr-card-lead', field.lead));
+        body.appendChild(element('div', 'amr-card-more', '자세히 보기 →'));
+        card.appendChild(body);
         card.addEventListener('click', event => {
           // 새 탭으로 여는 것은 막지 않습니다.
           if (event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0) return;
@@ -126,6 +145,13 @@
     function drawDetail(field) {
       detail.textContent = '';
       const box = element('div', 'amr-room');
+
+      if (field.image) {
+        const wide = element('img', 'amr-detail-thumb');
+        wide.src = field.image;
+        wide.alt = field.imageAlt || '';
+        box.appendChild(wide);
+      }
 
       const head = element('div', 'amr-detail-head');
       head.appendChild(element('h1', 'amr-detail-name', field.name));
