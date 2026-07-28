@@ -71,6 +71,14 @@ nav {
 }
 .form-input:focus, .form-select:focus, .form-textarea:focus { outline: none; border-color: var(--am-sage); }
 .form-textarea { min-height: 140px; resize: vertical; }
+.form-textarea.short { min-height: 74px; }
+.form-opt { color: var(--am-muted); font-size: 13px; margin-left: 4px; }
+.form-hint { font-size: 13px; color: var(--am-muted); line-height: 1.8; margin-top: 6px; }
+/* 어느 자리에서 눌러 왔는지 알려주는 띠. 주소에 from 이 있을 때만 보입니다. */
+.from-note { border-left: 2px solid var(--am-sage); background: var(--am-white);
+             padding: 12px 16px; margin-bottom: 24px; font-size: 13px;
+             line-height: 1.8; color: var(--am-gray); }
+.hidden { display: none; }
 .form-submit {
   width: 100%; padding: 13px;
   background: var(--am-sage); color: #fff; border: none;
@@ -145,7 +153,7 @@ footer {
   <div class="page-hero-inner">
     <div class="page-label">CONTACT</div>
     <h1 class="page-title">문의</h1>
-    <p class="page-desc">심리상담, 교육·연수, 조합 가입 등 궁금한 점을 보내주세요.</p>
+    <p class="page-desc">상담과 교육·연수에 관해 궁금한 점을 보내주세요. 접수 후 조합에서 연락드립니다.</p>
   </div>
 </div>
 
@@ -154,6 +162,8 @@ footer {
     문의가 접수되었습니다.<br>확인 후 연락드리겠습니다. 감사합니다.
   </div>
 
+  <p class="from-note hidden" id="fromNote"></p>
+
   <form id="contactForm" onsubmit="submitForm(event)">
     <div class="form-group">
       <label class="form-label">이름</label>
@@ -161,24 +171,45 @@ footer {
     </div>
     <div class="form-group">
       <label class="form-label">연락처</label>
-      <input class="form-input" type="text" id="fPhone" placeholder="010-0000-0000">
+      <input class="form-input" type="text" id="fPhone" placeholder="010-0000-0000" required>
     </div>
     <div class="form-group">
-      <label class="form-label">이메일</label>
+      <label class="form-label">이메일 <span class="form-opt">선택</span></label>
       <input class="form-input" type="email" id="fEmail" placeholder="example@email.com">
     </div>
     <div class="form-group">
+      <!-- 어느 자리에서 눌러 왔든 유형은 방문자가 직접 고릅니다 (2026-07-28 트리님 확정).
+           매체상담은 유형으로 두지 않습니다 — 상황에 따라 어느 상담에나 접목되기 때문입니다. -->
       <label class="form-label">문의 유형</label>
       <select class="form-select" id="fCategory">
-        <option value="상담문의">심리상담 문의</option>
-        <option value="교육문의">교육·연수 문의</option>
-        <option value="조합가입">조합 가입 문의</option>
+        <option value="개인상담">개인상담</option>
+        <option value="집단상담">집단상담</option>
+        <option value="가족상담">가족상담</option>
+        <option value="교육연수">교육·연수</option>
+        <option value="학교상담">학교상담</option>
         <option value="기타">기타</option>
       </select>
     </div>
     <div class="form-group">
-      <label class="form-label">문의 내용</label>
-      <textarea class="form-textarea" id="fMessage" placeholder="문의 내용을 입력해 주세요" required></textarea>
+      <label class="form-label">희망하시는 상담자 <span class="form-opt">선택</span></label>
+      <input class="form-input" type="text" id="fCounselor" placeholder="비워두셔도 됩니다">
+      <p class="form-hint">특별히 원하시는 분이 없으면 비워두세요. 조합에서 그 시간에 가능하신 분을 배정해 연락드립니다.</p>
+    </div>
+    <div class="form-group">
+      <label class="form-label">온라인 상담</label>
+      <select class="form-select" id="fOnline">
+        <option value="either">상관없습니다</option>
+        <option value="online">온라인(Zoom)으로 원합니다</option>
+        <option value="offline">직접 만나서 하고 싶습니다</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">상담이 가능한 시간</label>
+      <textarea class="form-textarea short" id="fTime" placeholder="예: 평일 저녁 7시 이후, 토요일 오전도 가능합니다" required></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">어떤 어려움을 함께 풀고 싶으신가요</label>
+      <textarea class="form-textarea" id="fMessage" placeholder="지금 가장 힘든 점이나 바라시는 것을 편하게 적어주세요. 자세하지 않아도 괜찮습니다." required></textarea>
     </div>
     <div class="err-msg" id="errMsg">전송 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.</div>
     <button class="form-submit" type="submit" id="submitBtn">문의 보내기</button>
@@ -217,6 +248,23 @@ footer {
 const SB_URL = 'https://jboceiacgczkqkhqcmqu.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impib2NlaWFjZ2N6a3FraHFjbXF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI1OTg1MTYsImV4cCI6MjA5ODE3NDUxNn0.9jHLNB8PVDrWlSc5CDGz5j6ZF9yaKwrnzICvvvsFbvA';
 
+/* 어느 자리에서 문의를 눌러 왔는지 · 2026-07-28
+   주소에 ?from=매체상담 처럼 붙여 보냅니다.
+   ⚠ 이 값으로 문의 유형을 대신 골라주지 않습니다. 유형은 방문자가 직접 고릅니다
+      (트리님 확정) — 매체상담처럼 어느 상담에나 접목되는 자리가 있기 때문입니다. */
+let fromLabel = null;
+(function readFrom() {
+  const raw = new URLSearchParams(location.search).get('from');
+  if (!raw) return;
+  const label = raw.trim().slice(0, 40);
+  if (!label) return;
+  fromLabel = label;
+  const note = document.getElementById('fromNote');
+  // 주소에 담겨 온 글이므로 textContent 로만 넣습니다.
+  note.textContent = `「${label}」을 보고 오셨군요. 아래에 남겨주시면 그 내용과 함께 전해집니다.`;
+  note.classList.remove('hidden');
+})();
+
 async function submitForm(e) {
   e.preventDefault();
   const name     = document.getElementById('fName').value.trim();
@@ -224,7 +272,11 @@ async function submitForm(e) {
   const email    = document.getElementById('fEmail').value.trim();
   const category = document.getElementById('fCategory').value;
   const message  = document.getElementById('fMessage').value.trim();
-  if (!name || !message) return;
+  const preferred_counselor = document.getElementById('fCounselor').value.trim() || null;
+  const online_pref         = document.getElementById('fOnline').value;
+  const available_time      = document.getElementById('fTime').value.trim();
+  const source_page         = fromLabel || null;
+  if (!name || !phone || !message || !available_time) return;
 
   const btn = document.getElementById('submitBtn');
   btn.disabled = true; btn.textContent = '전송 중...';
@@ -239,7 +291,8 @@ async function submitForm(e) {
         'Content-Type': 'application/json',
         'Prefer': 'return=minimal'
       },
-      body: JSON.stringify({ name, phone, email, category, message })
+      body: JSON.stringify({ name, phone, email, category, message,
+                             preferred_counselor, online_pref, available_time, source_page })
     });
     if (!res.ok) {
       const errBody = await res.text();

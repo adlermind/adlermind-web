@@ -1908,7 +1908,12 @@ async function deletePost(id) {
 }
 
 // ── 문의 관리 ──
-const catColor = { '상담문의':'var(--am-rose)', '교육문의':'var(--am-blue)', '조합가입':'var(--am-sage)', '기타':'var(--am-muted)' };
+// 옛 유형(상담문의·교육문의·조합가입)도 남겨 둔다. 이미 접수된 문의가 색을 잃지 않게 한다.
+const catColor = {
+  '개인상담':'var(--am-rose)', '집단상담':'var(--am-mauve)', '가족상담':'var(--am-sage)',
+  '교육연수':'var(--am-blue)', '학교상담':'var(--am-blue)', '기타':'var(--am-muted)',
+  '상담문의':'var(--am-rose)', '교육문의':'var(--am-blue)', '조합가입':'var(--am-sage)'
+};
 let allContacts = [];
 
 async function loadContacts() {
@@ -1940,7 +1945,35 @@ function openContact(id) {
   document.getElementById('viewTitle').textContent = `[${r.category}] ${r.name}`;
   document.getElementById('viewCatRow').innerHTML = '';
   document.getElementById('viewMeta').textContent = `연락처: ${r.phone||'—'}  |  이메일: ${r.email||'—'}  |  ${date}`;
-  document.getElementById('viewBody').textContent = r.message;
+
+  // 배정에 필요한 값을 본문 위에 모아 보여준다. 옛 문의에는 이 칸들이 비어 있다.
+  const ONLINE = { online:'온라인(Zoom) 희망', offline:'직접 만나기 희망', either:'상관없음' };
+  const facts = [
+    ['희망 상담자', r.preferred_counselor || '없음 — 조합에서 배정'],
+    ['온라인 상담', ONLINE[r.online_pref] || '—'],
+    ['가능한 시간', r.available_time || '—'],
+    ['문의한 자리', r.source_page || '—']
+  ];
+  const body = document.getElementById('viewBody');
+  body.textContent = '';
+  const box = document.createElement('div');
+  box.style.cssText = 'border:0.5px solid var(--am-border);background:var(--am-bg);' +
+                      'padding:14px 16px;margin-bottom:16px;font-size:13px;line-height:2';
+  facts.forEach(([key, value]) => {
+    const row = document.createElement('div');
+    const label = document.createElement('span');
+    label.style.cssText = 'display:inline-block;width:96px;color:var(--am-muted)';
+    label.textContent = key;
+    row.appendChild(label);
+    // 방문자가 적은 글이므로 textContent 로만 넣는다.
+    row.appendChild(document.createTextNode(value));
+    box.appendChild(row);
+  });
+  body.appendChild(box);
+
+  const text = document.createElement('div');
+  text.textContent = r.message;
+  body.appendChild(text);
   document.getElementById('viewAttachments').innerHTML = '';
   document.getElementById('viewActions').innerHTML =
     `<button class="btn-danger" onclick="deleteContact('${r.id}')"><i class="ti ti-trash"></i>삭제</button>`;
