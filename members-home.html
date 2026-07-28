@@ -897,6 +897,17 @@ table.idea-matrix tbody th { background: #f4f2ee; font-size: 13px; font-weight: 
 .idea-res-item .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .rtag { font-size: 13px; font-weight: 800; letter-spacing: .03em; padding: 1px 5px; border-radius: 2px; background: var(--am-sage); color: #fff; flex-shrink: 0; }
 .idea-card-acts { display: flex; gap: 6px; margin-top: 12px; }
+/* 셀 옮기기 화살표 — 관리자 모드에서만 그린다 (2026-07-28) */
+.idea-move { display: flex; align-items: center; gap: 6px; margin-top: 12px;
+             padding-top: 10px; border-top: 0.5px dashed var(--am-border); }
+.idea-move-label { font-size: 13px; color: var(--am-muted); margin-right: 2px; }
+.idea-move-btn { width: 30px; height: 28px; display: inline-flex; align-items: center;
+                 justify-content: center; border: 0.5px solid var(--am-border);
+                 background: var(--am-white); color: var(--am-gray);
+                 cursor: pointer; transition: all 0.15s; }
+.idea-move-btn:hover:not(:disabled) { border-color: var(--am-sage); color: var(--am-sage); }
+.idea-move-btn:disabled { opacity: 0.3; cursor: default; }
+.idea-move-btn i { font-size: 15px; }
 .idea-del { color: var(--am-rose) !important; }
 .idea-form { background: #faf9f6; border: 0.5px solid var(--am-border); padding: 18px; margin-top: 8px; }
 .idea-form-t { font-size: 13px; font-weight: 700; color: var(--am-gray); margin-bottom: 14px; }
@@ -986,6 +997,25 @@ table.idea-matrix tbody th { background: #f4f2ee; font-size: 13px; font-weight: 
       <div class="shortcut-title">모임 조율</div>
       <div class="shortcut-desc">새 모임을 제안하고 후보 일정에 투표합니다. 확정 이력도 확인할 수 있습니다.</div>
     </a>
+    <a class="shortcut-card" href="#agendaBoard" onclick="openAgendaBoard();return false;">
+      <div class="shortcut-icon"><i class="ti ti-list-details"></i></div>
+      <div class="shortcut-title">안건 게시판</div>
+      <div class="shortcut-desc">다음 총회에서 다룰 안건을 제안하고 왜 필요한지 함께 적습니다.</div>
+    </a>
+  </div>
+
+  <!-- 안건 게시판 · 2026-07-28
+       카드를 누르면 이 자리에서 열린다. 다음 총회 안건을 모으는 보드판이다. -->
+  <div id="agendaBoard" class="hidden" style="margin-bottom:20px;">
+    <div class="panel-hd">
+      <div class="panel-title">안건 게시판</div>
+      <button class="btn-outline-sm" type="button" onclick="closeAgendaBoard()">닫기</button>
+    </div>
+    <p style="font-size:13px;color:var(--am-muted);line-height:1.9;margin:0 0 16px;">
+      다음 총회에서 다루었으면 하는 안건을 남겨주세요. 왜 필요한지 함께 적어주시면 안건을 정리할 때 도움이 됩니다.
+    </p>
+    <div class="idea-cards" id="agendaCards"></div>
+    <div id="agendaFormArea"></div>
   </div>
   <div style="border: 0.5px solid var(--am-border); background: var(--am-white); padding: 20px 24px;">
     <div style="font-size: 13px; color: var(--am-muted); line-height: 1.9;">
@@ -1484,6 +1514,8 @@ function switchAmMode(mode) {
   if (amCurrentTask && amCurrentStage) {
     renderIdeaCell();
   }
+  // 모드에 따라 수정·삭제 버튼이 달라지므로 열려 있는 안건 게시판도 다시 그린다.
+  if (agendaLoaded) { agendaEditingId = null; renderAgenda(); }
   renderAcctTable();
 
   showToast(`${mode === 'member' ? '조합원' : '관리자'} 모드로 전환했습니다.`);
@@ -2655,10 +2687,22 @@ function renderIdeaCard(i) {
       return `<a class="idea-res-item" href="${esc(r.url)}" target="_blank" rel="noopener"><span class="rtag">링크</span><span class="nm">${esc(r.name || r.url)}</span></a>`;
     }
   }).join('');
-  const actions = isAdmin
-    ? `<button class="btn-outline-sm idea-del" onclick="deleteIdea('${i.id}')"><i class="ti ti-trash"></i>삭제</button>`
-    : `<button class="btn-outline-sm" onclick="editIdea('${i.id}')"><i class="ti ti-pencil"></i>수정</button>
-       <button class="btn-outline-sm idea-del" onclick="deleteIdea('${i.id}')"><i class="ti ti-trash"></i>삭제</button>`;
+  // 고칠 수 있는 사람 — 관리자는 모든 글, 조합원은 자기 이름으로 올린 글만.
+  // 조합원 공간이라 계정이 아니라 담당자 이름으로 가른다 (am_ideas 에 계정을 담지 않는다).
+  const canEdit = amAdminMode || (!isAdmin && i.author === currentMember.display_name);
+  const actions = canEdit
+    ? `<button class="btn-outline-sm" onclick="editIdea('${i.id}')"><i class="ti ti-pencil"></i>수정</button>
+       <button class="btn-outline-sm idea-del" onclick="deleteIdea('${i.id}')"><i class="ti ti-trash"></i>삭제</button>`
+    : '';
+  // 셀 옮기기는 관리자만. 매트릭스 가장자리에서는 그쪽 화살표를 잠근다.
+  const moves = amAdminMode ? `
+    <div class="idea-move">
+      <span class="idea-move-label">셀 옮기기</span>
+      ${ideaMoveButton(i, 'task', -1, 'ti-arrow-up')}
+      ${ideaMoveButton(i, 'task',  1, 'ti-arrow-down')}
+      ${ideaMoveButton(i, 'stage', -1, 'ti-arrow-left')}
+      ${ideaMoveButton(i, 'stage',  1, 'ti-arrow-right')}
+    </div>` : '';
   return `<div class="idea-card" style="border-left-color:${isAdmin ? 'var(--am-blue)' : 'var(--am-mauve)'};">
     <div class="mc-top">
       <div class="idea-card-ttl">${esc(i.program_title)}</div>${sourceBadge}
@@ -2667,10 +2711,44 @@ function renderIdeaCard(i) {
     <div class="idea-chips">${ses}${wel}</div>
     <div class="idea-card-feat">${esc(i.content)}</div>
     ${res ? `<div class="idea-res">${res}</div>` : ''}
-    <div class="idea-card-acts">
-      ${actions}
-    </div>
+    ${moves}
+    ${actions ? `<div class="idea-card-acts">${actions}</div>` : ''}
   </div>`;
+}
+
+// 화살표 하나. 갈 곳이 없으면 눌리지 않게 잠근다.
+function ideaMoveButton(idea, axis, step, icon) {
+  const list  = axis === 'task' ? AM_TASKS : AM_STAGES;
+  const now   = axis === 'task' ? idea.life_task : idea.life_stage;
+  const next  = list[list.indexOf(now) + step];
+  const label = { 'ti-arrow-up':'위로', 'ti-arrow-down':'아래로',
+                  'ti-arrow-left':'왼쪽으로', 'ti-arrow-right':'오른쪽으로' }[icon];
+  if (!next) {
+    return `<button class="idea-move-btn" type="button" disabled aria-label="${label} 옮길 수 없음"><i class="ti ${icon}"></i></button>`;
+  }
+  return `<button class="idea-move-btn" type="button" title="${esc(next)} 로 옮기기"
+            aria-label="${esc(next)} 로 옮기기" onclick="moveIdea('${idea.id}','${axis}',${step})"><i class="ti ${icon}"></i></button>`;
+}
+
+// 관리자만 부른다. 칸 하나만 바꾸므로 다른 내용은 건드리지 않는다.
+async function moveIdea(id, axis, step) {
+  const idea = allIdeas.find(x => x.id === id);
+  if (!idea) return;
+  const list = axis === 'task' ? AM_TASKS : AM_STAGES;
+  const now  = axis === 'task' ? idea.life_task : idea.life_stage;
+  const next = list[list.indexOf(now) + step];
+  if (!next) return;
+
+  const body = axis === 'task' ? { life_task: next } : { life_stage: next };
+  const res = await fetch(`${SB_URL}/rest/v1/am_ideas?id=eq.${id}`, {
+    method:'PATCH', headers:{ ...hdrs, 'Prefer':'return=minimal' }, body: JSON.stringify(body)
+  });
+  if (!res.ok) { showToast(`옮기지 못했습니다. (${res.status})`); return; }
+
+  // 옮긴 글을 따라가야 결과가 보인다. 보고 있던 셀에 남으면 글이 사라진 것처럼 보인다.
+  if (axis === 'task') amCurrentTask = next; else amCurrentStage = next;
+  showToast(`${next} 로 옮겼습니다.`);
+  await loadIdeas();
 }
 
 function openTextResourceModal(title, content) {
@@ -2685,7 +2763,9 @@ function openTextResourceModal(title, content) {
 }
 
 function renderIdeaForm() {
-  if (amAdminMode) return '';
+  // 관리자 모드에서는 새로 쓰는 자리를 감춘다 — 관리자는 위의 '자료 추가'를 쓴다.
+  // 다만 고치는 중이면 그려야 한다. 이 줄이 없어서 관리자의 수정 버튼이 눌려도 아무 일이 없었다.
+  if (amAdminMode && !amEditingId) return '';
   const editing = amEditingId ? allIdeas.find(i => i.id === amEditingId) : null;
   const memberOpts = ['<option value="">— 담당자 선택 —</option>']
     .concat(AM_MEMBERS.map(m => `<option${editing && editing.author === m.name ? ' selected' : ''}>${m.name}</option>`)).join('');
@@ -2884,31 +2964,163 @@ async function submitIdea() {
     sessions: sessions || null,
     content,
     wel_domain: wel_domain || null,
-    resources: amResources,
-    source: 'member'
+    resources: amResources
   };
+
+  const editing = amEditingId ? allIdeas.find(i => i.id === amEditingId) : null;
+  // 새 글일 때만 출처를 적는다. 고칠 때 덮어쓰면 관리자 자료가 조합원 글로 바뀐다.
+  if (!editing) body.source = 'member';
+
   try {
-    if (amEditingId) {
-      await fetch(`${SB_URL}/rest/v1/am_ideas?id=eq.${amEditingId}`, {
-        method:'PATCH', headers:{ ...hdrs, 'Prefer':'return=minimal' }, body: JSON.stringify(body)
-      });
-      showToast('수정되었습니다.');
-    } else {
-      await fetch(`${SB_URL}/rest/v1/am_ideas`, {
-        method:'POST', headers:{ ...hdrs, 'Prefer':'return=minimal' }, body: JSON.stringify(body)
-      });
-      showToast('등록되었습니다.');
+    // fetch 는 403·401 을 받아도 예외를 던지지 않는다. 응답을 확인하지 않으면
+    // 저장이 막혀도 "수정되었습니다"가 떠서 무엇이 막았는지 알 수 없게 된다.
+    const res = amEditingId
+      ? await fetch(`${SB_URL}/rest/v1/am_ideas?id=eq.${amEditingId}`, {
+          method:'PATCH', headers:{ ...hdrs, 'Prefer':'return=minimal' }, body: JSON.stringify(body) })
+      : await fetch(`${SB_URL}/rest/v1/am_ideas`, {
+          method:'POST', headers:{ ...hdrs, 'Prefer':'return=minimal' }, body: JSON.stringify(body) });
+
+    if (!res.ok) {
+      showToast(`저장하지 못했습니다. (${res.status}) ${(await res.text()).slice(0, 120)}`);
+      return;
     }
+    showToast(amEditingId ? '수정되었습니다.' : '등록되었습니다.');
     amEditingId = null; amResources = [];
     await loadIdeas();
-  } catch(e) { showToast('저장 오류가 발생했습니다.'); }
+  } catch(e) { showToast('저장 오류가 발생했습니다. 연결을 확인해 주세요.'); }
 }
 
 async function deleteIdea(id) {
   if (!confirm('이 아이디어를 삭제하시겠습니까?')) return;
-  await fetch(`${SB_URL}/rest/v1/am_ideas?id=eq.${id}`, { method:'DELETE', headers: hdrs });
+  const res = await fetch(`${SB_URL}/rest/v1/am_ideas?id=eq.${id}`, { method:'DELETE', headers: hdrs });
+  if (!res.ok) { showToast(`삭제하지 못했습니다. (${res.status})`); return; }
   showToast('삭제되었습니다.');
   await loadIdeas();
+}
+
+/* ── 안건 게시판 · 2026-07-28 ─────────────────────────────────────
+   다음 총회 안건을 모으는 자리입니다. 담는 것은 게시자·제목·필요성 셋뿐입니다.
+   고칠 수 있는 사람 기준은 기획마당과 같습니다 — 관리자는 전부, 조합원은 자기 글만. */
+let allAgenda = [];
+let agendaEditingId = null;
+let agendaLoaded = false;
+
+function openAgendaBoard() {
+  document.getElementById('agendaBoard').classList.remove('hidden');
+  document.getElementById('agendaBoard').scrollIntoView({ behavior:'smooth', block:'start' });
+  if (!agendaLoaded) { agendaLoaded = true; loadAgenda(); }
+}
+
+function closeAgendaBoard() {
+  agendaEditingId = null;
+  document.getElementById('agendaBoard').classList.add('hidden');
+}
+
+async function loadAgenda() {
+  try {
+    const res = await fetch(`${SB_URL}/rest/v1/am_agenda?order=created_at.desc`, { headers: hdrs });
+    if (!res.ok) {
+      document.getElementById('agendaCards').innerHTML =
+        `<div class="idea-empty">안건을 불러오지 못했습니다. (${res.status}) setup_agenda_board.sql 실행 여부를 확인해 주세요.</div>`;
+      document.getElementById('agendaFormArea').innerHTML = '';
+      return;
+    }
+    allAgenda = await res.json();
+  } catch (e) {
+    document.getElementById('agendaCards').innerHTML =
+      '<div class="idea-empty">안건을 불러오지 못했습니다. 연결을 확인해 주세요.</div>';
+    return;
+  }
+  renderAgenda();
+}
+
+function renderAgenda() {
+  document.getElementById('agendaCards').innerHTML =
+    allAgenda.map(renderAgendaCard).join('')
+    || '<div class="idea-empty">아직 올라온 안건이 없습니다. 첫 안건을 남겨보세요.</div>';
+  document.getElementById('agendaFormArea').innerHTML = renderAgendaForm();
+
+  const editing = agendaEditingId ? allAgenda.find(a => a.id === agendaEditingId) : null;
+  if (editing) {
+    document.getElementById('gTitle').value  = editing.title  || '';
+    document.getElementById('gReason').value = editing.reason || '';
+  }
+}
+
+function renderAgendaCard(a) {
+  const date = new Date(a.created_at).toLocaleDateString('ko-KR', { month:'long', day:'numeric' });
+  const canEdit = amAdminMode || a.author === currentMember.display_name;
+  const actions = canEdit
+    ? `<div class="idea-card-acts">
+         <button class="btn-outline-sm" onclick="editAgenda('${a.id}')"><i class="ti ti-pencil"></i>수정</button>
+         <button class="btn-outline-sm idea-del" onclick="deleteAgenda('${a.id}')"><i class="ti ti-trash"></i>삭제</button>
+       </div>` : '';
+  return `<div class="idea-card" style="border-left-color:var(--am-sage);">
+    <div class="mc-top"><div class="idea-card-ttl">${esc(a.title)}</div></div>
+    <div class="idea-card-m">${amWho(a.author)}${esc(a.author)} · ${date}</div>
+    <div class="idea-card-feat">${esc(a.reason)}</div>
+    ${actions}
+  </div>`;
+}
+
+function renderAgendaForm() {
+  const editing = agendaEditingId ? allAgenda.find(a => a.id === agendaEditingId) : null;
+  // 관리자 모드에서는 새로 쓰는 자리를 감춘다. 고치는 중이면 그린다 (기획마당과 같은 규칙).
+  if (amAdminMode && !editing) return '';
+  const memberOpts = ['<option value="">— 게시자 선택 —</option>']
+    .concat(AM_MEMBERS.map(m => `<option${editing && editing.author === m.name ? ' selected' : ''}>${m.name}</option>`)).join('');
+  return `
+  <div class="idea-form">
+    <div class="idea-form-t">${editing ? '안건 수정' : '안건 제안'}</div>
+    <div class="ifg"><label>게시자 *</label><select id="gAuthor">${memberOpts}</select></div>
+    <div class="ifg"><label>안건 제목 *</label><input id="gTitle" type="text" placeholder="예: 조합원 교육 일정 확정"></div>
+    <div class="ifg"><label>안건의 필요성 *</label><textarea id="gReason" rows="4" placeholder="이 안건이 왜 필요한지 적어주세요."></textarea></div>
+    <div class="idea-form-actions">
+      ${editing ? '<button class="btn-outline-sm" type="button" onclick="cancelAgendaEdit()">취소</button>' : ''}
+      <button class="btn-sage" type="button" onclick="submitAgenda()">${editing ? '수정 완료' : '안건 올리기'}</button>
+    </div>
+  </div>`;
+}
+
+function editAgenda(id) {
+  agendaEditingId = id;
+  renderAgenda();
+  document.getElementById('agendaFormArea').scrollIntoView({ behavior:'smooth', block:'nearest' });
+}
+
+function cancelAgendaEdit() { agendaEditingId = null; renderAgenda(); }
+
+async function submitAgenda() {
+  const author = document.getElementById('gAuthor').value;
+  const title  = document.getElementById('gTitle').value.trim();
+  const reason = document.getElementById('gReason').value.trim();
+  if (!author) { showToast('게시자를 선택해주세요.'); return; }
+  if (!title || !reason) { showToast('안건 제목과 필요성을 입력해주세요.'); return; }
+
+  const body = { author, title, reason };
+  try {
+    const res = agendaEditingId
+      ? await fetch(`${SB_URL}/rest/v1/am_agenda?id=eq.${agendaEditingId}`, {
+          method:'PATCH', headers:{ ...hdrs, 'Prefer':'return=minimal' }, body: JSON.stringify(body) })
+      : await fetch(`${SB_URL}/rest/v1/am_agenda`, {
+          method:'POST', headers:{ ...hdrs, 'Prefer':'return=minimal' }, body: JSON.stringify(body) });
+
+    if (!res.ok) {
+      showToast(`저장하지 못했습니다. (${res.status}) ${(await res.text()).slice(0, 120)}`);
+      return;
+    }
+    showToast(agendaEditingId ? '수정되었습니다.' : '안건을 올렸습니다.');
+    agendaEditingId = null;
+    await loadAgenda();
+  } catch (e) { showToast('저장 오류가 발생했습니다. 연결을 확인해 주세요.'); }
+}
+
+async function deleteAgenda(id) {
+  if (!confirm('이 안건을 삭제하시겠습니까?')) return;
+  const res = await fetch(`${SB_URL}/rest/v1/am_agenda?id=eq.${id}`, { method:'DELETE', headers: hdrs });
+  if (!res.ok) { showToast(`삭제하지 못했습니다. (${res.status})`); return; }
+  showToast('삭제되었습니다.');
+  await loadAgenda();
 }
 </script>
 </body>
