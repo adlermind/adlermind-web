@@ -53,6 +53,18 @@
 .amr-step-t { font-size: 14px; margin-bottom: 6px; }
 .amr-step-x { font-size: 13.5px; line-height: 1.95; color: #6E6763; }
 
+/* 운영 프로그램 목록 — 배움의 방에서 씁니다. 기관 담당자가 무엇을 고를 수 있는지 봅니다. */
+.amr-progs { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+.amr-prog { background: #fff; border: 0.5px solid #e8e4e0; padding: 20px 22px; }
+.amr-prog-t { font-family: 'Noto Serif KR', serif; font-size: 16px; font-weight: 400; }
+.amr-prog-tag { font-size: 13px; color: #6E6763; margin-top: 5px; }
+.amr-prog-list { list-style: none; margin: 14px 0 0; padding: 0; }
+.amr-prog-list li { font-size: 13.5px; line-height: 1.85; color: #4A4A4A;
+                    padding: 4px 0 4px 15px; position: relative; }
+.amr-prog-list li::before { content: '·'; position: absolute; left: 0; color: #8FBFB8; }
+.amr-closing { font-size: 14px; line-height: 1.95; color: #4A4A4A; margin-top: 22px;
+               background: #FAFAF8; border-left: 2px solid #8FBFB8; padding: 16px 20px; }
+
 .amr-foryou { list-style: none; margin: 0; padding: 0; }
 .amr-foryou li { font-size: 13.5px; line-height: 1.9; color: #4A4A4A; padding: 7px 0 7px 16px; position: relative; }
 .amr-foryou li::before { content: '·'; position: absolute; left: 0; color: #8FBFB8; }
@@ -189,6 +201,24 @@
         });
       }
 
+      // 운영 프로그램 — 배움의 방에서만 씁니다. 없으면 그려지지 않습니다.
+      if (field.programs && field.programs.length) {
+        box.appendChild(element('div', 'amr-steps-t', field.programsTitle || '운영 프로그램'));
+        const grid = element('div', 'amr-progs');
+        field.programs.forEach(prog => {
+          const item = element('article', 'amr-prog');
+          item.appendChild(element('div', 'amr-prog-t', prog.name));
+          if (prog.tags) item.appendChild(element('div', 'amr-prog-tag', prog.tags));
+          if (prog.points && prog.points.length) {
+            const ul = element('ul', 'amr-prog-list');
+            prog.points.forEach(point => ul.appendChild(element('li', null, point)));
+            item.appendChild(ul);
+          }
+          grid.appendChild(item);
+        });
+        box.appendChild(grid);
+      }
+
       if (field.extra) {
         box.appendChild(element('div', 'amr-extra-t', field.extra.title));
         const extra = element('div', 'amr-extra');
@@ -197,11 +227,15 @@
       }
 
       if (field.forYou && field.forYou.length) {
-        box.appendChild(element('div', 'amr-foryou-t', 'For You · 이런 분들과 만나고 싶습니다'));
+        // 상담의 방은 당사자가, 배움의 방은 기관 담당자가 읽습니다. 제목을 바꿔 씁니다.
+        box.appendChild(element('div', 'amr-foryou-t',
+          field.forYouTitle || 'For You · 이런 분들과 만나고 싶습니다'));
         const ul = element('ul', 'amr-foryou');
         field.forYou.forEach(item => ul.appendChild(element('li', null, item)));
         box.appendChild(ul);
       }
+
+      if (field.closing) box.appendChild(element('p', 'amr-closing', field.closing));
 
       if (field.note) {
         const note = element('div', 'amr-note');

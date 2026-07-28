@@ -62,7 +62,14 @@ nav {
 .back-link { font-size: 13px; color: var(--am-muted); text-decoration: none; }
 .back-link:hover { color: var(--am-sage); }
 .hidden { display: none; }
-.exp-section { flex: 1; background: var(--am-bg); padding: 64px 32px 80px; }
+.exp-section { background: var(--am-bg); padding: 64px 32px 40px; }
+/* 분야 구역 · 2026-07-28 — 체험 카드 아래에 온다 (상담의 방과 같은 구조) */
+.field-section { flex: 1; background: var(--am-bg); padding: 20px 32px 88px; }
+.field-inner { max-width: 1000px; margin: 0 auto; }
+.field-head { margin-bottom: 30px; }
+/* 분야 하나를 열었을 때 체험 구역을 감춥니다. 체험이 없을 때 쓰는 .hidden 과 따로 둡니다. */
+.hidden-by-detail { display: none; }
+@media (max-width: 900px) { .field-section { padding: 16px 20px 64px; } }
 .exp-inner { max-width: 1000px; margin: 0 auto; }
 .exp-section-label {
   font-family: 'Raleway', sans-serif; font-size: 13px; font-weight: 400;
@@ -110,17 +117,21 @@ nav {
   </div>
 </section>
 
-<div class="coming-wrap" id="comingWrap">
-  <div class="coming-label">EDUCATION</div>
-  <div class="coming-line"></div>
-  <h1 class="coming-title">교육·연수 페이지를 준비 중입니다</h1>
-  <p class="coming-desc">
-    아들러 심리학 기반의 교육 프로그램,<br>
-    연수 과정 안내를 준비하고 있습니다.
-  </p>
-  <div class="coming-date">2026. 08. 15 창립총회 이후 공개 예정</div>
-  <a class="back-link" href="index.html">&larr; 홈으로 돌아가기</a>
-</div>
+<!-- 분야 카드 3장과 분야 상세. 그리는 일은 room-view.js 가 합니다.
+     분야마다 파일을 만들지 않고 주소(?field=)로 나눕니다. -->
+<section class="field-section" id="fieldSection">
+  <div class="field-inner">
+    <div class="field-head" id="fieldHead">
+      <div class="exp-section-label">EDUCATION</div>
+      <h2 class="exp-section-title">어디서 만나든 함께 설계합니다</h2>
+      <p class="exp-section-desc">
+        학교와 기관, 선생님, 그리고 사람이 모이는 자리마다 필요한 것이 다릅니다.
+      </p>
+    </div>
+    <div id="fieldList"></div>
+    <div id="fieldDetail" class="hidden"></div>
+  </div>
+</section>
 <script>
 const SB_URL = 'https://jboceiacgczkqkhqcmqu.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impib2NlaWFjZ2N6a3FraHFjbXF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI1OTg1MTYsImV4cCI6MjA5ODE3NDUxNn0.9jHLNB8PVDrWlSc5CDGz5j6ZF9yaKwrnzICvvvsFbvA';
@@ -147,12 +158,27 @@ document.getElementById('navHam').addEventListener('click', () => {
 </script>
 <script src="experience-cards.js"></script>
 <script>
+// 걸린 체험이 없으면 이 구역은 나타나지 않습니다. 분야 카드는 그대로 보입니다.
 AMExperienceCards.render({
   into: 'expCards',
   placement: 'education',
-  onReady: () => {
-    document.getElementById('expSection').classList.remove('hidden');
-    document.getElementById('comingWrap').classList.add('hidden');
+  onReady: () => { document.getElementById('expSection').classList.remove('hidden'); }
+});
+</script>
+<script src="education-fields.js"></script>
+<script src="room-view.js"></script>
+<script>
+AMRoom.render({
+  listInto: 'fieldList',
+  detailInto: 'fieldDetail',
+  fields: window.AM_EDUCATION_FIELDS,
+  roomName: '배움의 방',
+  page: 'education.html',
+  // 분야 하나를 열면 체험 카드와 머리글을 감춥니다. 그 이야기에 집중하는 자리입니다.
+  onDetail: field => {
+    document.getElementById('expSection').classList.toggle('hidden-by-detail', !!field);
+    document.getElementById('fieldHead').classList.toggle('hidden', !!field);
+    document.title = (field ? field.name + ' · ' : '') + '교육·연수 · ADLER MIND 협동조합';
   }
 });
 </script>
