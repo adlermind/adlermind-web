@@ -1041,6 +1041,7 @@ table.idea-matrix tbody th { background: #f4f2ee; font-size: 13px; font-weight: 
   </div>
   <div id="ideaCellPanel"></div>
   <input type="file" id="ideaFileInput" style="display:none" multiple>
+  <input type="file" id="agendaFileInput" style="display:none" multiple>
 </div>
 
 <!-- Tab 4: 문의 관리 -->
@@ -1515,7 +1516,7 @@ function switchAmMode(mode) {
     renderIdeaCell();
   }
   // 모드에 따라 수정·삭제 버튼이 달라지므로 열려 있는 안건 게시판도 다시 그린다.
-  if (agendaLoaded) { agendaEditingId = null; renderAgenda(); }
+  if (agendaLoaded) { agendaEditingId = null; agendaFiles = []; renderAgenda(); }
   renderAcctTable();
 
   showToast(`${mode === 'member' ? '조합원' : '관리자'} 모드로 전환했습니다.`);
@@ -3004,6 +3005,7 @@ async function deleteIdea(id) {
 let allAgenda = [];
 let agendaEditingId = null;
 let agendaLoaded = false;
+let agendaFiles = [];   // 지금 쓰고 있는 안건에 붙인 파일 목록
 
 function openAgendaBoard() {
   document.getElementById('agendaBoard').classList.remove('hidden');
@@ -3012,7 +3014,7 @@ function openAgendaBoard() {
 }
 
 function closeAgendaBoard() {
-  agendaEditingId = null;
+  agendaEditingId = null; agendaFiles = [];
   document.getElementById('agendaBoard').classList.add('hidden');
 }
 
@@ -3026,6 +3028,11 @@ async function loadAgenda() {
       return;
     }
     allAgenda = await res.json();
+    if (!Array.isArray(allAgenda)) allAgenda = [];
+    // board-files 는 비공개 버킷이라 열 때마다 서명 주소를 받아 둔다 (기획마당과 같은 방식).
+    await Promise.all(allAgenda.flatMap(a => (a.attachments || []).map(async file => {
+      file.signed_url = await memberAuth.signedStorageUrl(file.url, 'board-files');
+    })));
   } catch (e) {
     document.getElementById('agendaCards').innerHTML =
       '<div class="idea-empty">안건을 불러오지 못했습니다. 연결을 확인해 주세요.</div>';
@@ -3045,7 +3052,37 @@ function renderAgenda() {
     document.getElementById('gTitle').value  = editing.title  || '';
     document.getElementById('gReason').value = editing.reason || '';
   }
+  renderAgendaFiles();
 }
+
+function renderAgendaFiles() {
+  const el = document.getElementById('agendaResList');
+  if (!el) return;
+  if (!agendaFiles.length) {
+    el.innerHTML = '<div class="idea-res-empty">첨부한 파일이 없습니다.</div>';
+    return;
+  }
+  el.innerHTML = agendaFiles.map((f, idx) =>
+    `<div class="idea-res-chip"><span class="rtag">파일</span><span class="idea-res-nm">${esc(f.name)}</span>` +
+    `<button class="idea-res-x" type="button" onclick="removeAgendaFile(${idx})"><i class="ti ti-x"></i></button></div>`
+  ).join('');
+}
+
+function removeAgendaFile(i) { agendaFiles.splice(i, 1); renderAgendaFiles(); }
+
+document.getElementById('agendaFileInput').addEventListener('change', async function() {
+  const files = Array.from(this.files); if (!files.length) return;
+  for (const f of files) {
+    showToast(`${f.name} 업로드 중...`);
+    const url = await uploadToStorage(f, 'agenda');
+    if (url) {
+      agendaFiles.push({ name: f.name, size: f.size, url });
+      showToast(`${f.name} 첨부 완료`);
+    }
+  }
+  renderAgendaFiles();
+  this.value = '';
+});
 
 function renderAgendaCard(a) {
   const date = new Date(a.created_at).toLocaleDateString('ko-KR', { month:'long', day:'numeric' });
@@ -3055,10 +3092,18 @@ function renderAgendaCard(a) {
          <button class="btn-outline-sm" onclick="editAgenda('${a.id}')"><i class="ti ti-pencil"></i>수정</button>
          <button class="btn-outline-sm idea-del" onclick="deleteAgenda('${a.id}')"><i class="ti ti-trash"></i>삭제</button>
        </div>` : '';
+  // PDF 는 페이지 안에서 열고 나머지는 새 탭으로 내려받는다 (기획마당과 같은 규칙).
+  const files = (a.attachments || []).map(f => {
+    const isPdf = f.name && f.name.toLowerCase().endsWith('.pdf');
+    return isPdf && f.signed_url
+      ? `<a class="idea-res-item" href="#" onclick="openPdf('${esc(f.signed_url)}', '${esc(f.name)}');return false;"><span class="rtag">PDF</span><span class="nm">${esc(f.name)}</span></a>`
+      : `<a class="idea-res-item" href="${esc(f.signed_url || '#')}" target="_blank" rel="noopener"><span class="rtag">파일</span><span class="nm">${esc(f.name)}</span></a>`;
+  }).join('');
   return `<div class="idea-card" style="border-left-color:var(--am-sage);">
     <div class="mc-top"><div class="idea-card-ttl">${esc(a.title)}</div></div>
     <div class="idea-card-m">${amWho(a.author)}${esc(a.author)} · ${date}</div>
     <div class="idea-card-feat">${esc(a.reason)}</div>
+    ${files ? `<div class="idea-res">${files}</div>` : ''}
     ${actions}
   </div>`;
 }
@@ -3075,6 +3120,13 @@ function renderAgendaForm() {
     <div class="ifg"><label>게시자 *</label><select id="gAuthor">${memberOpts}</select></div>
     <div class="ifg"><label>안건 제목 *</label><input id="gTitle" type="text" placeholder="예: 조합원 교육 일정 확정"></div>
     <div class="ifg"><label>안건의 필요성 *</label><textarea id="gReason" rows="4" placeholder="이 안건이 왜 필요한지 적어주세요."></textarea></div>
+    <div class="ifg">
+      <label>첨부파일 (선택 · 여러 개 가능)</label>
+      <div class="idea-res-btns">
+        <button class="btn-outline-sm" type="button" onclick="document.getElementById('agendaFileInput').click()"><i class="ti ti-paperclip"></i>파일 첨부</button>
+      </div>
+      <div class="idea-res-list" id="agendaResList"></div>
+    </div>
     <div class="idea-form-actions">
       ${editing ? '<button class="btn-outline-sm" type="button" onclick="cancelAgendaEdit()">취소</button>' : ''}
       <button class="btn-sage" type="button" onclick="submitAgenda()">${editing ? '수정 완료' : '안건 올리기'}</button>
@@ -3083,12 +3135,15 @@ function renderAgendaForm() {
 }
 
 function editAgenda(id) {
+  const a = allAgenda.find(x => x.id === id); if (!a) return;
   agendaEditingId = id;
+  // 이미 붙어 있던 파일을 그대로 이어받는다. 베껴 담아야 취소했을 때 원본이 안 망가진다.
+  agendaFiles = (a.attachments || []).map(f => ({ name: f.name, size: f.size, url: f.url }));
   renderAgenda();
   document.getElementById('agendaFormArea').scrollIntoView({ behavior:'smooth', block:'nearest' });
 }
 
-function cancelAgendaEdit() { agendaEditingId = null; renderAgenda(); }
+function cancelAgendaEdit() { agendaEditingId = null; agendaFiles = []; renderAgenda(); }
 
 async function submitAgenda() {
   const author = document.getElementById('gAuthor').value;
@@ -3097,7 +3152,9 @@ async function submitAgenda() {
   if (!author) { showToast('게시자를 선택해주세요.'); return; }
   if (!title || !reason) { showToast('안건 제목과 필요성을 입력해주세요.'); return; }
 
-  const body = { author, title, reason };
+  // 서명 주소는 그때그때 받는 값이라 담지 않는다. 저장하는 것은 이름·크기·경로뿐이다.
+  const body = { author, title, reason,
+    attachments: agendaFiles.map(f => ({ name: f.name, size: f.size, url: f.url })) };
   try {
     const res = agendaEditingId
       ? await fetch(`${SB_URL}/rest/v1/am_agenda?id=eq.${agendaEditingId}`, {
@@ -3110,7 +3167,7 @@ async function submitAgenda() {
       return;
     }
     showToast(agendaEditingId ? '수정되었습니다.' : '안건을 올렸습니다.');
-    agendaEditingId = null;
+    agendaEditingId = null; agendaFiles = [];
     await loadAgenda();
   } catch (e) { showToast('저장 오류가 발생했습니다. 연결을 확인해 주세요.'); }
 }

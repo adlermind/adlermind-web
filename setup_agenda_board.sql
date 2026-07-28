@@ -17,6 +17,19 @@ create table if not exists public.am_agenda (
   updated_at timestamptz not null default now()
 );
 
+-- 첨부파일 (2026-07-28 추가). 이미 표를 만든 뒤라도 이 줄이 칸을 더합니다.
+-- [{ name, size, url }] 모양이며 url 은 'board-files:경로' 표시값입니다.
+-- 서명 주소는 열 때마다 새로 받으므로 저장하지 않습니다.
+alter table public.am_agenda
+  add column if not exists attachments jsonb not null default '[]'::jsonb;
+
+alter table public.am_agenda
+  drop constraint if exists am_agenda_attachments_array_check;
+
+alter table public.am_agenda
+  add constraint am_agenda_attachments_array_check
+  check (jsonb_typeof(attachments) = 'array');
+
 comment on table public.am_agenda is
   '다음 총회에서 다룰 안건 제안. 조합원 마당 일정·모임 탭의 안건 게시판이 쓴다.';
 comment on column public.am_agenda.author is
@@ -106,10 +119,10 @@ select '1. am_agenda 표가 생겼다' as item,
        exists (select 1 from information_schema.tables
                 where table_schema = 'public' and table_name = 'am_agenda') as passed
 union all
-select '2. 칸 여섯이 모두 있다',
-       (select count(*) = 6 from information_schema.columns
+select '2. 칸 일곱이 모두 있다',
+       (select count(*) = 7 from information_schema.columns
          where table_schema = 'public' and table_name = 'am_agenda'
-           and column_name in ('id','author','title','reason','created_at','updated_at'))
+           and column_name in ('id','author','title','reason','attachments','created_at','updated_at'))
 union all
 select '3. am_agenda RLS 가 켜졌다',
        (select c.relrowsecurity from pg_class c
