@@ -96,6 +96,12 @@
     return node;
   }
 
+  // image/field/couple.webp → image/field/couple-800.webp
+  // 원고 파일에는 상세용 경로 하나만 적습니다. 카드용 이름은 여기서 만듭니다.
+  function smallOf(path) {
+    return path.replace(/\.webp$/i, '-800.webp');
+  }
+
   function render(options) {
     const list = typeof options.listInto === 'string'
       ? document.getElementById(options.listInto) : options.listInto;
@@ -118,9 +124,16 @@
 
         if (field.image) {
           const thumb = element('img', 'amr-card-thumb');
-          thumb.src = field.image;
+          // 카드는 330px 남짓으로 보입니다. 작은 판(-800)이 있으면 그것을 씁니다 —
+          // 상세용 1400px 을 카드 여섯 장에 쓰면 첫 화면이 네 배 무거워집니다.
+          thumb.src = smallOf(field.image);
           thumb.alt = '';              // 카드 이름이 바로 아래에 있어 화면낭독기에 두 번 읽히지 않게 둡니다.
           thumb.loading = 'lazy';
+          // 작은 판을 아직 안 만든 분야는 원본으로 되돌립니다. 깨진 그림이 뜨지 않게 합니다.
+          thumb.addEventListener('error', function once() {
+            thumb.removeEventListener('error', once);
+            thumb.src = field.image;
+          });
           card.appendChild(thumb);
         }
 
