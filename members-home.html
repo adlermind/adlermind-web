@@ -174,6 +174,32 @@ body {
   border-color: var(--am-sage);
 }
 
+/* ── 문의 처리 상태 (2026-07-29) ──
+   조합원 마당에서만 보인다. 방문자 화면에는 나타나지 않는다.
+   ⚠ 생김새가 같아도 .cat-tab 을 쓰지 않는다 — filterCat 이 .cat-tab 전부에서
+      active 를 걷어내므로 게시판을 거르면 이 줄의 표시가 함께 풀린다. */
+.st-tabs { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+.st-tab {
+  padding: 5px 14px;
+  border: 0.5px solid var(--am-border);
+  background: var(--am-white);
+  font-size: 13px; color: var(--am-muted);
+  cursor: pointer; transition: all 0.15s;
+  font-family: 'Noto Sans KR', sans-serif; font-weight: 400;
+}
+.st-tab:hover { border-color: var(--am-sage); color: var(--am-sage); }
+.st-tab.active { background: var(--am-sage); color: #fff; border-color: var(--am-sage); }
+.st-badge { font-size: 13px; padding: 3px 8px; flex-shrink: 0; }
+.st-접수 { background: rgba(232,146,154,0.12); color: var(--am-rose); }
+.st-배정 { background: rgba(143,175,212,0.14); color: var(--am-blue); }
+.st-완료 { background: rgba(0,0,0,0.05); color: var(--am-muted); }
+.ct-assignee {
+  padding: 5px 10px; width: 150px;
+  border: 0.5px solid var(--am-border); background: var(--am-bg);
+  font-family: 'Noto Sans KR', sans-serif; font-weight: 400;
+  font-size: 13px; color: var(--am-gray);
+}
+
 /* ── 게시판 목록 ── */
 .board-list { border-top: 0.5px solid var(--am-border); }
 .board-item {
@@ -1049,6 +1075,12 @@ table.idea-matrix tbody th { background: #f4f2ee; font-size: 13px; font-weight: 
   <div class="panel-hd">
     <div class="panel-title">문의 관리</div>
   </div>
+  <div class="st-tabs">
+    <button class="st-tab active" onclick="filterContactStatus('전체', this)">전체</button>
+    <button class="st-tab" onclick="filterContactStatus('접수', this)">접수</button>
+    <button class="st-tab" onclick="filterContactStatus('배정', this)">배정</button>
+    <button class="st-tab" onclick="filterContactStatus('완료', this)">완료</button>
+  </div>
   <div id="contactList">
     <div class="board-empty">불러오는 중...</div>
   </div>
@@ -1915,28 +1947,57 @@ const catColor = {
   '상담문의':'var(--am-rose)', '교육문의':'var(--am-blue)', '조합가입':'var(--am-sage)'
 };
 let allContacts = [];
+let contactStatus = '전체';   // 목록에서 고른 처리 상태
 
 async function loadContacts() {
   const el = document.getElementById('contactList');
   try {
     const res = await fetch(`${SB_URL}/rest/v1/contact_messages?order=created_at.desc`, { headers: hdrs });
     allContacts = await res.json();
-    if (!Array.isArray(allContacts) || !allContacts.length) {
-      el.innerHTML = '<div class="board-empty"><i class="ti ti-inbox"></i>접수된 문의가 없습니다.</div>'; return;
-    }
-    el.innerHTML = allContacts.map(r => {
-      const date = new Date(r.created_at).toLocaleDateString('ko-KR', { month:'long', day:'numeric' });
-      const color = catColor[r.category] || 'var(--am-muted)';
-      const preview = esc(r.message).slice(0, 40) + (r.message.length > 40 ? '…' : '');
-      return `<div class="board-item" onclick="openContact('${r.id}')">
-        <span class="board-cat-badge" style="background:rgba(0,0,0,0.04);color:${color}">${esc(r.category)}</span>
-        <div class="board-title">${esc(r.name)} — ${preview}</div>
-        <div class="board-meta">${date}</div>
-      </div>`;
-    }).join('');
+    renderContacts();
   } catch(e) {
     el.innerHTML = '<div class="board-empty"><i class="ti ti-alert-circle"></i>불러오기 실패</div>';
   }
+}
+
+// 상태를 바꿀 때마다 다시 불러오지 않고 손에 든 목록을 다시 그린다.
+function renderContacts() {
+  const el = document.getElementById('contactList');
+  if (!Array.isArray(allContacts) || !allContacts.length) {
+    el.innerHTML = '<div class="board-empty"><i class="ti ti-inbox"></i>접수된 문의가 없습니다.</div>'; return;
+  }
+  const rows = contactStatus === '전체'
+    ? allContacts
+    : allContacts.filter(r => contactStateOf(r) === contactStatus);
+  if (!rows.length) {
+    el.innerHTML = `<div class="board-empty"><i class="ti ti-inbox"></i>${contactStatus} 상태인 문의가 없습니다.</div>`; return;
+  }
+  el.innerHTML = rows.map(r => {
+    const date = new Date(r.created_at).toLocaleDateString('ko-KR', { month:'long', day:'numeric' });
+    const color = catColor[r.category] || 'var(--am-muted)';
+    const preview = esc(r.message).slice(0, 40) + (r.message.length > 40 ? '…' : '');
+    const state = contactStateOf(r);
+    const who = r.assigned_to ? ` · ${esc(r.assigned_to)}` : '';
+    return `<div class="board-item" onclick="openContact('${r.id}')">
+      <span class="st-badge st-${state}">${state}</span>
+      <span class="board-cat-badge" style="background:rgba(0,0,0,0.04);color:${color}">${esc(r.category)}</span>
+      <div class="board-title">${esc(r.name)} — ${preview}</div>
+      <div class="board-meta">${date}${who}</div>
+    </div>`;
+  }).join('');
+}
+
+// 상태 칸이 생기기 전에 들어온 문의는 값이 비어 있을 수 있다. 그때는 '접수'로 본다.
+function contactStateOf(r) {
+  return r && r.status ? r.status : '접수';
+}
+
+function filterContactStatus(status, btn) {
+  contactStatus = status;
+  // 상세 화면의 상태 단추도 같은 생김새를 쓰므로 목록 위 줄로만 좁혀 찾는다.
+  document.querySelectorAll('.st-tabs .st-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderContacts();
 }
 
 function openContact(id) {
@@ -1949,6 +2010,8 @@ function openContact(id) {
   // 배정에 필요한 값을 본문 위에 모아 보여준다. 옛 문의에는 이 칸들이 비어 있다.
   const ONLINE = { online:'온라인(Zoom) 희망', offline:'직접 만나기 희망', either:'상관없음' };
   const facts = [
+    ['처리 상태', contactStateOf(r)],
+    ['담당', r.assigned_to || '아직 없음'],
     ['희망 상담자', r.preferred_counselor || '없음 — 조합에서 배정'],
     ['온라인 상담', ONLINE[r.online_pref] || '—'],
     ['가능한 시간', r.available_time || '—'],
@@ -1975,10 +2038,42 @@ function openContact(id) {
   text.textContent = r.message;
   body.appendChild(text);
   document.getElementById('viewAttachments').innerHTML = '';
-  document.getElementById('viewActions').innerHTML =
-    `<button class="btn-danger" onclick="deleteContact('${r.id}')"><i class="ti ti-trash"></i>삭제</button>`;
+
+  // 담당자 이름과 상태 단추. 담당자를 적고 「배정」을 누르면 둘이 함께 저장된다.
+  // 삭제는 오른쪽 끝으로 밀어 상태 단추와 붙어 있지 않게 한다.
+  const state = contactStateOf(r);
+  const actions = document.getElementById('viewActions');
+  actions.innerHTML =
+    `<input id="contactAssignee" class="ct-assignee" type="text" placeholder="담당자 이름" maxlength="40">` +
+    ['접수','배정','완료'].map(s =>
+      `<button class="st-tab${s === state ? ' active' : ''}" onclick="setContactStatus('${r.id}','${s}')">${s}</button>`
+    ).join('') +
+    `<button class="btn-danger" style="margin-left:auto" onclick="deleteContact('${r.id}')"><i class="ti ti-trash"></i>삭제</button>`;
+  // esc() 가 따옴표는 바꾸지 않으므로 이름을 속성에 넣지 않고 값으로 넣는다.
+  document.getElementById('contactAssignee').value = r.assigned_to || '';
+
   document.getElementById('postViewPage').classList.add('open');
   document.getElementById('postViewPage').scrollTop = 0;
+}
+
+// 상태와 담당자를 함께 저장한다. 고칠 수 있는 칸은 DB 에서 이 둘로 좁혀 두었다.
+// fetch 는 403 을 받아도 예외를 던지지 않으므로 res.ok 를 반드시 본다.
+async function setContactStatus(id, status) {
+  const r = allContacts.find(x => x.id === id); if (!r) return;
+  const input = document.getElementById('contactAssignee');
+  const assigned_to = input ? (input.value.trim() || null) : (r.assigned_to || null);
+
+  const res = await fetch(`${SB_URL}/rest/v1/contact_messages?id=eq.${id}`, {
+    method: 'PATCH',
+    headers: Object.assign({}, hdrs, { Prefer: 'return=minimal' }),
+    body: JSON.stringify({ status, assigned_to })
+  });
+  if (!res.ok) { showToast(`저장하지 못했습니다 (${res.status})`); return; }
+
+  r.status = status; r.assigned_to = assigned_to;
+  showToast(`${status} 상태로 바꿨습니다.`);
+  openContact(id);
+  renderContacts();
 }
 
 async function deleteContact(id) {
