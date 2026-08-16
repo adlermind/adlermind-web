@@ -44,12 +44,19 @@
 /* 대문 히어로용. 섬네일 한 장만 보여줍니다.
    섬네일에 프로그램 내용이 유튜브처럼 적혀 오므로 글자를 겹쳐 적지 않습니다.
    섬네일이 아직 없는 카드(exp-card-plain)는 빈 칸이 되지 않도록 글자를 그대로 둡니다. */
-.exp-compact .exp-card { flex: 0 0 281px; }
-/* 카드가 적으면 가운데로 모으고, 넘치면 왼쪽부터 늘어서며 스크롤합니다.
-   safe 키워드가 없으면 넘칠 때 앞쪽이 잘려 스크롤로도 못 보게 됩니다.
-   이 키워드를 모르는 브라우저는 줄 전체를 무시해 왼쪽 정렬로 남으므로 잘릴 일이 없습니다.
+.exp-compact .exp-card { flex: 0 1 281px; }
+/* 대문에서는 옆으로 밀지 않고 줄을 바꿔 걸린 체험이 모두 보이게 합니다 (2026-08-16).
+   화면이 넓으면 한 줄에 더 많이 들어서고, 좁으면 줄이 늘어납니다.
+   가로 스크롤을 끄므로 스크롤 스냅도 함께 끕니다 — 켜 두면 세로 스크롤이 걸립니다.
+   방 안 목록(.exp-strip-scroll 기본형)은 옆으로 미는 그대로 둡니다.
    (이 파일의 CSS는 템플릿 문자열 안에 있으므로 주석에 역따옴표를 쓰지 않습니다) */
-.exp-compact .exp-strip-scroll { justify-content: safe center; }
+.exp-compact .exp-strip-scroll {
+  flex-wrap: wrap;
+  justify-content: center;
+  overflow-x: visible;
+  scroll-snap-type: none;
+  padding-bottom: 4px;
+}
 .exp-compact .exp-card:not(.exp-card-plain) .exp-card-body { display: none; }
 .exp-compact .exp-card-plain .exp-card-body { padding: 20px 18px; }
 .exp-compact .exp-card-plain .exp-card-title { font-size: 15px; margin-top: 8px; }

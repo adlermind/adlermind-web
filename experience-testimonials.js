@@ -204,7 +204,10 @@
     async render(opts) {
       const items = await fetchTestimonials();
       renderTestimonials(opts.into || 'amReviews', items);
-      if (opts.onReady) opts.onReady();
+      // 후기가 없으면 자리를 펼치지 않습니다 (2026-08-16). 펼치면 대문에
+      // "아직 등록된 후기가 없습니다"만 남은 빈 띠가 보입니다.
+      // 체험 카드(experience-cards.js)도 걸린 것이 없으면 같은 방식으로 자리를 만들지 않습니다.
+      if (opts.onReady && items.length) opts.onReady();
     }
   };
 })();

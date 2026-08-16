@@ -79,16 +79,21 @@ nav {
 .nav-member-btn:hover { background: #6fa8a0; }
 .nav-ham { display: none; border: none; background: none; cursor: pointer; font-size: 22px; color: var(--am-gray); }
 
-/* ── 히어로 ── */
+/* ── 맨 위 체험 띠 (2026-08-16) ──
+   조합 소개글을 조합 소식 아래로 내리면서 이 자리는 체험 띠만 담습니다.
+   화면 높이를 채우지 않습니다 — 채우면 띠 위아래로 빈 칸만 넓어집니다. */
 .hero {
-  min-height: calc(100vh - 60px);
   display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  padding: 80px 32px;
+  align-items: center;
+  padding: 0;
   background: var(--am-bg);
   text-align: center;
 }
-.hero-sub {
+
+/* ── 협동조합 소개글 (2026-08-16 · 대문 맨 위에서 조합 소식 아래로 내림) ──
+   글자 모양은 옮기기 전 첫마디와 같습니다. 자리만 바뀌었습니다. */
+.intro { background: var(--am-bg); text-align: center; }
+.intro-sub {
   font-family: 'Raleway', sans-serif;
   font-size: 13px; font-weight: 400;
   letter-spacing: 0.28em;
@@ -96,9 +101,7 @@ nav {
   text-transform: uppercase;
   margin-bottom: 28px;
 }
-/* 대문 첫마디. 큰 제목과 본문의 중간 크기로 다섯 줄을 그대로 앉힙니다.
-   상담 안내·조합 소개 단추는 상단 메뉴에 같은 길이 있어 걷어냈습니다. */
-.hero-statement {
+.intro-statement {
   font-family: 'Noto Serif KR', serif;
   font-size: clamp(15px, 2.1vw, 22px);
   font-weight: 400;
@@ -108,9 +111,7 @@ nav {
   margin: 0;
 }
 
-/* ── 마음을 알아가는 창 (히어로 안) ──
-   첫 화면에서 스크롤 없이 보여야 하므로 히어로 높이를 넘기지 않게 짜맞췄습니다.
-   화면이 낮은 노트북에서는 아래 media query 가 여백과 제목을 한 번 더 줄입니다. */
+/* ── 마음을 알아가는 창 ── */
 /* 체험 띠는 히어로 안에 있지만 바탕색을 화면 끝까지 깔아 "여기부터는 해보는 자리"임을 눈에 보이게 나눕니다.
    그래서 .hero 의 좌우 여백을 0으로 두고 글자 요소에만 좌우 여백을 줍니다. */
 .hero-experience {
@@ -124,30 +125,11 @@ nav {
   font-family: 'Noto Serif KR', serif; font-size: 17px; font-weight: 400;
   color: var(--am-gray); margin: 0 0 16px;
 }
-#expCards { max-width: 1200px; margin: 0 auto; }
+/* 화면 넓이에 맞춰 카드가 줄을 바꾸므로 담는 자리도 넓게 잡습니다 (2026-08-16). */
+#expCards { max-width: 1400px; margin: 0 auto; }
 
-/* 히어로 여백을 줄여 첫마디와 체험 띠가 함께 첫 화면에 들어가게 합니다.
-   히어로는 min-height 로 화면을 채우므로, 남는 만큼은 가운데 여백이 되어 답답해지지 않습니다. */
-/* 좌우 여백을 0으로 두는 것은 체험 띠가 화면 끝까지 색을 깔기 위함입니다. */
-.hero { padding: 44px 0; }
-.hero-sub { margin-bottom: 24px; padding: 0 32px; }
-.hero-statement { padding: 0 32px; }
-
-/* 화면이 낮은 노트북에서는 여백과 줄간격을 줄입니다. */
-@media (max-height: 860px) {
-  .hero { padding: 30px 0; }
-  .hero-sub { margin-bottom: 18px; }
-  .hero-statement { line-height: 2; }
-  .hero-experience { margin-top: 20px; padding: 22px 32px 24px; }
-}
-/* 아주 낮은 화면(768 노트북 등)에서 첫마디 다섯 줄과 체험 띠를 함께 넣습니다. */
-@media (max-height: 720px) {
-  .hero { padding: 20px 0; }
-  .hero-sub { margin-bottom: 10px; }
-  .hero-statement { font-size: clamp(14px, 1.8vw, 17px); line-height: 1.95; }
-  .hero-experience { margin-top: 12px; padding: 14px 20px 16px; }
-  .hero-exp-title { margin-bottom: 12px; }
-}
+/* 맨 위에 오면서 띠끼리 붙으므로 첫 띠의 위 여백은 두지 않습니다. */
+.hero .hero-experience:first-child { margin-top: 0; }
 
 /* ── 섹션 공통 ── */
 section { padding: 88px 32px; }
@@ -263,7 +245,8 @@ footer {
   .nav-member-mobile { display: block !important; }
   .nav-login-mobile { display: block !important; }
   section { padding: 60px 20px; }
-  .hero { padding: 60px 20px; }
+  /* 체험 띠는 화면 끝까지 색을 깔아야 하므로 좌우 여백을 두지 않습니다. */
+  .hero { padding: 0; }
 }
 .nav-member-mobile { display: none; }
 </style>
@@ -290,20 +273,14 @@ footer {
   <button class="nav-ham" id="navHam" aria-label="메뉴">&#9776;</button>
 </nav>
 
-<!-- SECTION 01: 히어로 -->
+<!-- SECTION 01: 마음을 알아가는 창 (2026-08-16 · 대문 맨 위로 올림)
+     조합 소개글은 조합 소식 아래(SECTION 05)로 내렸습니다. 들어오자마자 해볼 것이
+     먼저 보이고, 조합이 어떤 곳인지는 둘러본 뒤에 읽는 순서입니다. -->
 <section class="hero" id="home">
-  <div class="hero-sub">ADLER MIND COOPERATIVE · 2026</div>
-  <h1 class="hero-statement">
-    ADLER MIND 협동조합은<br>
-    아들러 개인심리학의 가치를 실천하는<br>
-    아들러리안 심리전문가들의 협동조합입니다.<br>
-    사회적 관심과 공동체 감각을 바탕으로<br>
-    심리상담과 교육을 함께 만들어갑니다.
-  </h1>
   <!-- 마음을 알아가는 창 · 2-3
-       상담의 방과 배움의 방에 걸어 둔 체험이 여기에 옆으로 늘어섭니다.
-       스크롤하지 않아도 첫 화면에서 바로 보이도록 히어로 안에 두었습니다.
-       걸린 체험이 없으면 이 자리는 나타나지 않고 첫마디만 보입니다. -->
+       상담의 방과 배움의 방에 걸어 둔 체험이 여기에 늘어섭니다.
+       화면 넓이에 맞춰 줄을 바꾸며 걸린 것이 모두 보입니다 (2026-08-16).
+       걸린 체험이 없으면 이 자리는 나타나지 않습니다. -->
   <div class="hero-experience hidden" id="experience">
     <h2 class="hero-exp-title">마음을 알아가는 창</h2>
     <div id="expCards"></div>
@@ -373,6 +350,21 @@ footer {
       <p class="news-empty">소식을 불러오는 중입니다...</p>
     </div>
   </div>
+</section>
+
+<hr class="divider-sage">
+
+<!-- SECTION 05: 협동조합 소개글 (2026-08-16 · 대문 맨 위에서 이 자리로 내림)
+     체험과 소식을 둘러본 뒤 읽는 맺음말 자리입니다. -->
+<section class="intro">
+  <div class="intro-sub">ADLER MIND COOPERATIVE · 2026</div>
+  <h1 class="intro-statement">
+    ADLER MIND 협동조합은<br>
+    아들러 개인심리학의 가치를 실천하는<br>
+    아들러리안 심리전문가들의 협동조합입니다.<br>
+    사회적 관심과 공동체 감각을 바탕으로<br>
+    심리상담과 교육을 함께 만들어갑니다.
+  </h1>
 </section>
 
 <!-- 푸터 -->
