@@ -21,7 +21,7 @@
 .amr-card { background: #fff; border: 0.5px solid #e8e4e0; padding: 22px 22px 18px; }
 .amr-meta { display: flex; flex-wrap: wrap; gap: 10px; align-items: baseline; font-size: 14px; color: #6E6763; }
 .amr-meta strong { font-weight: 400; color: #4A4A4A; font-size: 15px; }
-.amr-summary { font-size: 15.5px; line-height: 1.9; color: #4A4A4A; margin-top: 12px; }
+.amr-summary { font-size: 15.5px; line-height: 1.9; color: #4A4A4A; margin-top: 12px; white-space: pre-wrap; }
 .amr-block { margin-top: 14px; }
 .amr-label { font-size: 13px; letter-spacing: 0.06em; color: #6E6763; margin-bottom: 7px; }
 .amr-chips { display: flex; flex-wrap: wrap; gap: 6px; }
