@@ -157,7 +157,12 @@ tbody tr[aria-selected="true"]{background:#f4faf9}
         <div class="field hidden" id="videoFileField">
           <label class="label" for="itemVideoFile">영상 파일</label>
           <input id="itemVideoFile" type="file" accept="video/*">
-          <p class="hint">mp4 파일을 올립니다. 카드에 보일 그림은 영상 첫 장면에서 자동으로 만듭니다. 고칠 때 파일을 고르지 않으면 지금 영상을 그대로 둡니다.</p>
+          <p class="hint">mp4 파일을 올립니다. 고칠 때 파일을 고르지 않으면 지금 영상을 그대로 둡니다.</p>
+        </div>
+        <div class="field hidden" id="videoThumbField">
+          <label class="label" for="itemVideoThumb">카드에 보일 그림</label>
+          <input id="itemVideoThumb" type="file" accept="image/*">
+          <p class="hint">행사 사진 한 장을 고르시면 갤러리 카드에 그 사진이 보입니다. 고르지 않으면 영상 첫 장면에서 자동으로 만듭니다 — 도입부가 흐린 영상은 그림도 흐리게 나오니 직접 고르시는 쪽을 권합니다. 사진은 사진 올릴 때와 같이 자동으로 줄여 올립니다.</p>
         </div>
         <div class="field hidden" id="videoField">
           <label class="label" for="itemVideo">YouTube 영상 ID</label>
@@ -777,6 +782,7 @@ function resetItemForm() {
   ['itemTitle', 'itemDesc', 'itemMeta', 'itemVideo'].forEach(id => { document.getElementById(id).value = ''; });
   document.getElementById('itemFile').value = '';
   document.getElementById('itemVideoFile').value = '';
+  document.getElementById('itemVideoThumb').value = '';
   document.getElementById('itemType').value = 'photo';
   document.getElementById('itemVisibility').value = 'public';
   document.getElementById('itemOrder').value = '0';
@@ -788,6 +794,7 @@ function syncMediaFields() {
   const type = document.getElementById('itemType').value;   // photo | video_file | video
   document.getElementById('photoField').classList.toggle('hidden', type !== 'photo');
   document.getElementById('videoFileField').classList.toggle('hidden', type !== 'video_file');
+  document.getElementById('videoThumbField').classList.toggle('hidden', type !== 'video_file');
   document.getElementById('videoField').classList.toggle('hidden', type !== 'video');
 }
 
@@ -809,6 +816,7 @@ function editItem(id) {
   document.getElementById('itemOrder').value = item.sort_order;
   document.getElementById('itemFile').value = '';
   document.getElementById('itemVideoFile').value = '';
+  document.getElementById('itemVideoThumb').value = '';
   syncMediaFields();
   galleryStatus('고치는 중입니다. 파일을 새로 고르지 않으면 지금 파일을 그대로 둡니다.');
   document.getElementById('panel-gallery').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -825,6 +833,7 @@ async function saveItem() {
   const sectionId = document.getElementById('itemSection').value;
   const file = document.getElementById('itemFile').files[0];
   const videoFile = document.getElementById('itemVideoFile').files[0];
+  const thumbFile = document.getElementById('itemVideoThumb').files[0];
   const youtubeId = document.getElementById('itemVideo').value.trim();
   const current = editingId ? galleryItems.find(entry => entry.id === editingId) : null;
 
@@ -854,9 +863,22 @@ async function saveItem() {
       .from(GALLERY_BUCKET).upload(target, videoFile, { contentType: videoFile.type || 'video/mp4' });
     if (videoError) { galleryStatus('영상을 올리지 못했습니다. ' + videoError.message); return; }
     videoPath = target;
+  }
 
-    // 카드에 보일 그림을 첫 장면에서 만들어 함께 올립니다. 실패해도 저장은 계속합니다.
-    galleryStatus('카드에 보일 그림을 만들고 있습니다.');
+  // 카드에 보일 그림. 고르신 사진이 먼저이고, 안 고르셨을 때만 영상에서 자동으로 만듭니다.
+  // 둘 다 없으면(영상만 고쳤을 때) 지금 그림을 그대로 둡니다.
+  if (isFileVideo && thumbFile) {
+    const upload = await shrinkImage(thumbFile);
+    galleryStatus('카드에 보일 그림을 올리고 있습니다.');
+    const extension = (upload.type.split('/')[1] || 'jpg').replace('jpeg', 'jpg');
+    const thumbTarget = `items/${crypto.randomUUID()}.${extension}`;
+    const { error: thumbError } = await client.storage
+      .from(GALLERY_BUCKET).upload(thumbTarget, upload, { contentType: upload.type });
+    if (thumbError) { galleryStatus('카드 그림을 올리지 못했습니다. ' + thumbError.message); return; }
+    imagePath = thumbTarget;
+  } else if (isFileVideo && videoFile) {
+    // 영상 첫 장면에서 만들어 봅니다. 실패해도 저장은 계속하고 카드에 그림만 없습니다.
+    galleryStatus('카드에 보일 그림을 영상에서 만들고 있습니다.');
     const poster = await grabVideoPoster(videoFile);
     if (poster) {
       const posterPath = `items/${crypto.randomUUID()}.jpg`;
