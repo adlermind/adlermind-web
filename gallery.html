@@ -176,6 +176,24 @@ footer { background: var(--am-bg); border-top: 0.5px solid var(--am-border); pad
 .footer-nav a:hover { color: var(--am-sage); }
 .footer-copy { max-width: 900px; margin: 24px auto 0; font-size: 13px; color: var(--am-muted); font-family: 'Raleway', sans-serif; border-top: 0.5px solid var(--am-border); padding-top: 16px; }
 
+/* PC에서는 가로 스크롤 없이 줄바꿈으로 모두 보입니다.
+   카드가 520px 고정이라 976px 자리에 두 장(1060px)이 들어가지 않아 스크롤이 생겼습니다.
+   모바일(600px 이하)의 좌우 밀기는 그대로 둡니다. */
+@media (min-width: 601px) {
+  .gallery-track {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    overflow: visible;
+    scroll-snap-type: none;
+    padding: 1px 1px 0;
+  }
+  /* 항목이 하나뿐일 때 카드가 자리 전체로 늘어나지 않게 합니다. */
+  .gallery-card { max-width: 520px; }
+  /* 스크롤이 없으니 좌우 이동 버튼도 쓰이지 않습니다. */
+  .carousel-controls { display: none; }
+  .gallery-head { align-items: center; }
+}
+
 @media (max-width: 900px) {
   nav { padding: 0 20px; }
   .nav-links { display: none; }
