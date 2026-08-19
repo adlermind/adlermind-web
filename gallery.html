@@ -151,6 +151,8 @@ nav {
 }
 .video-frame { aspect-ratio: 16 / 9; background: #000; }
 .video-frame iframe { width: 100%; height: 100%; border: 0; display: block; }
+/* 직접 올린 영상은 브라우저 재생기로 틉니다. YouTube 틀과 같은 자리를 씁니다. */
+.video-frame video { width: 100%; height: 100%; display: block; background: #000; }
 /* 사진은 16:9 틀에 맞추지 않고 가로폭을 채웁니다. 세로는 사진 비율대로 늘어납니다. */
 .video-frame.photo { aspect-ratio: auto; background: transparent; }
 .video-frame.photo img { width: 100%; height: auto; object-fit: initial; }
@@ -306,7 +308,11 @@ function openItem(button) {
   const fallback = document.getElementById('modalFallback');
   frame.classList.toggle('photo', item.media_type === 'photo');
   modal.classList.toggle('photo-mode', item.media_type === 'photo');
-  if (item.media_type === 'video') {
+  if (item.media_type === 'video' && item.video_path) {
+    // 직접 올린 영상. 그 자리에서 브라우저 재생기로 틉니다.
+    frame.innerHTML = `<video src="${escapeHtml(item.videoUrl || '')}" controls autoplay playsinline preload="metadata"${item.imageUrl ? ` poster="${escapeHtml(item.imageUrl)}"` : ''}></video>`;
+    fallback.hidden = true;
+  } else if (item.media_type === 'video') {
     frame.innerHTML = `<iframe src="https://www.youtube.com/embed/${encodeURIComponent(item.youtube_id)}?autoplay=1&rel=0" title="${escapeHtml(item.title)}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>`;
     document.getElementById('youtubeLink').href = `https://youtu.be/${item.youtube_id}`;
     fallback.hidden = false;
@@ -335,7 +341,8 @@ function closeVideo() {
 }
 
 function cardHtml(item, index) {
-  const thumb = item.media_type === 'video'
+  // YouTube 영상은 유튜브가 주는 그림을, 올린 영상과 사진은 저장소의 그림을 씁니다.
+  const thumb = item.youtube_id
     ? `https://i.ytimg.com/vi/${encodeURIComponent(item.youtube_id)}/hqdefault.jpg`
     : item.imageUrl;
   const label = item.media_type === 'video' ? `${item.title} 재생` : `${item.title} 크게 보기`;
@@ -359,7 +366,7 @@ async function loadGallery() {
   const [sectionResult, itemResult] = await Promise.all([
     sb.from('site_gallery_sections').select('id,title,sort_order').order('sort_order'),
     sb.from('site_gallery')
-      .select('id,section_id,media_type,title,description,image_path,youtube_id,meta_text,visibility,sort_order')
+      .select('id,section_id,media_type,title,description,image_path,youtube_id,video_path,meta_text,visibility,sort_order')
       .order('sort_order').order('created_at')
   ]);
 
@@ -370,11 +377,18 @@ async function loadGallery() {
 
   items = itemResult.data || [];
 
-  // 사진은 비공개 버킷에 있으므로 서명 URL 을 받아 옵니다. 공개 범위 판정은 Storage 정책이 합니다.
+  // 사진과 올린 영상은 비공개 버킷에 있으므로 서명 URL 을 받아 옵니다.
+  // 공개 범위 판정은 Storage 정책이 합니다.
+  // 올린 영상은 카드에 보일 그림(image_path)과 영상 파일(video_path) 둘 다 받아 옵니다.
   await Promise.all(items.map(async item => {
-    if (item.media_type !== 'photo' || !item.image_path) return;
-    const { data } = await sb.storage.from(BUCKET).createSignedUrl(item.image_path, 3600);
-    item.imageUrl = data ? data.signedUrl : null;
+    if (item.image_path) {
+      const { data } = await sb.storage.from(BUCKET).createSignedUrl(item.image_path, 3600);
+      item.imageUrl = data ? data.signedUrl : null;
+    }
+    if (item.video_path) {
+      const { data } = await sb.storage.from(BUCKET).createSignedUrl(item.video_path, 3600);
+      item.videoUrl = data ? data.signedUrl : null;
+    }
   }));
 
   const html = (sectionResult.data || []).map(section => {

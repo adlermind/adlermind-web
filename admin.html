@@ -145,6 +145,7 @@ tbody tr[aria-selected="true"]{background:#f4faf9}
           <label class="label" for="itemType">매체</label>
           <select id="itemType">
             <option value="photo">사진</option>
+            <option value="video_file">영상 (파일 올리기)</option>
             <option value="video">영상 (YouTube)</option>
           </select>
         </div>
@@ -152,6 +153,11 @@ tbody tr[aria-selected="true"]{background:#f4faf9}
           <label class="label" for="itemFile">사진 파일</label>
           <input id="itemFile" type="file" accept="image/*">
           <p class="hint" id="photoHint">긴 변이 1600px보다 큰 사진은 자동으로 줄여서 올립니다(JPEG로 저장). 갤러리 카드에는 잘리지 않고 전체가 보입니다. 고칠 때 파일을 고르지 않으면 지금 사진을 그대로 둡니다.</p>
+        </div>
+        <div class="field hidden" id="videoFileField">
+          <label class="label" for="itemVideoFile">영상 파일</label>
+          <input id="itemVideoFile" type="file" accept="video/*">
+          <p class="hint">mp4 파일을 올립니다. 카드에 보일 그림은 영상 첫 장면에서 자동으로 만듭니다. 고칠 때 파일을 고르지 않으면 지금 영상을 그대로 둡니다.</p>
         </div>
         <div class="field hidden" id="videoField">
           <label class="label" for="itemVideo">YouTube 영상 ID</label>
@@ -666,6 +672,45 @@ async function shrinkImage(file, maxEdge) {
   }
 }
 
+// 올린 영상은 YouTube 와 달리 대표 그림이 없어서 카드가 빈 칸이 됩니다.
+// 첫 장면 한 컷을 잘라 사진과 같은 자리(image_path)에 넣어 카드 그림으로 씁니다.
+// 만들지 못해도 저장은 그대로 진행합니다. 카드에 그림만 없을 뿐입니다.
+async function grabVideoPoster(file) {
+  const url = URL.createObjectURL(file);
+  // 브라우저가 응답하지 않아도 저장 버튼이 멈춰 있지 않도록 기다리는 시간을 둡니다.
+  const settle = fn => new Promise(resolve => { fn(resolve); setTimeout(resolve, 4000); });
+
+  try {
+    const video = document.createElement('video');
+    video.muted = true;
+    video.playsInline = true;
+    video.preload = 'metadata';
+    video.src = url;
+
+    await settle(done => { video.onloadeddata = done; video.onerror = done; });
+    if (!video.videoWidth) return null;
+
+    // 맨 첫 장면은 검은 화면인 경우가 많아 조금 뒤로 옮겨 찍습니다.
+    await settle(done => {
+      video.onseeked = done;
+      video.currentTime = Math.min(1, (video.duration || 2) / 2);
+    });
+
+    const scale = Math.min(1, MAX_EDGE / Math.max(video.videoWidth, video.videoHeight));
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.round(video.videoWidth * scale);
+    canvas.height = Math.round(video.videoHeight * scale);
+    canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', JPEG_QUALITY));
+    return blob ? new File([blob], 'poster.jpg', { type: 'image/jpeg' }) : null;
+  } catch (error) {
+    return null;
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+}
+
 let sections = [];
 let galleryItems = [];
 let editingId = null;      // null 이면 새 항목 등록, 아니면 그 항목을 고치는 중
@@ -679,7 +724,7 @@ async function loadGallery() {
   const [sectionResult, itemResult] = await Promise.all([
     client.from('site_gallery_sections').select('id,title,sort_order').order('sort_order'),
     client.from('site_gallery')
-      .select('id,section_id,media_type,title,description,image_path,youtube_id,meta_text,visibility,sort_order')
+      .select('id,section_id,media_type,title,description,image_path,youtube_id,video_path,meta_text,visibility,sort_order')
       .order('sort_order').order('created_at')
   ]);
 
@@ -716,7 +761,7 @@ function renderGalleryTable() {
       <td>${item.sort_order}</td>
       <td>${escapeHtml(sectionTitle(item.section_id))}</td>
       <td>${escapeHtml(item.title)}</td>
-      <td>${item.media_type === 'video' ? '영상' : '사진'}</td>
+      <td>${item.media_type !== 'video' ? '사진' : (item.video_path ? '영상 (파일)' : '영상 (YouTube)')}</td>
       <td><span class="tag${item.visibility === 'public' ? '' : ' tag-member'}">${VISIBILITY_TEXT[item.visibility]}</span></td>
       <td>
         <button class="link-btn" type="button" data-act="edit">고치기</button>
@@ -731,6 +776,7 @@ function resetItemForm() {
   document.getElementById('itemCancel').classList.add('hidden');
   ['itemTitle', 'itemDesc', 'itemMeta', 'itemVideo'].forEach(id => { document.getElementById(id).value = ''; });
   document.getElementById('itemFile').value = '';
+  document.getElementById('itemVideoFile').value = '';
   document.getElementById('itemType').value = 'photo';
   document.getElementById('itemVisibility').value = 'public';
   document.getElementById('itemOrder').value = '0';
@@ -739,9 +785,10 @@ function resetItemForm() {
 }
 
 function syncMediaFields() {
-  const isVideo = document.getElementById('itemType').value === 'video';
-  document.getElementById('photoField').classList.toggle('hidden', isVideo);
-  document.getElementById('videoField').classList.toggle('hidden', !isVideo);
+  const type = document.getElementById('itemType').value;   // photo | video_file | video
+  document.getElementById('photoField').classList.toggle('hidden', type !== 'photo');
+  document.getElementById('videoFileField').classList.toggle('hidden', type !== 'video_file');
+  document.getElementById('videoField').classList.toggle('hidden', type !== 'video');
 }
 
 function editItem(id) {
@@ -752,7 +799,8 @@ function editItem(id) {
   document.getElementById('formTitle').textContent = '항목 고치기';
   document.getElementById('itemCancel').classList.remove('hidden');
   document.getElementById('itemSection').value = item.section_id;
-  document.getElementById('itemType').value = item.media_type;
+  document.getElementById('itemType').value =
+    item.media_type !== 'video' ? 'photo' : (item.video_path ? 'video_file' : 'video');
   document.getElementById('itemTitle').value = item.title;
   document.getElementById('itemDesc').value = item.description || '';
   document.getElementById('itemMeta').value = item.meta_text || '';
@@ -760,22 +808,33 @@ function editItem(id) {
   document.getElementById('itemVisibility').value = item.visibility;
   document.getElementById('itemOrder').value = item.sort_order;
   document.getElementById('itemFile').value = '';
+  document.getElementById('itemVideoFile').value = '';
   syncMediaFields();
-  galleryStatus('고치는 중입니다. 사진을 새로 고르지 않으면 지금 사진을 그대로 둡니다.');
+  galleryStatus('고치는 중입니다. 파일을 새로 고르지 않으면 지금 파일을 그대로 둡니다.');
   document.getElementById('panel-gallery').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 async function saveItem() {
-  const mediaType = document.getElementById('itemType').value;
+  // 화면에서 고르는 값은 셋(photo · video_file · video)이고, 표에 담기는 매체는 둘(photo · video)입니다.
+  // 파일 영상과 YouTube 영상은 video_path 가 있느냐 없느냐로 갈립니다.
+  const formType = document.getElementById('itemType').value;
+  const mediaType = formType === 'photo' ? 'photo' : 'video';
+  const isFileVideo = formType === 'video_file';
+
   const title = document.getElementById('itemTitle').value.trim();
   const sectionId = document.getElementById('itemSection').value;
   const file = document.getElementById('itemFile').files[0];
+  const videoFile = document.getElementById('itemVideoFile').files[0];
   const youtubeId = document.getElementById('itemVideo').value.trim();
   const current = editingId ? galleryItems.find(entry => entry.id === editingId) : null;
 
   if (!sectionId) { galleryStatus('섹션을 먼저 하나 만들어 주세요.'); return; }
   if (!title) { galleryStatus('제목을 적어 주세요.'); return; }
-  if (mediaType === 'video' && !youtubeId) { galleryStatus('YouTube 영상 ID를 적어 주세요.'); return; }
+  if (formType === 'video' && !youtubeId) { galleryStatus('YouTube 영상 ID를 적어 주세요.'); return; }
+  if (isFileVideo && !videoFile && !(current && current.video_path)) {
+    galleryStatus('영상 파일을 골라 주세요.');
+    return;
+  }
   if (mediaType === 'photo' && !file && !(current && current.image_path)) {
     galleryStatus('사진 파일을 골라 주세요.');
     return;
@@ -784,6 +843,29 @@ async function saveItem() {
   galleryStatus('저장하고 있습니다.');
 
   let imagePath = current ? current.image_path : null;
+  let videoPath = current ? current.video_path : null;
+
+  if (isFileVideo && videoFile) {
+    // 영상은 사진처럼 줄이지 않고 고른 파일을 그대로 올립니다.
+    galleryStatus(`영상을 올리고 있습니다. (${Math.round(videoFile.size / 1024 / 1024 * 10) / 10}MB)`);
+    const videoExt = (videoFile.name.split('.').pop() || 'mp4').toLowerCase();
+    const target = `videos/${crypto.randomUUID()}.${videoExt}`;
+    const { error: videoError } = await client.storage
+      .from(GALLERY_BUCKET).upload(target, videoFile, { contentType: videoFile.type || 'video/mp4' });
+    if (videoError) { galleryStatus('영상을 올리지 못했습니다. ' + videoError.message); return; }
+    videoPath = target;
+
+    // 카드에 보일 그림을 첫 장면에서 만들어 함께 올립니다. 실패해도 저장은 계속합니다.
+    galleryStatus('카드에 보일 그림을 만들고 있습니다.');
+    const poster = await grabVideoPoster(videoFile);
+    if (poster) {
+      const posterPath = `items/${crypto.randomUUID()}.jpg`;
+      const { error: posterError } = await client.storage
+        .from(GALLERY_BUCKET).upload(posterPath, poster, { contentType: 'image/jpeg' });
+      if (!posterError) imagePath = posterPath;
+    }
+  }
+
   if (mediaType === 'photo' && file) {
     const upload = await shrinkImage(file);
     if (upload !== file) {
@@ -806,8 +888,10 @@ async function saveItem() {
     meta_text: document.getElementById('itemMeta').value.trim() || null,
     visibility: document.getElementById('itemVisibility').value,
     sort_order: Number(document.getElementById('itemOrder').value) || 0,
-    image_path: mediaType === 'photo' ? imagePath : null,
-    youtube_id: mediaType === 'video' ? youtubeId : null
+    // 파일 영상은 카드 그림을 사진과 같은 자리에 담습니다.
+    image_path: formType === 'video' ? null : imagePath,
+    youtube_id: formType === 'video' ? youtubeId : null,
+    video_path: isFileVideo ? videoPath : null
   };
 
   const { error } = editingId
@@ -816,9 +900,11 @@ async function saveItem() {
 
   if (error) { galleryStatus('저장하지 못했습니다. ' + error.message); return; }
 
-  // 사진을 새 파일로 바꿨다면 이전 파일은 저장소에서 지웁니다.
-  if (current && current.image_path && current.image_path !== row.image_path) {
-    await client.storage.from(GALLERY_BUCKET).remove([current.image_path]);
+  // 파일을 새로 바꿨거나 매체를 바꿨다면 쓰지 않게 된 옛 파일을 저장소에서 지웁니다.
+  if (current) {
+    const stale = [current.image_path, current.video_path]
+      .filter(path => path && path !== row.image_path && path !== row.video_path);
+    if (stale.length) await client.storage.from(GALLERY_BUCKET).remove(stale);
   }
 
   resetItemForm();
@@ -833,7 +919,8 @@ async function deleteItem(id) {
 
   const { error } = await client.from('site_gallery').delete().eq('id', id);
   if (error) { galleryStatus('지우지 못했습니다. ' + error.message); return; }
-  if (item.image_path) await client.storage.from(GALLERY_BUCKET).remove([item.image_path]);
+  const files = [item.image_path, item.video_path].filter(Boolean);
+  if (files.length) await client.storage.from(GALLERY_BUCKET).remove(files);
   if (editingId === id) resetItemForm();
   galleryStatus('지웠습니다.');
   await loadGallery();
@@ -875,8 +962,11 @@ async function deleteSection(id) {
     ? `"${section.title}" 섹션과 그 안의 항목 ${count}건이 함께 지워집니다. 계속할까요?`
     : `"${section.title}" 섹션을 지울까요?`)) return;
 
-  // 표는 on delete cascade 로 함께 지워지므로 사진 파일을 먼저 치웁니다.
-  const paths = galleryItems.filter(item => item.section_id === id && item.image_path).map(item => item.image_path);
+  // 표는 on delete cascade 로 함께 지워지므로 사진·영상 파일을 먼저 치웁니다.
+  const paths = galleryItems
+    .filter(item => item.section_id === id)
+    .flatMap(item => [item.image_path, item.video_path])
+    .filter(Boolean);
 
   const { error } = await client.from('site_gallery_sections').delete().eq('id', id);
   if (error) { galleryStatus('섹션을 지우지 못했습니다. ' + error.message); return; }
