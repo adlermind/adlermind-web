@@ -181,6 +181,22 @@ main { flex: 1; background: var(--am-white); }
   font-family: 'Noto Serif KR', serif; font-size: 14px; line-height: 2.05; color: var(--am-muted);
 }
 
+/* 오시는 길 — 약도와 교통편 */
+.ab-map {
+  display: block; width: 100%; height: auto; margin: 0 auto 28px;
+  border-radius: 8px; border: 0.5px solid var(--am-border);
+}
+.ab-transit { max-width: 65%; margin: 32px auto 0; text-align: left; }
+.ab-transit-row { display: flex; gap: 18px; padding: 14px 0; font-size: 13.5px; line-height: 1.9; color: #4a4a4a; }
+.ab-transit-row + .ab-transit-row { border-top: 0.5px solid var(--am-border); }
+.ab-transit-row dt {
+  flex: none; width: 62px;
+  font-family: 'Raleway', sans-serif; font-size: 10.5px; font-weight: 500;
+  letter-spacing: 0.18em; color: var(--am-sage); padding-top: 5px;
+}
+.ab-transit-row dd { flex: 1; }
+.ab-transit-row .sub { display: block; margin-top: 4px; font-size: 12.5px; color: var(--am-muted); }
+
 /* 오시는 길 */
 .ab-address { text-align: center; font-size: 14px; color: #4a4a4a; line-height: 1.9; margin-bottom: 20px; }
 .ab-map-link {
@@ -204,6 +220,9 @@ main { flex: 1; background: var(--am-white); }
   .ab-hero { padding: 64px 20px; }
   .ab-greeting { max-width: 100%; }
   .ab-work { max-width: 100%; }
+  .ab-transit { max-width: 100%; }
+  .ab-transit-row { flex-direction: column; gap: 4px; }
+  .ab-transit-row dt { width: auto; padding-top: 0; }
   .ab-greeting-head { flex-direction: column; align-items: flex-start; gap: 18px; }
   .ab-greeting-head img { width: 104px; }
 }
@@ -446,8 +465,47 @@ main { flex: 1; background: var(--am-white); }
     <span class="ab-eyebrow">LOCATION</span>
     <h2>오시는 길</h2>
     <div class="ab-divider"></div>
+    <img class="ab-map" src="image/map_labeled.webp" alt="아들러마인드 협동조합 약도 — 팔당호 분원리, 분원초등학교와 분원백자자료관 사이" width="1200" height="800" loading="lazy">
     <p class="ab-address">경기도 광주시 남종면 산수로 1652-16</p>
     <a class="ab-map-link" href="https://map.naver.com/p/search/%EA%B2%BD%EA%B8%B0%EB%8F%84%20%EA%B4%91%EC%A3%BC%EC%8B%9C%20%EB%82%A8%EC%A2%85%EB%A9%B4%20%EC%82%B0%EC%88%98%EB%A1%9C%201652-16" target="_blank" rel="noopener">네이버지도에서 보기</a>
+
+    <dl class="ab-transit">
+      <div class="ab-transit-row">
+        <dt>BUS</dt>
+        <dd>
+          <strong>분원초교</strong> 정류장에서 내리시면 걸어서 닿습니다.
+          <span class="sub">38-2 · 38-21 · 38-22 · 38-23 · 38-24 · 38-25 · 38-26 · 38-40 · 38-41 · 38-41A · 38-52</span>
+        </dd>
+      </div>
+      <div class="ab-transit-row">
+        <dt>STOP</dt>
+        <dd>
+          가까운 정류장은 분원농협 · 분원초교 · 팔당수질개선본부입니다.
+          <span class="sub">분원초교 정류장이 가장 가깝습니다.</span>
+        </dd>
+      </div>
+      <div class="ab-transit-row">
+        <dt>CAR</dt>
+        <dd>
+          내비게이션에 <strong>분원초등학교</strong> 또는 <strong>남종스포츠타운</strong>을 넣으시면 됩니다.
+          <span class="sub">주소로 찾으실 때는 산수로 1652-16입니다. 팔당호를 바라보는 한옥입니다.</span>
+        </dd>
+      </div>
+      <div class="ab-transit-row">
+        <dt>PARK</dt>
+        <dd>
+          연구소 앞에는 주차 공간이 없습니다.
+          <span class="sub">남종스포츠타운 주차장에 세우시고 걸어오시면 됩니다.</span>
+        </dd>
+      </div>
+      <div class="ab-transit-row">
+        <dt>CALL</dt>
+        <dd>
+          오시는 길이 헷갈리시면 언제든 연락 주십시오.
+          <span class="sub"><a href="tel:0507-1328-4948">0507-1328-4948</a></span>
+        </dd>
+      </div>
+    </dl>
    </div>
   </section>
 
