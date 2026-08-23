@@ -123,9 +123,62 @@ main { flex: 1; background: var(--am-white); }
   max-width: 560px; margin: 0 auto 40px;
 }
 
-/* 보류 섹션 플레이스홀더 */
-.ab-placeholder-text {
-  text-align: center; font-size: 13px; color: var(--am-muted); line-height: 1.9;
+/* 명예고문 인사말 */
+.ab-greeting {
+  max-width: 65%; margin: 0 auto; text-align: left;
+  font-family: 'Noto Serif KR', serif; font-size: 14.5px;
+  line-height: 2.05; color: #4a4a4a;
+}
+.ab-greeting p + p { margin-top: 24px; }
+.ab-greeting .ab-sign {
+  margin-top: 40px; padding-top: 20px;
+  border-top: 0.5px solid var(--am-border);
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 12.5px; line-height: 1.85; color: var(--am-muted);
+}
+.ab-greeting .ab-sign strong {
+  display: block; margin-bottom: 6px;
+  font-size: 15px; font-weight: 500; letter-spacing: 0.28em; color: #4a4a4a;
+}
+
+/* 명예고문 인물 머리부 */
+.ab-greeting-head {
+  display: flex; align-items: center; gap: 26px;
+  margin-bottom: 36px; padding-bottom: 28px;
+  border-bottom: 0.5px solid var(--am-border);
+}
+.ab-greeting-head img {
+  flex: none; width: 118px; height: auto; border-radius: 6px; display: block;
+}
+.ab-greeting-head .ab-who {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 12.5px; line-height: 1.85; color: var(--am-muted);
+}
+.ab-greeting-head .ab-who strong {
+  display: block; margin-bottom: 8px;
+  font-size: 17px; font-weight: 500; letter-spacing: 0.3em; color: #4a4a4a;
+}
+
+/* 하는 일 */
+.ab-work { max-width: 65%; margin: 0 auto; text-align: left; }
+.ab-work .ab-work-lead {
+  font-family: 'Noto Serif KR', serif; font-size: 14.5px;
+  line-height: 2.05; color: #4a4a4a; margin-bottom: 40px;
+}
+.ab-work-item + .ab-work-item { margin-top: 30px; padding-top: 30px; border-top: 0.5px solid var(--am-border); }
+.ab-work-item h3 {
+  font-family: 'Noto Serif KR', serif; font-size: 16px; font-weight: 500;
+  color: #4a4a4a; margin-bottom: 12px;
+}
+.ab-work-item h3 span {
+  display: block; margin-bottom: 6px;
+  font-family: 'Raleway', sans-serif; font-size: 10.5px; font-weight: 500;
+  letter-spacing: 0.22em; color: var(--am-sage);
+}
+.ab-work-item p { font-size: 14px; line-height: 1.95; color: #4a4a4a; }
+.ab-work-close {
+  margin-top: 44px; padding: 24px 0 0; border-top: 0.5px solid var(--am-border);
+  font-family: 'Noto Serif KR', serif; font-size: 14px; line-height: 2.05; color: var(--am-muted);
 }
 
 /* 오시는 길 */
@@ -149,6 +202,10 @@ main { flex: 1; background: var(--am-white); }
   .ab-section { padding: 56px 0; }
   .ab-inner { padding: 0 20px; }
   .ab-hero { padding: 64px 20px; }
+  .ab-greeting { max-width: 100%; }
+  .ab-work { max-width: 100%; }
+  .ab-greeting-head { flex-direction: column; align-items: flex-start; gap: 18px; }
+  .ab-greeting-head img { width: 104px; }
 }
 </style>
 </head>
@@ -209,7 +266,49 @@ main { flex: 1; background: var(--am-white); }
     <span class="ab-eyebrow">GREETING</span>
     <h2>명예고문 인사말</h2>
     <div class="ab-divider"></div>
-    <p class="ab-placeholder-text">이 자리는 명예고문님의 인사말로 채워질 예정입니다.<br>준비되는 대로 안내해 드리겠습니다.</p>
+    <div class="ab-greeting">
+      <div class="ab-greeting-head">
+        <img src="image/oh_iksoo.webp" alt="오익수 명예고문" width="118">
+        <span class="ab-who">
+          <strong>오 익 수</strong>
+          아들러마인드 협동조합 명예고문<br>
+          한국아들러상담학회 명예회원<br>
+          광주교육대학교 명예교수 · 전남대학교 교육학 박사
+        </span>
+      </div>
+      <p>
+        아들러 개인심리학은 생활 안에서<br>
+        평등과 협력의 공동체를 지향하는,<br>
+        실제적인 힘을 가진 심리학입니다.<br>
+        갈등으로 혼란스러운 현대사회에서<br>
+        개인이 스스로의 부족함을 수용하고 사랑하며,<br>
+        서로를 격려하여 용기를 낼 수 있도록 돕는<br>
+        아름다운 철학과 지향을 품고 있습니다.
+      </p>
+      <p>
+        한국아들러상담학회는 2000년 아들러상담연구회에서 출발,<br>
+        2015년 학회를 창설하여 올해로 십여 년이 되어갑니다.<br>
+        그간 배출한 여러 영역의 상담자들이<br>
+        삶의 곳곳에서 아들러의 지향을 알리며 살아가고자<br>
+        협동조합을 창설한 것을<br>
+        기쁜 마음으로 축하하고 격려합니다.
+      </p>
+      <p>
+        생활 속의 건강함, 기여와 협력,<br>
+        성장과 번영을 이루어가는 다양성의 공동체.<br>
+        그 공동체를 살아가는 아들러리안으로서<br>
+        먼저 모범을 보여주시리라 믿습니다.<br>
+        가정과 학교에서, 여러 공동체와 갈등하는 세대 속에서,<br>
+        각자의 고유한 가치와 아름다움으로<br>
+        삶을 사랑하며 살아가는 일에<br>
+        최선을 다해주시기를 바랍니다.
+      </p>
+      <p>
+        아들러 마인드.<br>
+        작고 소박한 이들을 사랑했던 아들러의 그 마음이<br>
+        모든 이들의 생활 속에서 빛이 되어 피어나기를 기원합니다.
+      </p>
+    </div>
    </div>
   </section>
 
@@ -269,7 +368,76 @@ main { flex: 1; background: var(--am-white); }
     <span class="ab-eyebrow">WHAT WE DO</span>
     <h2>하는 일</h2>
     <div class="ab-divider"></div>
-    <p class="ab-placeholder-text">협동조합이 하는 일은 아직 정리 중입니다.<br>곧 자세히 소개해 드리겠습니다.</p>
+    <div class="ab-work">
+      <p class="ab-work-lead">
+        아들러마인드 협동조합은 다섯 가지 자리를 만들고 있습니다.<br>
+        마음을 만나는 자리, 함께 배우는 자리, 나누는 자리,<br>
+        머무는 자리, 그리고 이웃으로 이어지는 자리입니다.<br>
+        어느 자리든 혼자 애쓰지 않아도 되는 곳이었으면 합니다.
+      </p>
+
+      <div class="ab-work-item">
+        <h3><span>COUNSELING</span>마음을 만나는 자리</h3>
+        <p>
+          한 사람 한 사람과 마주 앉아 이야기를 나눕니다.
+          반복되는 나의 독특한 생활 패턴을 알아차리고,
+          좀 더 효율적인 방향으로 성장할 수 있도록 함께 길을 찾습니다.
+          혼자 오시는 개인상담과, 비슷한 마음을 가진 분들이 함께하는
+          집단프로그램을 엽니다. 대인관계, 명상, 타로를 통한 자기이해,
+          마음을 전하는 향기처럼 말로만 하지 않는 자리도 준비합니다.
+        </p>
+      </div>
+
+      <div class="ab-work-item">
+        <h3><span>EDUCATION</span>함께 배우는 자리</h3>
+        <p>
+          부모님, 선생님, 상담하시는 분들뿐 아니라
+          아들러 개인심리학을 공부하고 싶은 모든 분께 열려 있습니다.
+          아들러 심리학을 바탕으로 한 부모교육 프로그램을 운영하고,
+          기관에서 요청하시면 찾아가 강의합니다.
+          자신의 독특한 패턴을 발견하고 서로를 이해하며 협력하는,
+          성장과 번영을 바라는 모든 자리에서 함께 배우고 성장하겠습니다.
+        </p>
+      </div>
+
+      <div class="ab-work-item">
+        <h3><span>CONTENTS</span>나누는 자리</h3>
+        <p>
+          상담실에서만 오갈 이야기가 아니라고 생각합니다.
+          그래서 워크시트와 활동지, 교육 자료를 만들어 나누고,
+          뉴스레터로 아들러의 마음을 담은 편지를 보내드립니다.
+          온라인 강의와 영상도 조금씩 준비하고 있습니다.
+          멀리 계셔서 오시기 어려운 분께도 닿기를 바라는 마음입니다.
+        </p>
+      </div>
+
+      <div class="ab-work-item">
+        <h3><span>SPACE</span>머무는 자리</h3>
+        <p>
+          팔당호 강가에 위치한 한옥에 상담 공간이 있습니다.
+          조합원들이 함께 쓰고 함께 돌보는 곳입니다.
+          오시는 분이 잠시 숨을 고를 수 있는 자리이기를 바라며
+          가꾸어 가고 있습니다.
+        </p>
+      </div>
+
+      <div class="ab-work-item">
+        <h3><span>COMMUNITY</span>이웃으로 잇는 자리</h3>
+        <p>
+          지역에서 무료 특강과 캠페인을 열고,
+          학교와 복지관 같은 가까운 기관과 손을 잡습니다.
+          다른 협동조합들과도 만나 배우고 나눕니다.
+          아들러가 말한 사회적 관심은 결국
+          내가 속한 곳을 돌보는 마음이라고 믿기 때문입니다.
+        </p>
+      </div>
+
+      <p class="ab-work-close">
+        조합원들끼리도 매달 모여 공부하고, 사례를 나누고, 서로를 격려합니다.
+        먼저 우리가 그렇게 살아보지 않으면
+        누구에게도 권할 수 없다고 생각하기 때문입니다.
+      </p>
+    </div>
    </div>
   </section>
 
