@@ -181,6 +181,9 @@ main { flex: 1; background: var(--am-white); }
   font-family: 'Noto Serif KR', serif; font-size: 14px; line-height: 2.05; color: var(--am-muted);
 }
 
+/* 한글은 어절 단위로 줄바꿈 — 한 글자만 떨어지는 것 방지 */
+.ab-greeting, .ab-work, .ab-transit { word-break: keep-all; overflow-wrap: break-word; text-wrap: pretty; }
+
 /* 오시는 길 — 약도와 교통편 */
 .ab-map {
   display: block; width: 100%; height: auto; margin: 0 auto 28px;
