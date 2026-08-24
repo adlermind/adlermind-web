@@ -309,7 +309,8 @@ tbody tr[aria-selected="true"]{background:#f4faf9}
         <div class="field">
           <label class="label" for="expOrder">순서</label>
           <input id="expOrder" type="number" value="0">
-          <p class="hint">작은 숫자가 앞에 옵니다. 대문과 방이 같은 순서를 씁니다.</p>
+          <p class="hint">작은 숫자가 앞에 옵니다. 대문에서는 아래 목록의 <strong>앞에</strong> 를 체크한 체험이
+            먼저 서고, 그 뒤를 이 숫자 차례가 잇습니다. 상담의 방·배움의 방은 이 숫자만 따릅니다.</p>
         </div>
 
         <div class="actions" style="margin-top:18px">
@@ -326,7 +327,7 @@ tbody tr[aria-selected="true"]{background:#f4faf9}
           <table>
             <thead>
               <tr>
-                <th>순서</th><th>섬네일</th><th>제목</th><th>이름표</th><th>갈래</th><th>노출 위치</th><th></th>
+                <th>앞에</th><th>순서</th><th>섬네일</th><th>제목</th><th>이름표</th><th>갈래</th><th>노출 위치</th><th></th>
               </tr>
             </thead>
             <tbody id="expRows"></tbody>
@@ -1061,11 +1062,12 @@ function expStatus(message) {
 
 async function loadExperiences() {
   const { data, error } = await client.from('experiences')
-    .select('id,experience_key,title,summary,placement,content_type,body_html,link_url,thumb_path,map_regions,sort_order')
-    .order('sort_order').order('created_at');
+    .select('id,experience_key,title,summary,placement,content_type,body_html,link_url,thumb_path,map_regions,sort_order,is_featured')
+    // 대문과 같은 차례로 늘어놓습니다 — 앞에 체크한 것 먼저, 그다음 순서 숫자.
+    .order('is_featured', { ascending: false }).order('sort_order').order('created_at');
 
   if (error) {
-    expStatus('체험 목록을 불러오지 못했습니다. setup_week2_experiences.sql 실행 여부를 확인해 주세요.');
+    expStatus('체험 목록을 불러오지 못했습니다. setup_week2_experiences.sql 과 setup_experience_featured.sql 실행 여부를 확인해 주세요.');
     return;
   }
   experiences = data || [];
@@ -1079,6 +1081,11 @@ function renderExpTable() {
 
   document.getElementById('expRows').innerHTML = experiences.map(item => `
     <tr data-exp-id="${item.id}">
+      <td style="text-align:center">
+        <input type="checkbox" data-act="feature" ${item.is_featured ? 'checked' : ''}
+               aria-label="${escapeHtml(item.title)} 대문 앞에 걸기"
+               title="체크하면 대문 앞줄에 섭니다">
+      </td>
       <td>${item.sort_order}</td>
       <td>${item.thumb_path
         ? `<img src="${thumbUrl(item.thumb_path)}" alt="" style="width:72px;height:41px;object-fit:cover;display:block;border:1px solid #eeeae6">`
@@ -1301,6 +1308,30 @@ document.getElementById('expRows').addEventListener('click', event => {
   if (button.dataset.act === 'edit') editExperience(id);
   else if (button.dataset.act === 'export') exportExperience(id);
   else deleteExperience(id);
+});
+
+// 앞에 체크 — 누르면 그 자리에서 바로 저장하고 목록을 새 차례로 다시 그립니다.
+// 저장 버튼을 따로 누르지 않습니다.
+document.getElementById('expRows').addEventListener('change', async event => {
+  const box = event.target.closest('input[data-act="feature"]');
+  if (!box) return;
+
+  const id = box.closest('tr').dataset.expId;
+  const item = experiences.find(entry => entry.id === id);
+  const checked = box.checked;
+  box.disabled = true;
+
+  const { error } = await client.from('experiences').update({ is_featured: checked }).eq('id', id);
+  box.disabled = false;
+
+  if (error) {
+    box.checked = !checked;   // 저장하지 못했으므로 체크를 되돌립니다.
+    expStatus('앞자리를 바꾸지 못했습니다. ' + error.message);
+    return;
+  }
+
+  expStatus(`${item ? item.title : '체험'} 을(를) 대문 ${checked ? '앞줄에 걸었습니다' : '뒷자리로 내렸습니다'}.`);
+  loadExperiences();
 });
 
 function selectTab(name) {

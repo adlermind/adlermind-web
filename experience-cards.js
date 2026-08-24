@@ -44,7 +44,11 @@
 /* 대문 히어로용. 섬네일 한 장만 보여줍니다.
    섬네일에 프로그램 내용이 유튜브처럼 적혀 오므로 글자를 겹쳐 적지 않습니다.
    섬네일이 아직 없는 카드(exp-card-plain)는 빈 칸이 되지 않도록 글자를 그대로 둡니다. */
-.exp-compact .exp-card { flex: 0 1 281px; }
+/* 대문 카드는 폭을 고정하지 않고 담는 자리를 넷으로 나눠 씁니다 (2026-08-24).
+   고정 281px 이던 때에는 화면이 조금만 좁아져도 한 줄에 셋만 서고 넷째가 아래로 내려갔습니다.
+   이제 데스크탑에서는 늘 한 줄에 4개가 서고, 화면이 좁아지면 3 · 2 · 1개로 줄어듭니다.
+   16px 은 카드 사이 틈(gap)이며, 4개면 틈이 3군데라 48px 을 뺍니다. */
+.exp-compact .exp-card { flex: 0 0 calc((100% - 48px) / 4); }
 /* 대문에서는 옆으로 밀지 않고 줄을 바꿔 걸린 체험이 모두 보이게 합니다 (2026-08-16).
    화면이 넓으면 한 줄에 더 많이 들어서고, 좁으면 줄이 늘어납니다.
    가로 스크롤을 끄므로 스크롤 스냅도 함께 끕니다 — 켜 두면 세로 스크롤이 걸립니다.
@@ -62,9 +66,19 @@
 .exp-compact .exp-card-plain .exp-card-title { font-size: 15px; margin-top: 8px; }
 .exp-compact .exp-card-plain .exp-card-summary { font-size: 13px; margin-top: 6px; }
 .exp-compact .exp-card-plain .exp-card-go { margin-top: 12px; }
+/* 화면이 좁아지면 한 줄에 서는 카드 수를 줄입니다 (2026-08-24).
+   방 안 목록(.exp-strip-scroll 기본형)의 카드 폭은 예전 그대로 둡니다. */
+@media (max-width: 1023px) {
+  .exp-compact .exp-card { flex-basis: calc((100% - 32px) / 3); }
+}
+@media (max-width: 700px) {
+  .exp-compact .exp-card { flex-basis: calc((100% - 16px) / 2); }
+}
 @media (max-width: 600px) {
   .exp-card { flex-basis: 232px; }
-  .exp-compact .exp-card { flex-basis: 262px; }
+}
+@media (max-width: 460px) {
+  .exp-compact .exp-card { flex-basis: 100%; }
 }
 `;
 
@@ -120,11 +134,14 @@
     if (!host) return;
 
     let query = `${SUPABASE_URL}/rest/v1/experiences` +
-      `?select=experience_key,title,summary,placement,content_type,link_url,thumb_path,sort_order` +
-      `&order=sort_order.asc&order=created_at.asc`;
+      `?select=experience_key,title,summary,placement,content_type,link_url,thumb_path,sort_order,is_featured`;
+
+    // 대문은 관리자가 "앞에" 체크한 체험을 앞줄에 세웁니다 (2026-08-24).
+    // 체크하지 않은 것도 그 뒤에 이어서 모두 나옵니다.
+    // 방(상담·배움) 안 목록은 예전처럼 순서 숫자만 따릅니다.
     query += options.placement
-      ? `&placement=eq.${options.placement}`
-      : '&placement=neq.hidden';
+      ? `&placement=eq.${options.placement}&order=sort_order.asc&order=created_at.asc`
+      : '&placement=neq.hidden&order=is_featured.desc&order=sort_order.asc&order=created_at.asc';
 
     let items = [];
     try {
