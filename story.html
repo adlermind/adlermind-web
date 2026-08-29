@@ -342,9 +342,15 @@ function renderBody(target, content) {
     target.appendChild(plain);
     return;
   }
-  const css = `<style>
+  // 액자는 따로 뜨는 문서라 바깥 페이지의 웹폰트가 따라오지 않습니다.
+  // 글쓴이가 고른 '명조'가 시스템 기본 서체로 떨어지지 않게 여기서 한 번 더 불러옵니다.
+  const css = `<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400&family=Noto+Sans+KR:wght@300;400&display=swap" rel="stylesheet">
+  <style>
     * { box-sizing: border-box; }
     body { margin: 0; padding: 0; font-family: 'Noto Sans KR', sans-serif; font-size: 15px; line-height: 2; color: #4A4A4A; word-break: keep-all; }
+    /* 편집기의 '명조'는 style="font-family: serif" 로 나옵니다. 그것을 우리 명조체로 받습니다.
+       'sans-serif' 는 이 문자열을 품지 않으므로 고딕은 그대로 남습니다. */
+    [style*="font-family: serif"] { font-family: 'Noto Serif KR', serif; }
     img { max-width: 100%; height: auto; display: block; margin: 14px auto; }
     p { margin: 0 0 14px; }
     h1 { font-size: 20px; margin: 22px 0 10px; font-weight: 400; }
