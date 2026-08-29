@@ -107,6 +107,10 @@ tbody tr[aria-selected="true"]{background:#f4faf9}
         <span class="item-name">체험후기 관리</span>
         <span class="item-desc">참여자의 후기를 등록하고 첫화면에 보여줄지 정합니다. 후기가 많으면 좌우 스크롤로 나타납니다.</span>
       </button>
+      <button class="item" type="button" role="tab" aria-selected="false" data-tab="stories">
+        <span class="item-name">아들러 이야기 관리</span>
+        <span class="item-desc">글을 쓸 수 있는 사람을 지정하고, 올라온 글의 글쓴이 이름과 공개 여부를 고칩니다.</span>
+      </button>
       <button class="item" type="button" role="tab" aria-selected="false" data-tab="members">
         <span class="item-name">회원관리</span>
         <span class="item-desc">계정을 조회하고 검색하며 체험 응답 내용을 확인합니다. 권한을 주고 뺏는 일은 여기서 하지 않습니다.</span>
@@ -412,6 +416,91 @@ tbody tr[aria-selected="true"]{background:#f4faf9}
     </section>
 
     <!-- 회원관리 · 2-1 -->
+    <!-- 아들러 이야기 관리 -->
+    <section class="panel hidden" id="panel-stories">
+      <h2 class="panel-title">아들러 이야기 관리</h2>
+
+      <!-- 작성자 명단. 여기에 넣은 계정만 이야기를 쓸 수 있습니다. -->
+      <div class="subpanel">
+        <h3 class="subpanel-title">글을 쓸 수 있는 사람</h3>
+        <p class="hint">
+          여기에 넣은 계정만 아들러 이야기를 쓸 수 있습니다.
+          이름은 글에 그대로 보이며, 글마다 따로 고치는 것은 아래 목록에서 합니다.
+        </p>
+        <div class="field">
+          <label class="label" for="storyAuthorPick">계정 고르기</label>
+          <select id="storyAuthorPick"></select>
+        </div>
+        <div class="field">
+          <label class="label" for="storyAuthorName">글에 보일 이름</label>
+          <input id="storyAuthorName" type="text" maxlength="40" placeholder="예 · 이경숙">
+        </div>
+        <div class="actions" style="margin-top:14px">
+          <button class="button" type="button" id="storyAuthorAdd">작성자로 넣기</button>
+        </div>
+        <div class="table-scroll" style="margin-top:16px">
+          <table>
+            <thead>
+              <tr><th>이름</th><th>계정</th><th>상태</th><th style="text-align:right">관리</th></tr>
+            </thead>
+            <tbody id="storyAuthorRows"></tbody>
+          </table>
+        </div>
+        <p class="panel-empty hidden" id="storyAuthorEmpty">아직 지정한 작성자가 없습니다.</p>
+        <p class="hint" id="storyAuthorStatus"></p>
+      </div>
+
+      <!-- 연재. 조합원이 한 주제를 이어 쓰는 묶음입니다. -->
+      <div class="subpanel">
+        <h3 class="subpanel-title">연재</h3>
+        <p class="hint">
+          조합원이 자기 주제로 글을 이어 쓰는 묶음입니다. 예 · 아로마 · 미술치료와 명상 · 아들러 부모교육.
+          연재를 만들면 그 주인만 자기 연재를 골라 글을 올립니다.
+        </p>
+        <div class="field">
+          <label class="label" for="seriesTitle">연재 이름</label>
+          <input id="seriesTitle" type="text" maxlength="60" placeholder="예 · 아로마와 마음">
+        </div>
+        <div class="field">
+          <label class="label" for="seriesOwner">주인 조합원 <span style="color:#98928d">· 작성자 명단에서 고릅니다</span></label>
+          <select id="seriesOwner"></select>
+        </div>
+        <div class="field">
+          <label class="label" for="seriesDesc">한 줄 소개 <span style="color:#98928d">· 목록 위에 보입니다. 비워도 됩니다</span></label>
+          <input id="seriesDesc" type="text" maxlength="120">
+        </div>
+        <div class="actions" style="margin-top:14px">
+          <button class="button" type="button" id="seriesAdd">연재 만들기</button>
+        </div>
+        <div class="table-scroll" style="margin-top:16px">
+          <table>
+            <thead>
+              <tr><th>순서</th><th>연재 이름</th><th>주인</th><th>글</th><th style="text-align:right">관리</th></tr>
+            </thead>
+            <tbody id="seriesRows"></tbody>
+          </table>
+        </div>
+        <p class="panel-empty hidden" id="seriesEmpty">아직 만든 연재가 없습니다.</p>
+        <p class="hint" id="seriesStatus"></p>
+      </div>
+
+      <!-- 올라온 글. 글쓴이 이름과 공개 여부를 여기서 고칩니다. -->
+      <div class="subpanel">
+        <h3 class="subpanel-title">올라온 이야기</h3>
+        <p class="hint">글쓴이 이름은 이 자리에서 글마다 따로 고칠 수 있습니다. 대필하거나 함께 쓴 글을 위한 자리입니다.</p>
+        <div class="table-scroll" style="margin-top:12px">
+          <table>
+            <thead>
+              <tr><th>제목</th><th>연재</th><th>글쓴이</th><th>날짜</th><th>상태</th><th style="text-align:right">관리</th></tr>
+            </thead>
+            <tbody id="storyRows"></tbody>
+          </table>
+        </div>
+        <p class="panel-empty hidden" id="storyEmpty">아직 올라온 이야기가 없습니다.</p>
+        <p class="hint" id="storyStatus"></p>
+      </div>
+    </section>
+
     <section class="panel hidden" id="panel-members">
       <h2 class="panel-title">회원관리</h2>
 
@@ -1335,7 +1424,7 @@ document.getElementById('expRows').addEventListener('change', async event => {
 });
 
 function selectTab(name) {
-  ['gallery', 'experience', 'members', 'testimonials'].forEach(tab => {
+  ['gallery', 'experience', 'members', 'testimonials', 'stories'].forEach(tab => {
     document.getElementById(`panel-${tab}`).classList.toggle('hidden', tab !== name);
   });
   document.querySelectorAll('#menu .item').forEach(item => {
@@ -1352,6 +1441,10 @@ function selectTab(name) {
   if (name === 'testimonials' && !testimonialsLoaded) {
     testimonialsLoaded = true;
     loadTestimonials();
+  }
+  if (name === 'stories' && !storiesLoaded) {
+    storiesLoaded = true;
+    loadStoryAuthors().then(loadStories).then(loadStorySeries);
   }
 }
 
@@ -1543,6 +1636,289 @@ document.getElementById('testSave').addEventListener('click', async () => {
   } catch(e) {
     alert('저장 실패: ' + e.message);
   }
+});
+
+/* ── 아들러 이야기 관리 ────────────────────────────────
+   작성자 명단(story_authors)과 올라온 글(am_stories)을 다룹니다.
+   글쓴이 이름은 두 자리에 있습니다. 명단의 이름은 새 글의 기본값이고,
+   글 목록의 이름은 그 글에만 적용됩니다. 대필·공동 집필 글 때문입니다. */
+let storiesLoaded = false;
+let storyAuthors = [];
+let storyList = [];
+
+function storyAuthorStatus(message) { document.getElementById('storyAuthorStatus').textContent = message || ''; }
+function storyStatus(message) { document.getElementById('storyStatus').textContent = message || ''; }
+function storyDate(value) {
+  return value ? new Date(value).toLocaleDateString('ko-KR', { year:'numeric', month:'long', day:'numeric' }) : '';
+}
+
+async function loadStoryAuthors() {
+  if (!accounts.length) await loadAccounts();
+
+  const { data, error } = await client
+    .from('story_authors').select('user_id,display_name,is_active,sort_order').order('sort_order');
+  if (error) {
+    storyAuthorStatus('작성자 명단을 불러오지 못했습니다. setup_stories.sql 실행 여부를 확인해 주세요.');
+    return;
+  }
+  storyAuthors = data || [];
+
+  // 이메일 회원만 고를 수 있게 합니다. 별칭 체험계정은 글쓴이 자리가 아닙니다.
+  const picked = new Set(storyAuthors.map(row => row.user_id));
+  const options = accounts
+    .filter(account => account.base_type === 'formal' && !picked.has(account.user_id))
+    .map(account => `<option value="${account.user_id}">${escapeHtml(
+      (account.display_name || account.nickname || '이름 없음') + ' · ' + (account.email || '')
+    )}</option>`).join('');
+  document.getElementById('storyAuthorPick').innerHTML =
+    options || '<option value="">넣을 수 있는 계정이 없습니다</option>';
+
+  const nameOf = id => {
+    const account = accounts.find(row => row.user_id === id);
+    if (!account) return '<span class="muted">계정을 찾을 수 없습니다</span>';
+    return escapeHtml(account.email || account.display_name || account.nickname || id);
+  };
+
+  document.getElementById('storyAuthorRows').innerHTML = storyAuthors.map(row => `
+    <tr data-id="${row.user_id}">
+      <td>${escapeHtml(row.display_name)}</td>
+      <td style="color:#98928d">${nameOf(row.user_id)}</td>
+      <td>${row.is_active ? '<span class="tag tag-member">쓸 수 있음</span>' : '<span class="tag">멈춤</span>'}</td>
+      <td style="text-align:right;white-space:nowrap">
+        <button class="link-btn" type="button" data-action="rename">이름 고치기</button>
+        <button class="link-btn" type="button" data-action="toggle">${row.is_active ? '멈추기' : '다시 켜기'}</button>
+        <button class="link-btn danger" type="button" data-action="remove">빼기</button>
+      </td>
+    </tr>`).join('');
+  document.getElementById('storyAuthorEmpty').classList.toggle('hidden', storyAuthors.length > 0);
+}
+
+document.getElementById('storyAuthorAdd').addEventListener('click', async () => {
+  const userId = document.getElementById('storyAuthorPick').value;
+  const name = document.getElementById('storyAuthorName').value.trim();
+  if (!userId) { storyAuthorStatus('넣을 계정을 골라 주세요.'); return; }
+  if (!name) { storyAuthorStatus('글에 보일 이름을 적어 주세요.'); return; }
+
+  const { error } = await client.from('story_authors').insert({
+    user_id: userId, display_name: name, sort_order: storyAuthors.length + 1
+  });
+  if (error) { storyAuthorStatus('넣지 못했습니다. ' + error.message); return; }
+  document.getElementById('storyAuthorName').value = '';
+  storyAuthorStatus(`${name} 님을 작성자로 넣었습니다.`);
+  loadStoryAuthors();
+});
+
+document.getElementById('storyAuthorRows').addEventListener('click', async event => {
+  const button = event.target.closest('button[data-action]');
+  if (!button) return;
+  const userId = button.closest('tr').dataset.id;
+  const row = storyAuthors.find(item => item.user_id === userId);
+  if (!row) return;
+
+  if (button.dataset.action === 'rename') {
+    const name = prompt('글에 보일 이름을 적어 주세요.', row.display_name);
+    if (name === null || !name.trim()) return;
+    const { error } = await client.from('story_authors')
+      .update({ display_name: name.trim(), updated_at: new Date().toISOString() })
+      .eq('user_id', userId);
+    storyAuthorStatus(error ? '고치지 못했습니다. ' + error.message : '이름을 고쳤습니다.');
+  } else if (button.dataset.action === 'toggle') {
+    const { error } = await client.from('story_authors')
+      .update({ is_active: !row.is_active, updated_at: new Date().toISOString() })
+      .eq('user_id', userId);
+    storyAuthorStatus(error ? '바꾸지 못했습니다. ' + error.message
+      : (row.is_active ? '이제 새 글을 쓸 수 없습니다. 이미 쓴 글은 그대로 남습니다.' : '다시 쓸 수 있게 했습니다.'));
+  } else if (button.dataset.action === 'remove') {
+    if (!confirm(`${row.display_name} 님을 작성자 명단에서 뺍니다. 이미 쓴 글은 그대로 남습니다. 계속할까요?`)) return;
+    const { error } = await client.from('story_authors').delete().eq('user_id', userId);
+    storyAuthorStatus(error ? '빼지 못했습니다. ' + error.message : '작성자 명단에서 뺐습니다.');
+  }
+  loadStoryAuthors();
+});
+
+/* 연재 관리. 연재를 만들고 이름·주인·순서를 고칩니다.
+   연재를 지워도 글은 남고 연재만 떨어집니다(표에서 on delete set null). */
+let storySeries = [];
+
+function seriesStatus(message) { document.getElementById('seriesStatus').textContent = message || ''; }
+
+async function loadStorySeries() {
+  const { data, error } = await client
+    .from('story_series').select('id,title,description,owner_user_id,is_active,sort_order').order('sort_order');
+  if (error) {
+    seriesStatus('연재를 불러오지 못했습니다. setup_stories_series.sql 실행 여부를 확인해 주세요.');
+    return;
+  }
+  storySeries = data || [];
+
+  // 주인은 작성자 명단에서 고릅니다. 글을 쓸 수 없는 사람이 연재 주인이 되면 빈 방이 됩니다.
+  document.getElementById('seriesOwner').innerHTML =
+    storyAuthors.filter(row => row.is_active)
+      .map(row => `<option value="${row.user_id}">${escapeHtml(row.display_name)}</option>`).join('')
+    || '<option value="">작성자를 먼저 지정해 주세요</option>';
+
+  const ownerName = id => {
+    const author = storyAuthors.find(row => row.user_id === id);
+    return author ? escapeHtml(author.display_name) : '<span class="muted">없음</span>';
+  };
+  const countOf = id => storyList.filter(row => row.series_id === id).length;
+
+  document.getElementById('seriesRows').innerHTML = storySeries.map((row, index) => `
+    <tr data-id="${row.id}">
+      <td style="white-space:nowrap">
+        <button class="link-btn" type="button" data-action="up" ${index === 0 ? 'disabled' : ''}>↑</button>
+        <button class="link-btn" type="button" data-action="down" ${index === storySeries.length - 1 ? 'disabled' : ''}>↓</button>
+      </td>
+      <td>${escapeHtml(row.title)}${row.is_active ? '' : ' <span class="tag">멈춤</span>'}
+        ${row.description ? `<div style="color:#98928d;margin-top:4px">${escapeHtml(row.description)}</div>` : ''}</td>
+      <td>${ownerName(row.owner_user_id)}</td>
+      <td style="white-space:nowrap">${countOf(row.id)}편</td>
+      <td style="text-align:right;white-space:nowrap">
+        <button class="link-btn" type="button" data-action="rename">이름</button>
+        <button class="link-btn" type="button" data-action="desc">소개</button>
+        <button class="link-btn" type="button" data-action="toggle">${row.is_active ? '멈추기' : '다시 켜기'}</button>
+        <button class="link-btn danger" type="button" data-action="remove">지우기</button>
+      </td>
+    </tr>`).join('');
+  document.getElementById('seriesEmpty').classList.toggle('hidden', storySeries.length > 0);
+  renderStoryRows();   // 연재 이름이 정해진 뒤에 글 목록을 다시 그립니다
+}
+
+document.getElementById('seriesAdd').addEventListener('click', async () => {
+  const title = document.getElementById('seriesTitle').value.trim();
+  const owner = document.getElementById('seriesOwner').value;
+  const description = document.getElementById('seriesDesc').value.trim();
+  if (!title) { seriesStatus('연재 이름을 적어 주세요.'); return; }
+  if (!owner) { seriesStatus('주인이 될 조합원을 작성자 명단에 먼저 넣어 주세요.'); return; }
+
+  const { error } = await client.from('story_series').insert({
+    title, description: description || null, owner_user_id: owner,
+    sort_order: storySeries.length + 1
+  });
+  if (error) { seriesStatus('만들지 못했습니다. ' + error.message); return; }
+  document.getElementById('seriesTitle').value = '';
+  document.getElementById('seriesDesc').value = '';
+  seriesStatus(`"${title}" 연재를 만들었습니다.`);
+  loadStorySeries();
+});
+
+document.getElementById('seriesRows').addEventListener('click', async event => {
+  const button = event.target.closest('button[data-action]');
+  if (!button) return;
+  const id = button.closest('tr').dataset.id;
+  const row = storySeries.find(item => item.id === id);
+  if (!row) return;
+  const action = button.dataset.action;
+  const stamp = new Date().toISOString();
+
+  if (action === 'rename') {
+    const title = prompt('연재 이름을 적어 주세요.', row.title);
+    if (title === null || !title.trim()) return;
+    const { error } = await client.from('story_series')
+      .update({ title: title.trim(), updated_at: stamp }).eq('id', id);
+    seriesStatus(error ? '고치지 못했습니다. ' + error.message : '이름을 고쳤습니다.');
+  } else if (action === 'desc') {
+    const description = prompt('연재 소개를 적어 주세요. 비우면 없앱니다.', row.description || '');
+    if (description === null) return;
+    const { error } = await client.from('story_series')
+      .update({ description: description.trim() || null, updated_at: stamp }).eq('id', id);
+    seriesStatus(error ? '고치지 못했습니다. ' + error.message : '소개를 고쳤습니다.');
+  } else if (action === 'toggle') {
+    const { error } = await client.from('story_series')
+      .update({ is_active: !row.is_active, updated_at: stamp }).eq('id', id);
+    seriesStatus(error ? '바꾸지 못했습니다. ' + error.message
+      : (row.is_active ? '멈췄습니다. 이미 올라온 글은 그대로 보입니다.' : '다시 켰습니다.'));
+  } else if (action === 'up' || action === 'down') {
+    const index = storySeries.indexOf(row);
+    const other = storySeries[action === 'up' ? index - 1 : index + 1];
+    if (!other) return;
+    await client.from('story_series').update({ sort_order: other.sort_order, updated_at: stamp }).eq('id', row.id);
+    await client.from('story_series').update({ sort_order: row.sort_order, updated_at: stamp }).eq('id', other.id);
+    seriesStatus('순서를 바꿨습니다.');
+  } else if (action === 'remove') {
+    const count = storyList.filter(item => item.series_id === id).length;
+    const warning = count
+      ? `"${row.title}" 연재를 지웁니다. 이 연재의 글 ${count}편은 지워지지 않고 낱글로 남습니다. 계속할까요?`
+      : `"${row.title}" 연재를 지웁니다. 계속할까요?`;
+    if (!confirm(warning)) return;
+    const { error } = await client.from('story_series').delete().eq('id', id);
+    seriesStatus(error ? '지우지 못했습니다. ' + error.message : '연재를 지웠습니다. 글은 낱글로 남았습니다.');
+    loadStories();
+  }
+  loadStorySeries();
+});
+
+async function loadStories() {
+  const { data, error } = await client
+    .from('am_stories')
+    .select('id,title,author_name,series_id,visibility,is_published,published_at,created_at')
+    .order('created_at', { ascending: false });
+  if (error) {
+    storyStatus('이야기를 불러오지 못했습니다. setup_stories.sql 실행 여부를 확인해 주세요.');
+    return;
+  }
+  storyList = data || [];
+  renderStoryRows();
+}
+
+function renderStoryRows() {
+  const seriesName = id => {
+    const series = storySeries.find(row => row.id === id);
+    return series ? escapeHtml(series.title) : '<span class="muted">낱글</span>';
+  };
+  document.getElementById('storyRows').innerHTML = storyList.map(row => `
+    <tr data-id="${row.id}">
+      <td><a href="story.html?id=${row.id}" target="_blank" rel="noopener" style="color:#5e7773">${escapeHtml(row.title)}</a></td>
+      <td style="white-space:nowrap">${seriesName(row.series_id)}</td>
+      <td>${escapeHtml(row.author_name)}</td>
+      <td style="color:#98928d;white-space:nowrap">${storyDate(row.published_at || row.created_at)}</td>
+      <td style="white-space:nowrap">
+        ${row.is_published ? '<span class="tag tag-member">공개</span>' : '<span class="tag tag-admin">초안</span>'}
+        ${row.visibility === 'members' ? '<span class="tag tag-member">회원방</span>' : '<span class="tag">누구나</span>'}
+      </td>
+      <td style="text-align:right;white-space:nowrap">
+        <button class="link-btn" type="button" data-action="rename">글쓴이</button>
+        <button class="link-btn" type="button" data-action="room">${row.visibility === 'members' ? '맨앞으로' : '회원방으로'}</button>
+        <button class="link-btn" type="button" data-action="toggle">${row.is_published ? '내리기' : '공개하기'}</button>
+        <button class="link-btn danger" type="button" data-action="remove">지우기</button>
+      </td>
+    </tr>`).join('');
+  document.getElementById('storyEmpty').classList.toggle('hidden', storyList.length > 0);
+}
+
+document.getElementById('storyRows').addEventListener('click', async event => {
+  const button = event.target.closest('button[data-action]');
+  if (!button) return;
+  const id = button.closest('tr').dataset.id;
+  const row = storyList.find(item => item.id === id);
+  if (!row) return;
+
+  if (button.dataset.action === 'rename') {
+    const name = prompt('이 글에 보일 글쓴이 이름을 적어 주세요.', row.author_name);
+    if (name === null || !name.trim()) return;
+    const { error } = await client.from('am_stories')
+      .update({ author_name: name.trim(), updated_at: new Date().toISOString() }).eq('id', id);
+    storyStatus(error ? '고치지 못했습니다. ' + error.message : '글쓴이 이름을 고쳤습니다.');
+  } else if (button.dataset.action === 'room') {
+    const next = row.visibility === 'members' ? 'public' : 'members';
+    const { error } = await client.from('am_stories')
+      .update({ visibility: next, updated_at: new Date().toISOString() }).eq('id', id);
+    storyStatus(error ? '바꾸지 못했습니다. ' + error.message
+      : (next === 'members' ? '회원방 글로 옮겼습니다. 로그인한 회원에게만 보입니다.' : '누구나 볼 수 있게 했습니다.'));
+  } else if (button.dataset.action === 'toggle') {
+    const next = !row.is_published;
+    const patch = { is_published: next, updated_at: new Date().toISOString() };
+    // 처음 공개할 때만 공개 날짜를 찍습니다. 다시 올릴 때는 원래 날짜를 지킵니다.
+    if (next && !row.published_at) patch.published_at = new Date().toISOString();
+    const { error } = await client.from('am_stories').update(patch).eq('id', id);
+    storyStatus(error ? '바꾸지 못했습니다. ' + error.message
+      : (next ? '공개했습니다.' : '목록에서 내렸습니다. 글은 지워지지 않았습니다.'));
+  } else if (button.dataset.action === 'remove') {
+    if (!confirm(`"${row.title}" 글을 지웁니다. 달린 댓글도 함께 지워집니다. 계속할까요?`)) return;
+    const { error } = await client.from('am_stories').delete().eq('id', id);
+    storyStatus(error ? '지우지 못했습니다. ' + error.message : '글을 지웠습니다.');
+  }
+  loadStories();
 });
 
 init();

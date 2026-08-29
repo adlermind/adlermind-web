@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="image/favicon.png">
+<link rel="icon" type="image/webp" href="image/favicon.webp">
+<title>아들러 이야기 · ADLER MIND 협동조합</title>
+<meta property="og:type" content="article">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:title" content="아들러 이야기 · ADLER MIND 협동조합">
+<meta property="og:description" content="조합원들이 쓰는 아들러 개인심리학 이야기입니다.">
+<meta property="og:image" content="https://adlermind.co.kr/image/og-image.png">
+<meta property="og:url" content="https://adlermind.co.kr/stories.html">
+<meta name="twitter:card" content="summary_large_image">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400&family=Noto+Sans+KR:wght@300;400&family=Raleway:wght@200;300;400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root {
+  --am-rose:   #E8929A;
+  --am-sage:   #8FBFB8;
+  --am-blue:   #8FAFD4;
+  --am-gray:   #4A4A4A;
+  --am-pale:   #D8D8DC;
+  --am-bg:     #FAFAF8;
+  --am-muted:  #6E6763;
+  --am-border: #e8e4e0;
+  --am-white:  #ffffff;
+  --am-dark:   #3d3a36;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Noto Sans KR', sans-serif; font-weight: 400; color: var(--am-gray); background: var(--am-white); }
+
+nav {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--am-white); border-bottom: 0.5px solid var(--am-border);
+  padding: 0 32px; display: flex; align-items: center; gap: 32px; height: 60px;
+}
+.nav-logo img { height: 40px; display: block; margin-top: 4px; }
+.nav-links { display: flex; align-items: center; gap: 18px; flex: 1; }
+.nav-links a { font-size: 13px; color: var(--am-gray); text-decoration: none; transition: color 0.15s; }
+.nav-links a:hover, .nav-links a.active { color: var(--am-sage); }
+.nav-login-link {
+  margin-left: auto; font-size: 13px; color: var(--am-muted);
+  text-decoration: none; letter-spacing: 0.04em;
+  transition: color 0.15s; white-space: nowrap;
+}
+.nav-login-link:hover { color: var(--am-sage); }
+.nav-login-mobile { display: none; }
+.nav-member-btn {
+  padding: 7px 18px;
+  background: var(--am-sage); color: #fff; border: none; border-radius: 2px;
+  font-size: 13px; font-family: 'Noto Sans KR', sans-serif; font-weight: 400;
+  cursor: pointer; text-decoration: none; transition: background 0.15s; white-space: nowrap;
+}
+.nav-member-btn:hover { background: #6fa8a0; }
+.nav-ham { display: none; border: none; background: none; cursor: pointer; font-size: 22px; color: var(--am-gray); }
+
+.article-wrap { max-width: 720px; margin: 0 auto; padding: 48px 32px 80px; }
+
+.back-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 13px; color: var(--am-muted); text-decoration: none;
+  margin-bottom: 30px; transition: color 0.15s;
+}
+.back-link:hover { color: var(--am-sage); }
+
+.article-label {
+  font-family: 'Raleway', sans-serif; font-size: 13px; letter-spacing: 0.22em;
+  color: var(--am-rose); margin-bottom: 14px;
+}
+.article-title {
+  font-family: 'Noto Serif KR', serif; font-size: 24px; font-weight: 400;
+  color: var(--am-gray); line-height: 1.6; word-break: keep-all; margin-bottom: 14px;
+}
+.article-meta {
+  font-size: 13px; color: var(--am-muted);
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  margin-bottom: 22px;
+}
+.article-meta .dot { color: var(--am-pale); }
+.article-date { font-family: 'Raleway', sans-serif; letter-spacing: 0.04em; }
+.draft-tag {
+  font-size: 13px; color: var(--am-rose);
+  background: rgba(232,146,154,0.10); padding: 3px 10px;
+}
+.members-tag {
+  font-size: 13px; color: #5a9990;
+  background: rgba(143,191,184,0.12); padding: 3px 10px;
+}
+.article-actions { display: flex; gap: 8px; margin-bottom: 30px; flex-wrap: wrap; }
+.act-btn {
+  font-size: 13px; color: var(--am-sage); background: none;
+  border: 0.5px solid var(--am-sage); padding: 6px 16px;
+  cursor: pointer; font-family: 'Noto Sans KR', sans-serif; font-weight: 400;
+  text-decoration: none; transition: background 0.15s;
+}
+.act-btn:hover { background: rgba(143,191,184,0.08); }
+
+.article-series {
+  display: inline-block; font-size: 13px; color: #5a9990;
+  background: rgba(143,191,184,0.12); padding: 4px 12px;
+  text-decoration: none; margin-bottom: 14px; transition: background 0.15s;
+}
+.article-series:hover { background: rgba(143,191,184,0.22); }
+
+.article-cover { width: 100%; display: block; margin-bottom: 30px; }
+.article-summary {
+  font-size: 14px; line-height: 2; color: var(--am-muted);
+  background: var(--am-bg); border-left: 2px solid var(--am-sage);
+  padding: 16px 20px; margin-bottom: 30px; word-break: keep-all;
+}
+.article-body {
+  font-size: 15px; color: var(--am-gray); line-height: 2;
+  border-top: 0.5px solid var(--am-border); padding-top: 30px;
+}
+.article-body-frame { width: 100%; border: none; display: block; min-height: 200px; }
+.article-plain { white-space: pre-wrap; word-break: keep-all; }
+
+/* ── 같은 연재의 다른 글 ── */
+.more-in-series { margin-top: 48px; border-top: 0.5px solid var(--am-border); padding-top: 26px; }
+.more-head {
+  font-family: 'Noto Serif KR', serif; font-size: 16px; font-weight: 400;
+  color: var(--am-gray); margin-bottom: 6px;
+}
+.more-sub { font-size: 13px; color: var(--am-muted); margin-bottom: 14px; }
+.more-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 13px 0; border-bottom: 0.5px solid var(--am-border);
+  text-decoration: none; color: inherit; transition: opacity 0.15s;
+}
+.more-item:hover { opacity: 0.65; }
+.more-title { flex: 1; font-size: 14px; color: var(--am-gray); word-break: keep-all; }
+.more-date { font-size: 13px; color: var(--am-muted); font-family: 'Raleway', sans-serif; white-space: nowrap; }
+.more-all { display: inline-block; margin-top: 16px; font-size: 13px; color: var(--am-sage); text-decoration: none; }
+
+/* ── 댓글 ── */
+.comment-section { margin-top: 56px; border-top: 0.5px solid var(--am-border); padding-top: 30px; }
+.comment-head {
+  font-family: 'Noto Serif KR', serif; font-size: 16px; font-weight: 400;
+  color: var(--am-gray); margin-bottom: 20px;
+}
+.comment-head span { color: var(--am-sage); }
+.comment-item { padding: 16px 0; border-bottom: 0.5px solid var(--am-border); }
+.comment-item.reply { padding-left: 24px; border-left: 2px solid var(--am-bg); }
+.comment-top { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+.comment-author { font-size: 13px; color: var(--am-gray); }
+.comment-date { font-size: 13px; color: var(--am-muted); font-family: 'Raleway', sans-serif; }
+.comment-tools { margin-left: auto; display: flex; gap: 10px; }
+.comment-tool {
+  font-size: 13px; color: var(--am-muted); background: none; border: none;
+  cursor: pointer; padding: 0; font-family: 'Noto Sans KR', sans-serif;
+  transition: color 0.15s;
+}
+.comment-tool:hover { color: var(--am-sage); }
+.comment-text { font-size: 14px; line-height: 1.9; color: var(--am-gray); white-space: pre-wrap; word-break: keep-all; }
+.comment-empty { padding: 28px 0; font-size: 13px; color: var(--am-muted); text-align: center; }
+
+.comment-form { margin-top: 24px; background: var(--am-bg); padding: 20px; }
+.comment-form.reply-form { margin: 14px 0 4px; }
+.form-row { display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+.form-row input {
+  flex: 1; min-width: 140px;
+  font-family: 'Noto Sans KR', sans-serif; font-size: 13px; color: var(--am-gray);
+  border: 0.5px solid var(--am-border); background: var(--am-white);
+  padding: 9px 12px;
+}
+.comment-form textarea {
+  width: 100%; min-height: 90px; resize: vertical;
+  font-family: 'Noto Sans KR', sans-serif; font-size: 14px; line-height: 1.8; color: var(--am-gray);
+  border: 0.5px solid var(--am-border); background: var(--am-white);
+  padding: 10px 12px; margin-bottom: 10px;
+}
+.comment-form input:focus, .comment-form textarea:focus { outline: none; border-color: var(--am-sage); }
+.form-foot { display: flex; align-items: center; gap: 10px; justify-content: flex-end; }
+.form-hint { font-size: 13px; color: var(--am-muted); margin-right: auto; }
+.btn-sage {
+  font-size: 13px; color: #fff; background: var(--am-sage);
+  border: none; border-radius: 2px; padding: 9px 22px; cursor: pointer;
+  font-family: 'Noto Sans KR', sans-serif; font-weight: 400; transition: background 0.15s;
+}
+.btn-sage:hover { background: #6fa8a0; }
+.btn-plain {
+  font-size: 13px; color: var(--am-muted); background: none;
+  border: 0.5px solid var(--am-border); padding: 8px 18px; cursor: pointer;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+.notice { padding: 80px 0; text-align: center; font-size: 14px; line-height: 2; color: var(--am-muted); }
+
+footer {
+  background: var(--am-bg); border-top: 0.5px solid var(--am-border); padding: 48px 32px;
+}
+.footer-inner { max-width: 900px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 32px; justify-content: space-between; }
+.footer-logo img { height: 32px; margin-bottom: 10px; }
+.footer-info { font-size: 13px; color: var(--am-muted); line-height: 2; }
+.footer-nav { display: flex; flex-direction: column; gap: 8px; }
+.footer-nav a { font-size: 13px; color: var(--am-muted); text-decoration: none; }
+.footer-nav a:hover { color: var(--am-sage); }
+.footer-copy { max-width: 900px; margin: 24px auto 0; font-size: 13px; color: var(--am-muted); font-family: 'Raleway', sans-serif; border-top: 0.5px solid var(--am-border); padding-top: 16px; }
+
+@media (max-width: 900px) {
+  nav { padding: 0 20px; }
+  .nav-links { display: none; }
+  .nav-links.open { display: flex; flex-direction: column; position: fixed; top: 60px; left: 0; right: 0; background: var(--am-white); border-bottom: 0.5px solid var(--am-border); padding: 20px; gap: 16px; z-index: 99; }
+  .nav-ham { display: block; margin-left: auto; }
+  .nav-login-link { display: none; }
+  .nav-login-mobile { display: block !important; }
+  .article-wrap { padding: 32px 20px 60px; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">
+    <img src="image/adlermind_logo.png" alt="ADLER MIND 협동조합">
+  </a>
+  <div class="nav-links" id="navLinks">
+    <a href="about.html">협동조합 소개</a>
+    <a href="counseling.html">심리상담</a>
+    <a href="education.html">교육·연수</a>
+    <a href="news.html">소식</a>
+    <a href="stories.html" class="active">아들러 이야기</a>
+    <a href="gallery.html">갤러리</a>
+    <a href="contact.html">문의</a>
+    <a id="navLoginMobile" class="nav-login-mobile" href="login.html">로그인</a>
+  </div>
+  <a id="navLoginLink" class="nav-login-link" href="login.html">로그인</a>
+  <a class="nav-member-btn" href="members.html">조합원 마당</a>
+  <button class="nav-ham" id="navHam">&#9776;</button>
+</nav>
+
+<div class="article-wrap">
+  <a class="back-link" href="stories.html">&#8592; 아들러 이야기 목록</a>
+
+  <div id="notice" class="notice" style="display:none;"></div>
+
+  <article id="article" style="display:none;">
+    <div class="article-label">STORY</div>
+    <a class="article-series" id="aSeries" style="display:none;"></a>
+    <h1 class="article-title" id="aTitle"></h1>
+    <div class="article-meta">
+      <span id="aAuthor"></span>
+      <span class="dot">·</span>
+      <span class="article-date" id="aDate"></span>
+      <span class="draft-tag" id="aDraft" style="display:none;">아직 공개하지 않은 글</span>
+      <span class="members-tag" id="aMembers" style="display:none;">회원방 글</span>
+    </div>
+    <div class="article-actions">
+      <button class="act-btn" id="aCopy">링크 복사</button>
+      <a class="act-btn" id="aEdit" style="display:none;">고치기</a>
+    </div>
+    <img class="article-cover" id="aCover" style="display:none;" alt="">
+    <div class="article-summary" id="aSummary" style="display:none;"></div>
+    <div class="article-body" id="aBody"></div>
+
+    <section class="more-in-series" id="moreInSeries" style="display:none;">
+      <div class="more-head" id="moreHead"></div>
+      <div class="more-sub">같은 연재의 다른 글입니다.</div>
+      <div id="moreList"></div>
+      <a class="more-all" id="moreAll">이 연재 전체 보기 &#8594;</a>
+    </section>
+
+    <section class="comment-section" id="commentSection">
+      <div class="comment-head">댓글 <span id="cCount">0</span></div>
+      <div id="commentList"></div>
+
+      <div class="comment-form">
+        <div class="form-row">
+          <input id="cName" type="text" maxlength="20" placeholder="이름">
+          <input id="cPass" type="password" maxlength="30" placeholder="비밀번호 (4자 이상)">
+        </div>
+        <textarea id="cText" maxlength="1000" placeholder="이야기를 읽고 남기고 싶은 말을 적어 주세요."></textarea>
+        <div class="form-foot">
+          <span class="form-hint">비밀번호는 나중에 댓글을 지울 때 씁니다.</span>
+          <button class="btn-sage" id="cSubmit">댓글 남기기</button>
+        </div>
+      </div>
+    </section>
+  </article>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-logo"><img src="image/adlermind_logo.png" alt="ADLER MIND 협동조합"></div>
+      <div class="footer-info">
+        ADLER MIND 협동조합 (일반협동조합)<br>
+        경기도 광주시 남종면 산수로 1652-16<br>
+        adlermindcoop@gmail.com
+      </div>
+    </div>
+    <nav class="footer-nav">
+      <a href="about.html">협동조합 소개</a>
+      <a href="counseling.html">심리상담</a>
+      <a href="education.html">교육·연수</a>
+      <a href="news.html">소식</a>
+      <a href="stories.html">아들러 이야기</a>
+      <a href="gallery.html">갤러리</a>
+      <a href="contact.html">문의</a>
+      <a href="members.html">조합원 마당</a>
+      <a href="https://www.youtube.com/@AdlerMindCoop" target="_blank" rel="noopener">YouTube 채널</a>
+      <a href="privacy.html">개인정보처리방침</a>
+    </nav>
+  </div>
+  <div class="footer-copy">&copy; 2026 ADLER MIND 협동조합. All rights reserved.</div>
+</footer>
+
+<script>
+const SB_URL = 'https://jboceiacgczkqkhqcmqu.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impib2NlaWFjZ2N6a3FraHFjbXF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI1OTg1MTYsImV4cCI6MjA5ODE3NDUxNn0.9jHLNB8PVDrWlSc5CDGz5j6ZF9yaKwrnzICvvvsFbvA';
+const client = supabase.createClient(SB_URL, SB_KEY);
+window._sbNav = client;
+
+const storyId = new URLSearchParams(window.location.search).get('id');
+let comments = [];
+let replyTo = null;
+
+function esc(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function fmtDate(v) { return new Date(v).toLocaleDateString('ko-KR', { year:'numeric', month:'long', day:'numeric' }); }
+function coverUrl(path) {
+  if (!path) return '';
+  return `${SB_URL}/storage/v1/object/public/story-images/${path.split('/').map(encodeURIComponent).join('/')}`;
+}
+function showNotice(text) {
+  const el = document.getElementById('notice');
+  el.innerHTML = text;
+  el.style.display = 'block';
+}
+
+// 본문에 HTML 태그가 있으면 소식 게시판과 같은 방식으로 액자(iframe) 안에 그립니다.
+// 글쓴이가 붙여넣은 서식이 이 페이지의 글자 크기를 흔들지 않게 하려는 것입니다.
+function hasHtmlTag(content) { return /<\/?[a-z][\s\S]*>/i.test(String(content || '')); }
+function renderBody(target, content) {
+  target.innerHTML = '';
+  if (!hasHtmlTag(content)) {
+    const plain = document.createElement('div');
+    plain.className = 'article-plain';
+    plain.textContent = content || '';
+    target.appendChild(plain);
+    return;
+  }
+  const css = `<style>
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 0; font-family: 'Noto Sans KR', sans-serif; font-size: 15px; line-height: 2; color: #4A4A4A; word-break: keep-all; }
+    img { max-width: 100%; height: auto; display: block; margin: 14px auto; }
+    p { margin: 0 0 14px; }
+    h1 { font-size: 20px; margin: 22px 0 10px; font-weight: 400; }
+    h2 { font-size: 18px; margin: 20px 0 10px; font-weight: 400; }
+    h3 { font-size: 16px; margin: 16px 0 8px; font-weight: 400; }
+    ul, ol { padding-left: 20px; margin-bottom: 14px; }
+    blockquote { border-left: 2px solid #8FBFB8; padding-left: 14px; color: #6E6763; margin: 14px 0; }
+    a { color: #8FAFD4; }
+    table { border-collapse: collapse; width: 100%; margin-bottom: 14px; }
+    td, th { border: 0.5px solid #e8e4e0; padding: 8px 10px; }
+  </style>`;
+  const frame = document.createElement('iframe');
+  frame.className = 'article-body-frame';
+  frame.setAttribute('sandbox', 'allow-same-origin');
+  frame.onload = function () {
+    try {
+      const body = frame.contentDocument && frame.contentDocument.body;
+      if (!body) return;
+      const fit = () => { frame.style.height = (body.scrollHeight + 24) + 'px'; };
+      fit();
+      // 사진은 액자가 열린 뒤에 도착합니다. 그때 높이를 다시 재지 않으면 아래가 잘립니다.
+      if (window.ResizeObserver) new ResizeObserver(fit).observe(body);
+      else body.querySelectorAll('img').forEach(img => {
+        if (img.complete) return;
+        img.addEventListener('load', fit);
+        img.addEventListener('error', fit);
+      });
+    } catch (e) {}
+  };
+  frame.srcdoc = css + String(content || '');
+  target.appendChild(frame);
+}
+
+async function loadStory() {
+  if (!storyId) {
+    showNotice('글 주소가 올바르지 않습니다.<br><a class="back-link" href="stories.html">목록으로 돌아가기</a>');
+    return;
+  }
+  const { data: story, error } = await client
+    .from('am_stories')
+    .select('id,title,summary,content,cover_path,author_name,author_user_id,series_id,visibility,is_published,published_at,created_at')
+    .eq('id', storyId)
+    .maybeSingle();
+
+  if (error || !story) {
+    showNotice('글을 찾을 수 없습니다. 지워졌거나 아직 공개하지 않은 글일 수 있습니다.');
+    return;
+  }
+
+  document.title = `${story.title} · 아들러 이야기 · ADLER MIND 협동조합`;
+  document.getElementById('aTitle').textContent = story.title;
+  document.getElementById('aAuthor').textContent = story.author_name;
+  document.getElementById('aDate').textContent = fmtDate(story.published_at || story.created_at);
+  if (!story.is_published) document.getElementById('aDraft').style.display = 'inline-block';
+  if (story.visibility === 'members') document.getElementById('aMembers').style.display = 'inline-block';
+
+  if (story.cover_path) {
+    const cover = document.getElementById('aCover');
+    cover.src = coverUrl(story.cover_path);
+    cover.style.display = 'block';
+  }
+  if (story.summary) {
+    const summary = document.getElementById('aSummary');
+    summary.textContent = story.summary;
+    summary.style.display = 'block';
+  }
+  renderBody(document.getElementById('aBody'), story.content);
+
+  document.getElementById('aCopy').onclick = () => {
+    navigator.clipboard.writeText(`${window.location.origin}/story.html?id=${story.id}`);
+    alert('링크가 복사되었습니다.');
+  };
+
+  document.getElementById('article').style.display = 'block';
+
+  // 공개하지 않은 글에는 댓글을 받지 않습니다(정책도 같은 기준입니다).
+  if (!story.is_published) {
+    document.getElementById('commentSection').style.display = 'none';
+  } else {
+    loadComments();
+  }
+
+  showEditLinkIfAllowed(story);
+  if (story.series_id) loadSeries(story);
+}
+
+// 연재 이름과, 같은 연재의 다른 글을 최대 5편까지 이어 보여 줍니다.
+// 책 한 권을 이어 쓰는 자리라 앞뒤 글로 건너가는 길이 있어야 합니다.
+async function loadSeries(story) {
+  const { data: series } = await client
+    .from('story_series').select('id,title').eq('id', story.series_id).maybeSingle();
+  if (!series) return;
+
+  const link = document.getElementById('aSeries');
+  link.textContent = series.title;
+  link.href = `stories.html?series=${encodeURIComponent(series.id)}`;
+  link.style.display = 'inline-block';
+
+  const { data: siblings } = await client
+    .from('am_stories')
+    .select('id,title,published_at,created_at')
+    .eq('series_id', series.id)
+    .eq('is_published', true)
+    .neq('id', story.id)
+    .order('published_at', { ascending: false })
+    .limit(5);
+
+  if (!siblings || !siblings.length) return;
+  document.getElementById('moreHead').textContent = series.title;
+  document.getElementById('moreList').innerHTML = siblings.map(row => `
+    <a class="more-item" href="story.html?id=${encodeURIComponent(row.id)}">
+      <span class="more-title">${esc(row.title)}</span>
+      <span class="more-date">${fmtDate(row.published_at || row.created_at)}</span>
+    </a>`).join('');
+  document.getElementById('moreAll').href = `stories.html?series=${encodeURIComponent(series.id)}`;
+  document.getElementById('moreInSeries').style.display = 'block';
+}
+
+async function showEditLinkIfAllowed(story) {
+  const { data: { session } } = await client.auth.getSession();
+  if (!session) return;
+  const isAuthor = story.author_user_id && story.author_user_id === session.user.id;
+  const { data: admin } = await client
+    .from('site_admins').select('user_id')
+    .eq('user_id', session.user.id).eq('is_active', true).maybeSingle();
+  if (!isAuthor && !admin) return;
+  const edit = document.getElementById('aEdit');
+  edit.href = `story-write.html?id=${encodeURIComponent(story.id)}`;
+  edit.style.display = 'inline-block';
+}
+
+async function loadComments() {
+  const { data, error } = await client
+    .from('story_comments')
+    .select('id,created_at,parent_id,author_name,content')
+    .eq('story_id', storyId)
+    .order('created_at', { ascending: true });
+  comments = error ? [] : (data || []);
+  renderComments();
+}
+
+function commentHtml(row, isReply) {
+  return `<div class="comment-item${isReply ? ' reply' : ''}">
+    <div class="comment-top">
+      <span class="comment-author">${esc(row.author_name)}</span>
+      <span class="comment-date">${fmtDate(row.created_at)}</span>
+      <span class="comment-tools">
+        ${isReply ? '' : `<button class="comment-tool" onclick="openReply('${row.id}')">답글</button>`}
+        <button class="comment-tool" onclick="removeComment('${row.id}')">삭제</button>
+      </span>
+    </div>
+    <div class="comment-text">${esc(row.content)}</div>
+    <div id="replyBox-${row.id}"></div>
+  </div>`;
+}
+
+function renderComments() {
+  document.getElementById('cCount').textContent = comments.length;
+  const list = document.getElementById('commentList');
+  if (!comments.length) {
+    list.innerHTML = '<div class="comment-empty">첫 댓글을 남겨 주세요.</div>';
+    return;
+  }
+  const roots = comments.filter(c => !c.parent_id);
+  list.innerHTML = roots.map(root => {
+    const replies = comments.filter(c => c.parent_id === root.id);
+    return commentHtml(root, false) + replies.map(r => commentHtml(r, true)).join('');
+  }).join('');
+}
+
+function openReply(parentId) {
+  const box = document.getElementById(`replyBox-${parentId}`);
+  if (!box) return;
+  if (box.innerHTML) { box.innerHTML = ''; return; }
+  box.innerHTML = `<div class="comment-form reply-form">
+    <div class="form-row">
+      <input id="rName-${parentId}" type="text" maxlength="20" placeholder="이름">
+      <input id="rPass-${parentId}" type="password" maxlength="30" placeholder="비밀번호 (4자 이상)">
+    </div>
+    <textarea id="rText-${parentId}" maxlength="1000" placeholder="답글을 적어 주세요."></textarea>
+    <div class="form-foot">
+      <button class="btn-plain" onclick="openReply('${parentId}')">취소</button>
+      <button class="btn-sage" onclick="submitComment('${parentId}')">답글 남기기</button>
+    </div>
+  </div>`;
+}
+
+async function submitComment(parentId) {
+  const nameEl = document.getElementById(parentId ? `rName-${parentId}` : 'cName');
+  const passEl = document.getElementById(parentId ? `rPass-${parentId}` : 'cPass');
+  const textEl = document.getElementById(parentId ? `rText-${parentId}` : 'cText');
+  const name = nameEl.value.trim();
+  const pass = passEl.value;
+  const text = textEl.value.trim();
+
+  if (!name) { alert('이름을 적어 주세요.'); nameEl.focus(); return; }
+  if (pass.length < 4) { alert('비밀번호는 4자 이상으로 적어 주세요.'); passEl.focus(); return; }
+  if (!text) { alert('댓글 내용을 적어 주세요.'); textEl.focus(); return; }
+
+  const { error } = await client.rpc('add_story_comment', {
+    p_story_id: storyId,
+    p_parent_id: parentId || null,
+    p_author: name,
+    p_password: pass,
+    p_content: text
+  });
+  if (error) { alert('댓글을 남기지 못했습니다. ' + (error.message || '')); return; }
+
+  if (parentId) {
+    document.getElementById(`replyBox-${parentId}`).innerHTML = '';
+  } else {
+    passEl.value = '';
+    textEl.value = '';
+  }
+  await loadComments();
+}
+
+async function removeComment(id) {
+  const pass = prompt('댓글을 쓸 때 적은 비밀번호를 넣어 주세요.');
+  if (pass === null) return;
+  const { data, error } = await client.rpc('delete_story_comment', { p_id: id, p_password: pass });
+  if (error) { alert('지우지 못했습니다. ' + (error.message || '')); return; }
+  if (!data) { alert('비밀번호가 맞지 않습니다.'); return; }
+  await loadComments();
+}
+
+document.getElementById('cSubmit').addEventListener('click', () => submitComment(null));
+document.getElementById('navHam').addEventListener('click', () => {
+  document.getElementById('navLinks').classList.toggle('open');
+});
+
+loadStory();
+</script>
+<script src="site-session.js"></script>
+</body>
+</html>

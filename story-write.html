@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="image/favicon.png">
+<title>이야기 쓰기 · ADLER MIND 협동조합</title>
+<meta name="robots" content="noindex">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400&family=Noto+Sans+KR:wght@300;400&family=Raleway:wght@200;300;400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root {
+  --am-rose:   #E8929A;
+  --am-sage:   #8FBFB8;
+  --am-blue:   #8FAFD4;
+  --am-gray:   #4A4A4A;
+  --am-pale:   #D8D8DC;
+  --am-bg:     #FAFAF8;
+  --am-muted:  #6E6763;
+  --am-border: #e8e4e0;
+  --am-white:  #ffffff;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Noto Sans KR', sans-serif; font-weight: 400; color: var(--am-gray); background: var(--am-bg); }
+
+.top {
+  background: var(--am-white); border-bottom: 0.5px solid var(--am-border);
+  padding: 0 32px; height: 60px; display: flex; align-items: center; gap: 16px;
+}
+.top img { height: 36px; }
+.top-title { font-family: 'Noto Serif KR', serif; font-size: 16px; color: var(--am-gray); }
+.top-links { margin-left: auto; display: flex; gap: 14px; align-items: center; }
+.top-links a { font-size: 13px; color: var(--am-muted); text-decoration: none; }
+.top-links a:hover { color: var(--am-sage); }
+
+.wrap { max-width: 760px; margin: 0 auto; padding: 36px 32px 80px; }
+.guard { padding: 90px 0; text-align: center; font-size: 14px; line-height: 2; color: var(--am-muted); }
+
+.card { background: var(--am-white); border: 0.5px solid var(--am-border); padding: 28px; margin-bottom: 24px; }
+.card-head {
+  font-family: 'Noto Serif KR', serif; font-size: 16px; color: var(--am-gray);
+  margin-bottom: 20px; padding-bottom: 12px; border-bottom: 0.5px solid var(--am-border);
+}
+.field { margin-bottom: 20px; }
+.label { display: block; font-size: 13px; color: var(--am-gray); margin-bottom: 8px; }
+.label .sub { color: var(--am-muted); }
+input[type=text], textarea, select {
+  width: 100%; font-family: 'Noto Sans KR', sans-serif; font-size: 14px; color: var(--am-gray);
+  border: 0.5px solid var(--am-border); background: var(--am-white); padding: 10px 12px;
+}
+textarea { line-height: 1.9; resize: vertical; }
+#fContent { min-height: 380px; font-size: 14px; }
+#fSummary { min-height: 70px; }
+input:focus, textarea:focus, select:focus { outline: none; border-color: var(--am-sage); }
+.hint { font-size: 13px; color: var(--am-muted); line-height: 1.9; margin-top: 8px; }
+
+.cover-row { display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap; }
+.cover-preview {
+  width: 200px; aspect-ratio: 16 / 10; object-fit: cover;
+  border: 0.5px solid var(--am-border); background: var(--am-bg); display: block;
+}
+.cover-empty {
+  width: 200px; aspect-ratio: 16 / 10; border: 0.5px solid var(--am-border);
+  background: rgba(143,191,184,0.10); display: flex; align-items: center; justify-content: center;
+  font-family: 'Raleway', sans-serif; font-size: 13px; letter-spacing: 0.28em; color: rgba(143,191,184,0.85);
+}
+.cover-tools { display: flex; flex-direction: column; gap: 8px; }
+
+.btn-sage {
+  font-size: 13px; color: #fff; background: var(--am-sage);
+  border: none; border-radius: 2px; padding: 10px 24px; cursor: pointer;
+  font-family: 'Noto Sans KR', sans-serif; transition: background 0.15s;
+}
+.btn-sage:hover { background: #6fa8a0; }
+.btn-line {
+  font-size: 13px; color: var(--am-muted); background: var(--am-white);
+  border: 0.5px solid var(--am-border); padding: 9px 18px; cursor: pointer;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+.btn-line:hover { border-color: var(--am-sage); color: var(--am-sage); }
+.btn-rose { color: var(--am-rose); border-color: rgba(232,146,154,0.4); }
+
+.switch-row { display: flex; align-items: center; gap: 10px; }
+.switch-row input { width: 16px; height: 16px; accent-color: var(--am-sage); }
+.foot { display: flex; gap: 10px; align-items: center; }
+.foot .spacer { margin-left: auto; }
+.status { font-size: 13px; color: var(--am-muted); min-height: 20px; margin-top: 12px; }
+
+.mine-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 13px 0; border-bottom: 0.5px solid var(--am-border);
+}
+.mine-title { flex: 1; font-size: 14px; color: var(--am-gray); word-break: keep-all; }
+.mine-tag { font-size: 13px; padding: 3px 10px; white-space: nowrap; }
+.tag-open { background: rgba(143,191,184,0.12); color: #5a9990; }
+.tag-draft { background: rgba(232,146,154,0.10); color: var(--am-rose); }
+.mine-date { font-size: 13px; color: var(--am-muted); font-family: 'Raleway', sans-serif; white-space: nowrap; }
+.mine-edit { font-size: 13px; color: var(--am-sage); text-decoration: none; white-space: nowrap; }
+.mine-empty { padding: 24px 0; text-align: center; font-size: 13px; color: var(--am-muted); }
+
+@media (max-width: 700px) {
+  .top { padding: 0 20px; }
+  .wrap { padding: 24px 20px 60px; }
+  .card { padding: 20px; }
+}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <img src="image/adlermind_logo.png" alt="ADLER MIND 협동조합">
+  <span class="top-title">이야기 쓰기</span>
+  <div class="top-links">
+    <a href="stories.html">아들러 이야기 목록</a>
+    <a href="members.html">조합원 마당</a>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="guard" id="guard">권한을 확인하고 있습니다.</div>
+
+  <div id="editor" style="display:none;">
+    <div class="card">
+      <div class="card-head" id="editorHead">새 이야기</div>
+
+      <div class="field">
+        <label class="label" for="fTitle">제목</label>
+        <input id="fTitle" type="text" maxlength="120" placeholder="예 · 아이의 뒷모습에서 배운 것">
+      </div>
+
+      <div class="field">
+        <label class="label" for="fSeries">연재 <span class="sub">· 이어 쓰는 주제가 있으면 고르세요. 없으면 낱글로 올라갑니다.</span></label>
+        <select id="fSeries"></select>
+      </div>
+
+      <div class="field">
+        <label class="label" for="fSummary">요약 <span class="sub">· 목록 카드에 두 줄로 보입니다. 비워 두어도 됩니다.</span></label>
+        <textarea id="fSummary" maxlength="200" placeholder="글의 첫인상이 되는 두어 문장을 적어 주세요."></textarea>
+      </div>
+
+      <div class="field">
+        <label class="label">대표 그림 <span class="sub">· 없으면 글자 카드로 보입니다.</span></label>
+        <div class="cover-row">
+          <img class="cover-preview" id="coverPreview" style="display:none;" alt="대표 그림 미리보기">
+          <div class="cover-empty" id="coverEmpty">ADLER MIND</div>
+          <div class="cover-tools">
+            <button class="btn-line" id="coverPick">그림 고르기</button>
+            <button class="btn-line btn-rose" id="coverClear">그림 빼기</button>
+            <input id="coverFile" type="file" accept="image/*" style="display:none;">
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label" for="fContent">본문</label>
+        <textarea id="fContent" placeholder="이야기를 적어 주세요. 줄바꿈은 그대로 보입니다."></textarea>
+        <div class="foot" style="margin-top:10px;">
+          <button class="btn-line" id="bodyImagePick">본문에 그림 넣기</button>
+          <input id="bodyImageFile" type="file" accept="image/*" style="display:none;">
+        </div>
+        <div class="hint">
+          그냥 글로 적으면 줄바꿈이 그대로 보입니다.<br>
+          &lt;p&gt; &lt;h2&gt; &lt;blockquote&gt; 같은 태그를 쓰면 서식대로 보입니다.
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label" for="fAuthor">글쓴이 <span class="sub" id="authorHint"></span></label>
+        <input id="fAuthor" type="text" maxlength="40">
+      </div>
+
+      <div class="field">
+        <label class="label" for="fVisibility">누가 볼 수 있나</label>
+        <select id="fVisibility">
+          <option value="public">누구나 · 맨 앞에 열립니다</option>
+          <option value="members">회원방 · 로그인한 회원만 봅니다</option>
+        </select>
+      </div>
+
+      <div class="field switch-row">
+        <input id="fPublish" type="checkbox">
+        <label class="label" for="fPublish" style="margin:0;">지금 공개합니다 <span class="sub">· 꺼 두면 나만 보는 초안으로 남습니다.</span></label>
+      </div>
+
+      <div class="foot">
+        <button class="btn-line btn-rose" id="btnDelete" style="display:none;">이 글 지우기</button>
+        <span class="spacer"></span>
+        <a class="btn-line" href="stories.html">그만두기</a>
+        <button class="btn-sage" id="btnSave">저장</button>
+      </div>
+      <div class="status" id="status"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">내가 쓴 이야기</div>
+      <div id="mineList"><div class="mine-empty">불러오는 중입니다.</div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SB_URL = 'https://jboceiacgczkqkhqcmqu.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impib2NlaWFjZ2N6a3FraHFjbXF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI1OTg1MTYsImV4cCI6MjA5ODE3NDUxNn0.9jHLNB8PVDrWlSc5CDGz5j6ZF9yaKwrnzICvvvsFbvA';
+const client = supabase.createClient(SB_URL, SB_KEY);
+
+const STORY_BUCKET = 'story-images';
+let me = null;            // { user_id, display_name }
+let isAdmin = false;
+let storyId = new URLSearchParams(window.location.search).get('id');
+let loaded = null;        // 고치는 중인 글의 원래 값
+let coverPath = null;
+
+function esc(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function fmtDate(v) { return new Date(v).toLocaleDateString('ko-KR', { year:'numeric', month:'long', day:'numeric' }); }
+function coverUrl(path) {
+  if (!path) return '';
+  return `${SB_URL}/storage/v1/object/public/${STORY_BUCKET}/${path.split('/').map(encodeURIComponent).join('/')}`;
+}
+function setStatus(text) { document.getElementById('status').textContent = text || ''; }
+
+function guardOut(message) {
+  document.getElementById('guard').innerHTML =
+    `${message}<br><a href="stories.html" style="color:#8FBFB8;">아들러 이야기 목록으로</a>`;
+}
+
+async function init() {
+  const { data: { session } } = await client.auth.getSession();
+  if (!session) {
+    guardOut('로그인한 뒤에 쓸 수 있습니다.');
+    return;
+  }
+
+  const { data: author } = await client
+    .from('story_authors').select('user_id,display_name')
+    .eq('user_id', session.user.id).eq('is_active', true).maybeSingle();
+  const { data: admin } = await client
+    .from('site_admins').select('user_id')
+    .eq('user_id', session.user.id).eq('is_active', true).maybeSingle();
+
+  isAdmin = !!admin;
+  if (!author && !isAdmin) {
+    guardOut('이야기 작성자로 지정된 계정만 글을 쓸 수 있습니다.<br>관리자에게 말씀해 주세요.');
+    return;
+  }
+  me = author || { user_id: session.user.id, display_name: '' };
+
+  document.getElementById('guard').style.display = 'none';
+  document.getElementById('editor').style.display = 'block';
+
+  // 글쓴이 이름은 관리자만 고칠 수 있습니다.
+  const authorInput = document.getElementById('fAuthor');
+  authorInput.value = me.display_name || '';
+  if (isAdmin) {
+    document.getElementById('authorHint').textContent = '· 관리자는 이름을 고칠 수 있습니다.';
+  } else {
+    authorInput.readOnly = true;
+    authorInput.style.background = 'var(--am-bg)';
+    document.getElementById('authorHint').textContent = '· 관리자가 지정한 이름입니다.';
+  }
+
+  await loadSeriesOptions();
+  if (storyId) await loadStory();
+  await loadMine();
+}
+
+// 연재는 관리자가 만듭니다. 글쓴이는 자기 몫으로 지정된 연재만 고릅니다.
+// 관리자는 남의 글도 고치므로 전체를 봅니다.
+async function loadSeriesOptions() {
+  let query = client.from('story_series')
+    .select('id,title,owner_user_id,is_active').eq('is_active', true).order('sort_order');
+  const { data } = await query;
+  const all = data || [];
+  const mine = isAdmin ? all : all.filter(row => row.owner_user_id === me.user_id);
+  document.getElementById('fSeries').innerHTML =
+    '<option value="">연재 없음 · 낱글로 올립니다</option>' +
+    mine.map(row => `<option value="${row.id}">${esc(row.title)}</option>`).join('');
+}
+
+async function loadStory() {
+  const { data, error } = await client
+    .from('am_stories')
+    .select('id,title,summary,content,cover_path,author_name,author_user_id,series_id,visibility,is_published')
+    .eq('id', storyId).maybeSingle();
+  if (error || !data) {
+    setStatus('글을 불러오지 못했습니다. 새 글로 시작합니다.');
+    storyId = null;
+    return;
+  }
+  if (!isAdmin && data.author_user_id !== me.user_id) {
+    guardOut('내가 쓴 글만 고칠 수 있습니다.');
+    document.getElementById('editor').style.display = 'none';
+    document.getElementById('guard').style.display = 'block';
+    return;
+  }
+  loaded = data;
+  document.getElementById('editorHead').textContent = '이야기 고치기';
+  document.getElementById('fTitle').value = data.title || '';
+  document.getElementById('fSummary').value = data.summary || '';
+  document.getElementById('fContent').value = data.content || '';
+  document.getElementById('fAuthor').value = data.author_name || '';
+  document.getElementById('fSeries').value = data.series_id || '';
+  document.getElementById('fVisibility').value = data.visibility || 'public';
+  document.getElementById('fPublish').checked = !!data.is_published;
+  document.getElementById('btnDelete').style.display = 'inline-block';
+  setCover(data.cover_path);
+}
+
+function setCover(path) {
+  coverPath = path || null;
+  const preview = document.getElementById('coverPreview');
+  const empty = document.getElementById('coverEmpty');
+  if (coverPath) {
+    preview.src = coverUrl(coverPath);
+    preview.style.display = 'block';
+    empty.style.display = 'none';
+  } else {
+    preview.removeAttribute('src');
+    preview.style.display = 'none';
+    empty.style.display = 'flex';
+  }
+}
+
+// 글 id 를 먼저 만들어 두면 저장 전에도 그림을 'stories/{글id}/…' 자리에 올릴 수 있습니다.
+function ensureStoryId() {
+  if (!storyId) {
+    storyId = (crypto.randomUUID && crypto.randomUUID()) ||
+      'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+        const r = Math.random() * 16 | 0;
+        return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+      });
+  }
+  return storyId;
+}
+
+async function uploadImage(file) {
+  const id = ensureStoryId();
+  const safe = file.name.replace(/[^\w.\-]/g, '_');
+  const path = `stories/${id}/${Date.now()}_${safe}`;
+  const { error } = await client.storage.from(STORY_BUCKET).upload(path, file, { upsert: false });
+  if (error) throw error;
+  return path;
+}
+
+document.getElementById('coverPick').addEventListener('click', () => document.getElementById('coverFile').click());
+document.getElementById('coverClear').addEventListener('click', () => { setCover(null); setStatus('대표 그림을 뺐습니다. 저장을 눌러야 반영됩니다.'); });
+document.getElementById('coverFile').addEventListener('change', async event => {
+  const file = event.target.files[0];
+  if (!file) return;
+  setStatus('대표 그림을 올리고 있습니다.');
+  try {
+    setCover(await uploadImage(file));
+    setStatus('대표 그림을 올렸습니다. 저장을 눌러야 반영됩니다.');
+  } catch (e) {
+    setStatus('그림을 올리지 못했습니다. ' + (e.message || ''));
+  }
+  event.target.value = '';
+});
+
+document.getElementById('bodyImagePick').addEventListener('click', () => document.getElementById('bodyImageFile').click());
+document.getElementById('bodyImageFile').addEventListener('change', async event => {
+  const file = event.target.files[0];
+  if (!file) return;
+  setStatus('본문 그림을 올리고 있습니다.');
+  try {
+    const path = await uploadImage(file);
+    const box = document.getElementById('fContent');
+    const tag = `\n<img src="${coverUrl(path)}" alt="">\n`;
+    const at = box.selectionStart || box.value.length;
+    box.value = box.value.slice(0, at) + tag + box.value.slice(at);
+    setStatus('본문에 그림을 넣었습니다.');
+  } catch (e) {
+    setStatus('그림을 올리지 못했습니다. ' + (e.message || ''));
+  }
+  event.target.value = '';
+});
+
+document.getElementById('btnSave').addEventListener('click', async () => {
+  const title = document.getElementById('fTitle').value.trim();
+  const summary = document.getElementById('fSummary').value.trim();
+  const content = document.getElementById('fContent').value;
+  const authorName = document.getElementById('fAuthor').value.trim();
+  const publish = document.getElementById('fPublish').checked;
+
+  if (!title) { setStatus('제목을 적어 주세요.'); return; }
+  if (!content.trim()) { setStatus('본문을 적어 주세요.'); return; }
+  if (!authorName) { setStatus('글쓴이 이름이 비어 있습니다. 관리자에게 말씀해 주세요.'); return; }
+
+  const id = ensureStoryId();
+  const row = {
+    title, summary: summary || null, content,
+    cover_path: coverPath,
+    series_id: document.getElementById('fSeries').value || null,
+    visibility: document.getElementById('fVisibility').value,
+    author_name: authorName,
+    is_published: publish,
+    updated_at: new Date().toISOString()
+  };
+
+  setStatus('저장하고 있습니다.');
+  let error;
+  if (loaded) {
+    // 처음 공개하는 순간에만 공개 날짜를 찍습니다. 고칠 때마다 목록 맨 위로 올라가지 않게 하려는 것입니다.
+    if (publish && !loaded.is_published) row.published_at = new Date().toISOString();
+    if (!publish) row.published_at = null;
+    ({ error } = await client.from('am_stories').update(row).eq('id', id));
+  } else {
+    row.id = id;
+    row.author_user_id = me.user_id;
+    row.published_at = publish ? new Date().toISOString() : null;
+    ({ error } = await client.from('am_stories').insert(row));
+  }
+
+  if (error) { setStatus('저장하지 못했습니다. ' + (error.message || '')); return; }
+  window.location.href = `story.html?id=${encodeURIComponent(id)}`;
+});
+
+document.getElementById('btnDelete').addEventListener('click', async () => {
+  if (!storyId || !loaded) return;
+  if (!confirm('이 글을 지웁니다. 달린 댓글도 함께 지워집니다. 계속할까요?')) return;
+  const { error } = await client.from('am_stories').delete().eq('id', storyId);
+  if (error) { setStatus('지우지 못했습니다. ' + (error.message || '')); return; }
+  window.location.href = 'stories.html';
+});
+
+async function loadMine() {
+  let query = client.from('am_stories')
+    .select('id,title,is_published,published_at,created_at,author_name')
+    .order('created_at', { ascending: false });
+  if (!isAdmin) query = query.eq('author_user_id', me.user_id);
+  const { data, error } = await query;
+  const list = document.getElementById('mineList');
+  if (error || !data || !data.length) {
+    list.innerHTML = '<div class="mine-empty">아직 쓴 이야기가 없습니다.</div>';
+    return;
+  }
+  list.innerHTML = data.map(row => `<div class="mine-item">
+    <span class="mine-tag ${row.is_published ? 'tag-open' : 'tag-draft'}">${row.is_published ? '공개' : '초안'}</span>
+    <span class="mine-title">${esc(row.title)}</span>
+    ${isAdmin ? `<span class="mine-date">${esc(row.author_name)}</span>` : ''}
+    <span class="mine-date">${fmtDate(row.published_at || row.created_at)}</span>
+    <a class="mine-edit" href="story-write.html?id=${encodeURIComponent(row.id)}">고치기</a>
+  </div>`).join('');
+}
+
+init();
+</script>
+</body>
+</html>
