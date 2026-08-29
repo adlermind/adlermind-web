@@ -1691,6 +1691,13 @@ async function loadStoryAuthors() {
       </td>
     </tr>`).join('');
   document.getElementById('storyAuthorEmpty').classList.toggle('hidden', storyAuthors.length > 0);
+
+  // 연재의 주인 고르는 칸도 여기서 함께 그립니다.
+  // 연재 쪽에서 그리면 작성자를 새로 넣어도 그 칸이 비어 있는 채로 남습니다.
+  document.getElementById('seriesOwner').innerHTML =
+    storyAuthors.filter(row => row.is_active)
+      .map(row => `<option value="${row.user_id}">${escapeHtml(row.display_name)}</option>`).join('')
+    || '<option value="">작성자를 먼저 지정해 주세요</option>';
 }
 
 document.getElementById('storyAuthorAdd').addEventListener('click', async () => {
@@ -1750,12 +1757,6 @@ async function loadStorySeries() {
     return;
   }
   storySeries = data || [];
-
-  // 주인은 작성자 명단에서 고릅니다. 글을 쓸 수 없는 사람이 연재 주인이 되면 빈 방이 됩니다.
-  document.getElementById('seriesOwner').innerHTML =
-    storyAuthors.filter(row => row.is_active)
-      .map(row => `<option value="${row.user_id}">${escapeHtml(row.display_name)}</option>`).join('')
-    || '<option value="">작성자를 먼저 지정해 주세요</option>';
 
   const ownerName = id => {
     const author = storyAuthors.find(row => row.user_id === id);
