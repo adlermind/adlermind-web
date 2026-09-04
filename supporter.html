@@ -49,9 +49,11 @@ nav {
 .nav-ham { display: none; border: none; background: none; cursor: pointer; font-size: 22px; color: var(--am-gray); }
 
 /* 살구 바탕에서 흰 본문으로 흘러내리는 머리글입니다 (2026-09-04).
-   바탕색 #FEEEDD 는 삽화에서 그대로 뽑은 값이라 그림과 이음매가 보이지 않습니다. */
+   위는 옅은 살구로 시작해 글이 편히 읽히게 하고, 그림이 놓이는 자리에서
+   삽화 바탕과 똑같은 #FEEEDD 가 되어 이음매가 보이지 않게 합니다. */
 .page-hero {
-  background: linear-gradient(to bottom, #FEEEDD 0%, #FEEEDD 62%, var(--am-white) 100%);
+  background: linear-gradient(to bottom,
+              #FFF7F1 0%, #FEEEDD 42%, #FEEEDD 64%, var(--am-white) 100%);
   padding: 56px 32px 0;
 }
 .page-hero-inner { max-width: 760px; margin: 0 auto; }

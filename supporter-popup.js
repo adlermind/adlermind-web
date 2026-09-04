@@ -50,7 +50,9 @@
        그림을 끌면 브라우저가 검은 테두리와 그림자를 그려서 그것을 막습니다 (2026-09-04).
        키보드로 오신 분께는 테두리가 보여야 하므로 :focus-visible 만 남깁니다. */
     + '.am-sp-link{display:block;line-height:0;outline:none;-webkit-tap-highlight-color:transparent;}'
-    + '.am-sp-link:focus-visible{outline:2px solid #8FBFB8;outline-offset:-2px;}'
+    /* 테두리는 채도 낮은 꽃분홍 (브랜드 Mauve Pink · 2026-09-04 트리님 지시).
+       초록은 그림의 살구빛과 부딪혀 눈에 거슬립니다. */
+    + '.am-sp-link:focus-visible{outline:2px solid #C48DA0;outline-offset:-2px;}'
     + '.am-sp-link img{width:100%;height:auto;display:block;'
     +   'user-select:none;-webkit-user-select:none;-webkit-user-drag:none;pointer-events:none;}'
     /* 닫기 — 그림 위에 얹되 손가락으로 누르기 넉넉한 크기로 둡니다 */
