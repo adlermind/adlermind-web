@@ -112,7 +112,14 @@ footer {
 .footer-inner { max-width: 900px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 32px; justify-content: space-between; }
 .footer-logo img { height: 32px; margin-bottom: 10px; }
 .footer-info { font-size: 13px; color: var(--am-muted); line-height: 2; }
-.footer-nav { display: flex; flex-direction: column; gap: 8px; }
+/* 위의 nav 규칙이 태그 이름으로 걸려 있어 푸터 차림표에도 흰 바탕·높이 60px·
+   sticky 가 함께 딸려옵니다. 여기서 되돌립니다 (2026-09-05). */
+.footer-nav {
+  display: flex; flex-direction: column; gap: 8px;
+  position: static; height: auto; padding: 0;
+  background: transparent; border: none;
+  align-items: flex-start;
+}
 .footer-nav a { font-size: 13px; color: var(--am-muted); text-decoration: none; }
 .footer-nav a:hover { color: var(--am-sage); }
 .footer-copy { max-width: 900px; margin: 24px auto 0; font-size: 13px; color: var(--am-muted); font-family: 'Raleway', sans-serif; border-top: 0.5px solid var(--am-border); padding-top: 16px; }
