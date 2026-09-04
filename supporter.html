@@ -15,13 +15,17 @@
   --am-sage:   #8FBFB8;
   --am-mauve:  #C48DA0;
   --am-gray:   #4A4A4A;
-  --am-bg:     #FAFAF8;
+  /* 이 페이지는 삽화에 맞춰 살구빛으로 채웁니다 (2026-09-05 트리님 지시).
+     --am-page 는 바탕, --am-bg 는 그보다 아주 조금 진한 카드·입력칸 색입니다.
+     두 색이 같으면 카드가 바탕에 묻혀 사라집니다. */
+  --am-page:   #FFF7F1;
+  --am-bg:     #FBF0E6;
   --am-muted:  #6E6763;
-  --am-border: #e8e4e0;
+  --am-border: #EFE2D6;
   --am-white:  #ffffff;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Noto Sans KR', sans-serif; font-weight: 400; color: var(--am-gray); background: var(--am-white); }
+body { font-family: 'Noto Sans KR', sans-serif; font-weight: 400; color: var(--am-gray); background: var(--am-page); }
 
 nav {
   position: sticky; top: 0; z-index: 100;
@@ -48,12 +52,12 @@ nav {
 .nav-member-btn:hover { background: #6fa8a0; }
 .nav-ham { display: none; border: none; background: none; cursor: pointer; font-size: 22px; color: var(--am-gray); }
 
-/* 살구 바탕에서 흰 본문으로 흘러내리는 머리글입니다 (2026-09-04).
-   위는 옅은 살구로 시작해 글이 편히 읽히게 하고, 그림이 놓이는 자리에서
-   삽화 바탕과 똑같은 #FEEEDD 가 되어 이음매가 보이지 않게 합니다. */
+/* 머리글은 옅은 살구로 시작해, 그림이 놓이는 자리에서만 삽화 바탕과 똑같은
+   #FEEEDD 가 되었다가 다시 옅은 살구로 돌아옵니다.
+   덕분에 그림 둘레에 네모난 자국이 남지 않습니다. */
 .page-hero {
   background: linear-gradient(to bottom,
-              #FFF7F1 0%, #FEEEDD 42%, #FEEEDD 64%, var(--am-white) 100%);
+              var(--am-page) 0%, #FEEEDD 42%, #FEEEDD 64%, var(--am-page) 100%);
   padding: 56px 32px 0;
 }
 .page-hero-inner { max-width: 760px; margin: 0 auto; }
@@ -96,8 +100,9 @@ nav {
 .benefit-text strong { font-weight: 500; }
 
 /* 회비·계좌 */
+/* 왼쪽 세로선만으로 충분히 드러나므로 바탕은 비워 페이지 살구빛이 그대로 비치게 합니다. */
 .fee-box {
-  border-left: 2px solid var(--am-sage); background: var(--am-white);
+  border-left: 2px solid var(--am-sage);
   padding: 18px 22px; margin-bottom: 32px;
 }
 .fee-row { font-size: 14px; line-height: 2.1; color: var(--am-gray); }
