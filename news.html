@@ -152,16 +152,8 @@ footer {
 .footer-inner { max-width: 900px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 32px; justify-content: space-between; }
 .footer-logo img { height: 32px; margin-bottom: 10px; }
 .footer-info { font-size: 13px; color: var(--am-muted); line-height: 2; }
-/* 위의 nav 규칙이 태그 이름으로 걸려 있어 푸터 차림표에도 흰 바탕·높이 60px·
-   sticky 가 함께 딸려옵니다. 여기서 되돌립니다 (2026-09-05). */
-.footer-nav {
-  display: flex; flex-direction: column; gap: 8px;
-  position: static; height: auto; padding: 0;
-  background: transparent; border: none;
-  align-items: flex-start;
-}
-.footer-nav a { font-size: 13px; color: var(--am-muted); text-decoration: none; }
-.footer-nav a:hover { color: var(--am-sage); }
+.footer-info a { color: var(--am-muted); text-decoration: underline; text-underline-offset: 3px; }
+.footer-info a:hover { color: var(--am-sage); }
 .footer-copy { max-width: 900px; margin: 24px auto 0; font-size: 13px; color: var(--am-muted); font-family: 'Raleway', sans-serif; border-top: 0.5px solid var(--am-border); padding-top: 16px; }
 
 @media (max-width: 900px) {
@@ -238,21 +230,10 @@ footer {
       <div class="footer-info">
         ADLER MIND 협동조합 (일반협동조합)<br>
         경기도 광주시 남종면 산수로 1652-16<br>
-        adlermindcoop@gmail.com
+        adlermindcoop@gmail.com<br>
+        <a href="privacy.html">개인정보처리방침</a>
       </div>
     </div>
-    <nav class="footer-nav">
-      <a href="about.html">협동조합 소개</a>
-      <a href="counseling.html">심리상담</a>
-      <a href="education.html">교육·연수</a>
-      <a href="news.html">소식</a>
-      <a href="stories.html">아들러 이야기</a>
-      <a href="gallery.html">갤러리</a>
-      <a href="contact.html">문의</a>
-      <a href="members.html">조합원 마당</a>
-      <a href="https://www.youtube.com/@AdlerMindCoop" target="_blank" rel="noopener">YouTube 채널</a>
-      <a href="privacy.html">개인정보처리방침</a>
-    </nav>
   </div>
   <div class="footer-copy">&copy; 2026 ADLER MIND 협동조합. All rights reserved.</div>
 </footer>
