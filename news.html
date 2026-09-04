@@ -371,7 +371,10 @@ function renderPostBody(target, content) {
   </style>`;
   const frame = document.createElement('iframe');
   frame.className = 'detail-content-frame';
-  frame.setAttribute('sandbox', 'allow-same-origin');
+  // allow-popups 두 가지를 함께 줍니다 (2026-09-02).
+  // 이것이 없으면 본문 안의 링크가 눌러도 아무 일도 일어나지 않습니다 — 죽은 버튼이 됩니다.
+  // 새 탭으로만 열리게 두어 게시글이 지금 보는 창을 가로채지 못하게 합니다.
+  frame.setAttribute('sandbox', 'allow-same-origin allow-popups allow-popups-to-escape-sandbox');
   frame.onload = function() {
     try {
       const doc = frame.contentDocument;
