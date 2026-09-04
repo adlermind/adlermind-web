@@ -46,9 +46,13 @@
     +   'background:#FBEADF;box-shadow:0 8px 40px rgba(0,0,0,.2);'
     +   'transform:translateY(10px);transition:transform .25s;}'
     + '.am-sp-back.on .am-sp-card{transform:translateY(0);}'
-    /* 그림 전체가 신청 페이지로 가는 단추입니다 */
-    + '.am-sp-link{display:block;line-height:0;}'
-    + '.am-sp-link img{width:100%;height:auto;display:block;}'
+    /* 그림 전체가 신청 페이지로 가는 단추입니다.
+       그림을 끌면 브라우저가 검은 테두리와 그림자를 그려서 그것을 막습니다 (2026-09-04).
+       키보드로 오신 분께는 테두리가 보여야 하므로 :focus-visible 만 남깁니다. */
+    + '.am-sp-link{display:block;line-height:0;outline:none;-webkit-tap-highlight-color:transparent;}'
+    + '.am-sp-link:focus-visible{outline:2px solid #8FBFB8;outline-offset:-2px;}'
+    + '.am-sp-link img{width:100%;height:auto;display:block;'
+    +   'user-select:none;-webkit-user-select:none;-webkit-user-drag:none;pointer-events:none;}'
     /* 닫기 — 그림 위에 얹되 손가락으로 누르기 넉넉한 크기로 둡니다 */
     + '.am-sp-x{position:absolute;top:8px;right:8px;width:40px;height:40px;'
     +   'border:none;border-radius:50%;background:rgba(255,255,255,.85);'
@@ -84,6 +88,7 @@
     var img = document.createElement('img');
     img.src = IMG;
     img.alt = ALT;
+    img.draggable = false;   // 끌어서 옮기기를 막습니다
     link.appendChild(img);
 
     var x = document.createElement('button');
