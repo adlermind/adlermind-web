@@ -20,7 +20,13 @@
   --am-white:  #ffffff;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Noto Sans KR', sans-serif; font-weight: 400; color: var(--am-gray); background: var(--am-white); }
+/* word-break: keep-all — 한글을 어절 단위로만 끊습니다 (2026-09-05 트리님 지시).
+   이것이 없으면 "드립니다" 의 "다" 한 글자만 다음 줄로 떨어지는 일이 생깁니다. */
+body {
+  font-family: 'Noto Sans KR', sans-serif; font-weight: 400;
+  color: var(--am-gray); background: var(--am-white);
+  word-break: keep-all; overflow-wrap: break-word;
+}
 
 nav {
   position: sticky; top: 0; z-index: 100;
