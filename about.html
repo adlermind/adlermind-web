@@ -522,8 +522,16 @@ main { flex: 1; background: var(--am-white); }
     grid-template-columns: repeat(3, 1fr);
     gap: 20px;
   }
+  /* 마지막 줄에 카드가 한 장만 남으면 가운데 정렬 */
+  .am-card-grid > .am-card:last-child:nth-child(3n+1) { grid-column: 2; }
   @media (max-width: 720px) {
     .am-card-grid { grid-template-columns: repeat(2, 1fr); }
+    .am-card-grid > .am-card:last-child:nth-child(3n+1) { grid-column: auto; }
+    .am-card-grid > .am-card:last-child:nth-child(2n+1) {
+      grid-column: 1 / -1;
+      justify-self: center;
+      width: calc(50% - 10px);
+    }
   }
   .am-card {
     background: #fff;
@@ -756,6 +764,22 @@ const AM_MEMBERS = [
       "임상심리사 2급 — 보건복지부 (2021)",
       "청소년상담사 2급 — 여성가족부 (2022)",
       "모래놀이심리상담사 1급 — 한국놀이치료협회 (2022)"
+    ]
+  },
+  {
+    id: "psc", name: "박상철", role: "조합원", color: "#A3AD86", photo: "image/007.webp",
+    tags: ["중독상담", "교정상담", "마약류 예방교육", "범죄피해평가"],
+    career: [
+      "소망교도소 보안과 계장 (2010.12~현재)",
+      "한국마약퇴치운동본부 예방강사 — 식품의약품안전처 예방교육 (2024.05~현재)",
+      "한국마약중독복지학회 부회장 (2026.07~현재)",
+      "강원도경찰청 범죄피해평가 전문가 (2023.03~현재)"
+    ],
+    certs: [
+      "한국아들러상담학회 정회원",
+      "중독심리전문가 — 한국심리학회",
+      "중독전문가 1급 — 한국중독전문가협회",
+      "응급구조사 2급 — 보건복지부"
     ]
   }
 ];
