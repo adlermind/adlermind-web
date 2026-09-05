@@ -480,6 +480,19 @@ body {
 }
 .toggle-switch input:checked ~ .toggle-thumb { left: 21px; }
 
+/* 확인(서명 갈음) 인원 선택 */
+.confirm-check-list {
+  display: flex; flex-wrap: wrap; gap: 8px 18px;
+  border: 0.5px solid var(--am-border); background: var(--am-white);
+  padding: 12px 14px;
+}
+.confirm-check-item { display: flex; align-items: center; gap: 6px; font-size: 14px; color: var(--am-gray); }
+.confirm-check-item input[type="checkbox"] { width: 16px; height: 16px; }
+.confirm-role-input {
+  width: 96px; border: 0.5px solid var(--am-border); padding: 4px 8px;
+  font-size: 13px; color: var(--am-gray); font-family: 'Noto Sans KR', sans-serif;
+}
+
 /* 에디터 모드 탭 */
 .editor-mode-tabs {
   display: flex; gap: 0; margin-bottom: 0;
@@ -1191,6 +1204,8 @@ table.idea-matrix tbody th { background: #f4f2ee; font-size: 13px; font-weight: 
 
     <div id="viewAttachments"></div>
 
+    <div id="viewConfirmations"></div>
+
     <div class="modal-actions" id="viewActions" style="justify-content:flex-start;margin-bottom:20px;"></div>
 
     <div id="viewComments" style="margin-top:40px;"></div>
@@ -1275,6 +1290,12 @@ table.idea-matrix tbody th { background: #f4f2ee; font-size: 13px; font-weight: 
     <div class="form-group">
       <label class="form-label">관련 링크 (선택)</label>
       <input class="form-input" type="url" id="wLink" placeholder="https://...">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">확인 서명이 필요한 사람 (선택)</label>
+      <div class="write-page-sub" style="margin:-2px 0 8px;">체크한 사람만 이 글에서 "확인합니다" 버튼으로 본인 계정 확인을 남길 수 있습니다. 회의록·의사록에 씁니다.</div>
+      <div class="confirm-check-list" id="wConfirmList"></div>
     </div>
 
     <div class="pin-toggle-row">
@@ -1754,6 +1775,118 @@ function filterCat(cat, btn) {
 }
 
 // ── 보기 페이지 (전체 화면) ──
+// ── 게시글 확인(서명 갈음) ──
+let allMemberNames = [];
+let editingConfirmers = [];   // 글 수정 중일 때 원래 있던 확인 명단 (동기화 비교용)
+
+async function loadMemberNamesForConfirm() {
+  if (allMemberNames.length) return allMemberNames;
+  try {
+    const res = await fetch(`${SB_URL}/rest/v1/rpc/list_active_members`, {
+      method: 'POST', headers: hdrs, body: '{}'
+    });
+    const rows = await res.json();
+    allMemberNames = (Array.isArray(rows) ? rows : []).map(r => r.display_name);
+  } catch(e) { allMemberNames = []; }
+  return allMemberNames;
+}
+
+function renderConfirmCheckList(selected) {
+  const selMap = {};
+  (selected || []).forEach(s => { selMap[s.name] = s.role || ''; });
+  const el = document.getElementById('wConfirmList');
+  if (!allMemberNames.length) {
+    el.innerHTML = '<span style="font-size:13px;color:var(--am-muted);">조합원 명단을 불러오지 못했습니다.</span>';
+    return;
+  }
+  el.innerHTML = allMemberNames.map(name => {
+    const checked = name in selMap;
+    const role = selMap[name] || '';
+    return `<label class="confirm-check-item">
+      <input type="checkbox" value="${esc(name)}" ${checked ? 'checked' : ''}
+        onchange="this.parentElement.querySelector('.confirm-role-input').style.display = this.checked ? 'inline-block' : 'none'">
+      <span>${esc(name)}</span>
+      <input type="text" class="confirm-role-input" placeholder="역할(선택)" value="${esc(role)}" style="${checked ? '' : 'display:none;'}">
+    </label>`;
+  }).join('');
+}
+
+function getSelectedConfirmers() {
+  const out = [];
+  document.querySelectorAll('#wConfirmList .confirm-check-item').forEach(item => {
+    const cb = item.querySelector('input[type="checkbox"]');
+    if (cb.checked) {
+      const roleInput = item.querySelector('.confirm-role-input');
+      out.push({ name: cb.value, role: (roleInput.value || '').trim() || null });
+    }
+  });
+  return out;
+}
+
+// 원래 명단과 견주어 빠진 사람만 지우고 새로 더한 사람만 넣는다.
+// 이미 확인한 사람의 서명 기록을 지우지 않기 위해서다.
+async function syncConfirmers(postId, selected, previous) {
+  const prevNames = new Set(previous.map(p => p.name));
+  const selNames = new Set(selected.map(s => s.name));
+
+  const toRemove = previous.filter(p => !selNames.has(p.name));
+  const toAdd = selected.filter(s => !prevNames.has(s.name));
+
+  for (const p of toRemove) {
+    await fetch(`${SB_URL}/rest/v1/board_confirmations?post_id=eq.${postId}&confirmer_name=eq.${encodeURIComponent(p.name)}`, {
+      method: 'DELETE', headers: hdrs
+    });
+  }
+  if (toAdd.length) {
+    await fetch(`${SB_URL}/rest/v1/board_confirmations`, {
+      method: 'POST', headers: { ...hdrs, 'Prefer': 'return=minimal' },
+      body: JSON.stringify(toAdd.map(s => ({ post_id: postId, confirmer_name: s.name, role: s.role })))
+    });
+  }
+}
+
+async function loadConfirmations(postId) {
+  try {
+    const res = await fetch(`${SB_URL}/rest/v1/board_confirmations?post_id=eq.${postId}&order=created_at.asc`, { headers: hdrs });
+    return await res.json();
+  } catch(e) { return []; }
+}
+
+function renderConfirmations(rows) {
+  const el = document.getElementById('viewConfirmations');
+  if (!Array.isArray(rows) || !rows.length) { el.innerHTML = ''; return; }
+  const myName = currentMember && currentMember.display_name;
+  el.innerHTML = `
+    <div style="background:var(--am-white);padding:20px;border:0.5px solid var(--am-border);border-radius:8px;margin-bottom:20px;">
+      <div class="modal-attachments-title">확인 현황 · 위 내용이 사실과 상위 없음을 확인함</div>
+      <table style="width:100%;font-size:14px;border-collapse:collapse;">
+        ${rows.map(r => {
+          const done = !!r.confirmed_at;
+          const isMe = !done && r.confirmer_name === myName;
+          const when = done ? new Date(r.confirmed_at).toLocaleString('ko-KR', { year:'numeric', month:'long', day:'numeric', hour:'2-digit', minute:'2-digit' }) : '';
+          return `<tr style="border-top:0.5px solid var(--am-border);">
+            <td style="padding:8px 4px;">${esc(r.confirmer_name)}${r.role ? ` (${esc(r.role)})` : ''}</td>
+            <td style="padding:8px 4px;color:${done ? 'var(--am-sage)' : 'var(--am-muted)'};">${done ? '확인함 · ' + when : (isMe ? '' : '대기 중')}</td>
+            <td style="padding:8px 4px;text-align:right;">${isMe ? `<button class="btn-sage" style="padding:4px 12px;font-size:13px;" onclick="confirmMyBoardPost('${r.post_id}')">확인합니다</button>` : ''}</td>
+          </tr>`;
+        }).join('')}
+      </table>
+    </div>`;
+}
+
+async function confirmMyBoardPost(postId) {
+  try {
+    const res = await fetch(`${SB_URL}/rest/v1/rpc/confirm_board_post`, {
+      method: 'POST', headers: hdrs, body: JSON.stringify({ p_post_id: postId })
+    });
+    if (!res.ok) { showToast('확인 처리에 실패했습니다.'); return; }
+    showToast('확인되었습니다.');
+    renderConfirmations(await loadConfirmations(postId));
+  } catch(e) {
+    showToast('확인 처리 중 오류가 발생했습니다.');
+  }
+}
+
 async function openView(id) {
   const p = allPosts.find(x => x.id === id); if (!p) return;
   history.pushState({}, '', `members-home.html?post=${id}`);
@@ -1812,6 +1945,8 @@ async function openView(id) {
     <button class="btn-outline-sm" onclick="openEdit('${p.id}')"><i class="ti ti-pencil"></i>수정</button>
     <button class="btn-danger" onclick="deletePost('${p.id}')"><i class="ti ti-trash"></i>삭제</button>`;
 
+  renderConfirmations(await loadConfirmations(p.id));
+
   loadComments(p.id);
   document.getElementById('postViewPage').classList.add('open');
   document.getElementById('postViewPage').scrollTop = 0;
@@ -1832,6 +1967,7 @@ function copyPostLink(id) {
 // ── 글쓰기 페이지 ──
 function openWritePage() {
   editingId = null;
+  editingConfirmers = [];
   document.getElementById('writePageTitle').textContent = '새 글 작성';
   document.getElementById('writeSubmitBtn').textContent = '따뜻하게 등록하기';
   document.getElementById('wCat').value = '공지';
@@ -1844,6 +1980,7 @@ function openWritePage() {
   pendingFiles = [];
   renderFileList();
   setEditorMode('normal');
+  loadMemberNamesForConfirm().then(() => renderConfirmCheckList([]));
   document.getElementById('writePage').classList.add('open');
   document.getElementById('writePage').scrollTop = 0;
 }
@@ -1852,7 +1989,7 @@ function closeWritePage() {
   document.getElementById('writePage').classList.remove('open');
 }
 
-function openEdit(id) {
+async function openEdit(id) {
   closeView();
   const p = allPosts.find(x => x.id === id); if (!p) return;
   editingId = id;
@@ -1869,6 +2006,12 @@ function openEdit(id) {
   pendingFiles = (p.attachments || []).map(f => ({ ...f }));
   renderFileList();
   setEditorMode('html');
+
+  const confRows = await loadConfirmations(id);
+  editingConfirmers = confRows.map(r => ({ name: r.confirmer_name, role: r.role }));
+  await loadMemberNamesForConfirm();
+  renderConfirmCheckList(editingConfirmers);
+
   document.getElementById('writePage').classList.add('open');
   document.getElementById('writePage').scrollTop = 0;
 }
@@ -1906,6 +2049,9 @@ async function submitPost() {
   };
 
   try {
+    const selectedConfirmers = getSelectedConfirmers();
+    let postId = editingId;
+
     if (editingId) {
       await fetch(`${SB_URL}/rest/v1/board_posts?id=eq.${editingId}`, {
         method: 'PATCH', headers: { ...hdrs, 'Prefer': 'return=minimal' },
@@ -1913,12 +2059,19 @@ async function submitPost() {
       });
       showToast('수정되었습니다.');
     } else {
-      await fetch(`${SB_URL}/rest/v1/board_posts`, {
-        method: 'POST', headers: { ...hdrs, 'Prefer': 'return=minimal' },
+      const res = await fetch(`${SB_URL}/rest/v1/board_posts`, {
+        method: 'POST', headers: { ...hdrs, 'Prefer': 'return=representation' },
         body: JSON.stringify(body)
       });
+      const rows = await res.json();
+      postId = rows && rows[0] && rows[0].id;
       showToast('등록되었습니다.');
     }
+
+    if (postId) {
+      await syncConfirmers(postId, selectedConfirmers, editingId ? editingConfirmers : []);
+    }
+
     closeWritePage();
     await loadBoard();
   } catch(e) {
