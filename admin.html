@@ -47,6 +47,7 @@ tbody tr[aria-selected="true"]{background:#f4faf9}
 .tag{display:inline-block;padding:3px 7px;font-size: 13px;border:1px solid #e8e4e0;color:#98928d;margin-right:4px;white-space:nowrap}
 .tag-member{border-color:#8FBFB8;color:#5e7773}
 .tag-admin{border-color:#E8929A;color:#c2727a}
+.tag-supporter{border-color:#E0A96B;color:#a9772e}
 .muted{color:#b4aeaa}
 .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:25px}
 .button{display:inline-block;border:1px solid #8FBFB8;padding:10px 15px;color:#5e7773;text-decoration:none;background:#fff;font:inherit;font-size: 13px;cursor:pointer}
@@ -507,8 +508,9 @@ tbody tr[aria-selected="true"]{background:#f4faf9}
       <div class="tools">
         <select id="typeFilter" aria-label="계정 유형 거르기">
           <option value="all">전체</option>
-          <option value="experience">체험계정</option>
-          <option value="formal">이메일 회원</option>
+          <option value="experience">별칭계정</option>
+          <option value="formal">일반계정</option>
+          <option value="supporter">후원회원</option>
           <option value="member">조합원</option>
           <option value="admin">관리자</option>
         </select>
@@ -574,8 +576,17 @@ function labelOf(account) {
   return account.display_name || account.nickname || '(이름 없음)';
 }
 
+// 후원 상태 문구. active 는 후원회원, pending 은 입금 대기 중입니다.
+function supporterText(account) {
+  if (account.is_supporter) return '후원회원';
+  if (account.supporter_status === 'pending') return '후원 입금대기';
+  return '';
+}
+
 function typeText(account) {
-  const parts = [account.base_type === 'experience' ? '체험계정' : '이메일 회원'];
+  const parts = [account.base_type === 'experience' ? '별칭계정' : '일반계정'];
+  const sup = supporterText(account);
+  if (sup) parts.push(sup);
   if (account.is_member) parts.push('조합원');
   if (account.is_admin) parts.push('관리자');
   return parts.join(' · ');
@@ -585,6 +596,13 @@ function matchesFilter(account, filter) {
   if (filter === 'all') return true;
   if (filter === 'member') return account.is_member;
   if (filter === 'admin') return account.is_admin;
+  if (filter === 'supporter') return account.is_supporter || account.supporter_status === 'pending';
+  // 일반계정 = 별칭이 아닌 계정 중 후원·조합원·관리자 자격이 없는 계정
+  if (filter === 'formal') {
+    return account.base_type === 'formal'
+      && !account.is_supporter && account.supporter_status !== 'pending'
+      && !account.is_member && !account.is_admin;
+  }
   return account.base_type === filter;
 }
 
@@ -624,7 +642,9 @@ function renderTable() {
       <td>${account.email
         ? escapeHtml(account.email)
         : '<span class="muted">표시하지 않음</span>'}</td>
-      <td><span class="tag">${account.base_type === 'experience' ? '체험계정' : '이메일 회원'}</span>${
+      <td><span class="tag">${account.base_type === 'experience' ? '별칭계정' : '일반계정'}</span>${
+        account.is_supporter ? '<span class="tag tag-supporter">후원회원</span>'
+          : account.supporter_status === 'pending' ? '<span class="tag">후원 입금대기</span>' : ''}${
         account.is_member ? '<span class="tag tag-member">조합원</span>' : ''}${
         account.is_admin ? '<span class="tag tag-admin">관리자</span>' : ''}</td>
       <td>${formatDate(account.created_at)}</td>
@@ -635,12 +655,14 @@ function renderTable() {
 }
 
 function downloadCsv() {
-  const header = ['이름', '별칭', '이메일', '유형', '가입일', '체험 기록 수', '마지막 기록일'];
+  const header = ['이름', '별칭', '이메일', '유형', '후원상태', '조합원', '가입일', '체험 기록 수', '마지막 기록일'];
   const lines = visibleAccounts().map(account => [
     account.display_name || '',
     account.nickname || '',
     account.email || '',
     typeText(account),
+    account.is_supporter ? '후원회원' : (account.supporter_status === 'pending' ? '입금대기' : ''),
+    account.is_member ? '조합원' : '',
     formatDate(account.created_at),
     account.record_count,
     formatDate(account.last_record_at)

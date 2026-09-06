@@ -181,7 +181,7 @@ a.card-link:hover { border-color: var(--am-sage); }
 
 <div class="page-wrap">
 
-  <h1 class="greeting-title"><span id="nickDisplay">···</span>님의 마음여정</h1>
+  <h1 class="greeting-title"><span id="nickDisplay">···</span>님의 마음여정<span id="supporterBadge" class="hidden" style="margin-left:10px;font-size:13px;font-weight:400;color:#a9772e;border:1px solid #E0A96B;border-radius:2px;padding:2px 8px;vertical-align:middle;">후원회원</span></h1>
   <p class="greeting-desc">
     아들러 심리학을 기반으로 한 자기탐색 활동들을 이곳에서 확인하고 기록할 수 있습니다.
   </p>
@@ -240,6 +240,10 @@ document.getElementById('navHam').addEventListener('click', () => {
     document.getElementById('navNick').href = 'account-home.html';
     document.getElementById('accountLabel').classList.add('hidden');
     document.getElementById('accountGrid').classList.add('hidden');
+
+    // 후원회원이면 배지를 보여줍니다 (am_supporters status='active').
+    const { data: isSupporter } = await _sb.rpc('is_active_supporter');
+    if (isSupporter) document.getElementById('supporterBadge').classList.remove('hidden');
   }
 
   document.getElementById('nickDisplay').textContent = nick;

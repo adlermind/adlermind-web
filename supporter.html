@@ -247,6 +247,10 @@ footer {
       예금주 · 이경숙<br>
       금액 · 30,000원
     </div>
+    <p style="margin-top:16px">
+      이제 이메일 회원으로 로그인되어 있습니다.
+      <a href="account-home.html" style="color:var(--am-sage)">내 계정 보기</a>
+    </p>
   </div>
 
   <div id="pageContent">
@@ -281,27 +285,37 @@ footer {
     <form id="supporterForm" onsubmit="submitForm(event)">
       <div class="form-group">
         <label class="form-label" for="fName">이름</label>
-        <input class="form-input" type="text" id="fName" placeholder="성함을 입력해 주세요" required>
+        <input class="form-input" type="text" id="fName" placeholder="성함을 입력해 주세요" autocomplete="name" required>
       </div>
       <div class="form-group">
         <label class="form-label" for="fPhone">연락처</label>
-        <input class="form-input" type="text" id="fPhone" placeholder="010-0000-0000" required>
+        <input class="form-input" type="tel" id="fPhone" placeholder="010-0000-0000" autocomplete="tel" required>
       </div>
-      <div class="form-group">
+      <div class="form-group" id="grpEmail">
         <label class="form-label" for="fEmail">이메일</label>
-        <input class="form-input" type="email" id="fEmail" placeholder="example@email.com" required>
-        <p class="form-hint">뉴스레터를 이 주소로 보내드립니다.</p>
+        <input class="form-input" type="email" id="fEmail" placeholder="example@email.com" autocomplete="email" required>
+        <p class="form-hint">이 주소로 회원 로그인을 하고, 뉴스레터도 이 주소로 받으십니다.</p>
+      </div>
+      <div class="form-group" id="grpPw">
+        <label class="form-label" for="fPw">비밀번호 <span class="form-opt">8자 이상</span></label>
+        <input class="form-input" type="password" id="fPw" placeholder="회원 로그인에 쓰실 비밀번호" autocomplete="new-password" minlength="8">
+      </div>
+      <div class="form-group" id="grpPw2">
+        <label class="form-label" for="fPw2">비밀번호 확인</label>
+        <input class="form-input" type="password" id="fPw2" autocomplete="new-password">
       </div>
       <div class="form-group">
         <label class="form-label" for="fDepositor">입금자명 <span class="form-opt">이름과 다를 때만</span></label>
         <input class="form-input" type="text" id="fDepositor" placeholder="비워두시면 위 이름으로 확인합니다">
       </div>
 
+      <p class="form-hint" id="loginNote" style="display:none"></p>
+
       <div class="agree-group">
         <div class="agree-item">
           <input type="checkbox" id="fPrivacy" required>
           <label for="fPrivacy">
-            <strong>[필수]</strong> 후원회원 등록과 안내를 위해 이름·연락처·이메일을 수집하는 데 동의합니다.
+            <strong>[필수]</strong> 회원계정 생성·로그인과 후원회원 등록·안내를 위해 이름·연락처·이메일을 수집하는 데 동의합니다.
             수집한 정보는 후원회원 자격이 유지되는 동안 보관하며, 탈퇴하시면 지체 없이 파기합니다.
           </label>
         </div>
@@ -314,6 +328,7 @@ footer {
       </div>
 
       <div class="notice-box">
+        · 후원 신청과 동시에 이메일 회원계정이 만들어지고 로그인됩니다. 별칭 체험계정과는 별개입니다.<br>
         · 후원회비는 한 번만 납부하시며, 납입하신 회비는 반환되지 않습니다.<br>
         · 아들러마인드 협동조합은 지정기부금단체가 아니어서 기부금영수증은 발행되지 않습니다.<br>
         · 후원회원은 조합원과 다른 자리로, 총회 의결과 배당에는 참여하지 않습니다.
@@ -344,43 +359,102 @@ footer {
 <script>
 const SB_URL = 'https://jboceiacgczkqkhqcmqu.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impib2NlaWFjZ2N6a3FraHFjbXF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI1OTg1MTYsImV4cCI6MjA5ODE3NDUxNn0.9jHLNB8PVDrWlSc5CDGz5j6ZF9yaKwrnzICvvvsFbvA';
+const sb = supabase.createClient(SB_URL, SB_KEY);
+
+// 이미 이메일 회원으로 로그인된 상태라면 회원가입 단계를 건너뜁니다.
+let hasFormalSession = false;
+
+function showErr(msg) {
+  const box = document.getElementById('errMsg');
+  box.textContent = msg; box.classList.add('show');
+}
+function resetBtn() {
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = false; btn.textContent = '후원회원 신청하기';
+}
+
+// 010 1234 5678, 01012345678 등을 010-1234-5678 로 정리합니다. 형식을 못 맞추면 입력 그대로 둡니다.
+function normalizePhone(v) {
+  const d = (v || '').replace(/[^0-9]/g, '');
+  if (d.length === 11) return d.slice(0, 3) + '-' + d.slice(3, 7) + '-' + d.slice(7);
+  if (d.length === 10) return d.slice(0, 3) + '-' + d.slice(3, 6) + '-' + d.slice(6);
+  return (v || '').trim();
+}
 
 async function submitForm(e) {
   e.preventDefault();
+  document.getElementById('errMsg').classList.remove('show');
+
   const name      = document.getElementById('fName').value.trim();
-  const phone     = document.getElementById('fPhone').value.trim();
-  const email     = document.getElementById('fEmail').value.trim();
+  const phone     = normalizePhone(document.getElementById('fPhone').value);
   const depositor = document.getElementById('fDepositor').value.trim() || null;
   const privacy_agree = document.getElementById('fPrivacy').checked;
   const news_agree    = document.getElementById('fNews').checked;
-  if (!name || !phone || !email || !privacy_agree) return;
+  if (!name || !phone || !privacy_agree) { showErr('이름·연락처와 [필수] 동의를 확인해 주세요.'); return; }
+  if (name.length < 2) { showErr('이름을 2자 이상 입력해 주세요.'); return; }
 
   const btn = document.getElementById('submitBtn');
-  btn.disabled = true; btn.textContent = '전송 중...';
-  document.getElementById('errMsg').classList.remove('show');
+  btn.disabled = true; btn.textContent = '처리 중...';
 
   try {
+    let email;
+
+    if (hasFormalSession) {
+      const { data: { session } } = await sb.auth.getSession();
+      email = session.user.email;
+    } else {
+      email = document.getElementById('fEmail').value.trim().toLowerCase();
+      const pw  = document.getElementById('fPw').value;
+      const pw2 = document.getElementById('fPw2').value;
+      if (!email) { showErr('이메일을 입력해 주세요.'); resetBtn(); return; }
+      if (pw.length < 8) { showErr('비밀번호는 8자 이상 입력해 주세요.'); resetBtn(); return; }
+      if (pw !== pw2) { showErr('두 비밀번호가 일치하지 않습니다.'); resetBtn(); return; }
+
+      const { data: signUpData, error: signUpErr } = await sb.auth.signUp({
+        email, password: pw,
+        options: { data: { display_name: name, nickname: name, account_type: 'formal' } }
+      });
+
+      if (signUpErr && /already registered|already exists/i.test(signUpErr.message || '')) {
+        // 이미 가입된 이메일이면, 같은 칸의 비밀번호로 로그인해 그 계정에 후원 자격만 얹습니다.
+        const { error: signInErr } = await sb.auth.signInWithPassword({ email, password: pw });
+        if (signInErr) {
+          showErr('이미 가입된 이메일입니다. 비밀번호가 맞지 않으면 로그인 페이지에서 비밀번호를 재설정한 뒤 다시 시도해 주세요.');
+          resetBtn(); return;
+        }
+      } else if (signUpErr) {
+        showErr('회원가입을 처리하지 못했습니다. (' + (signUpErr.message || '') + ')');
+        resetBtn(); return;
+      } else if (!signUpData.session) {
+        // 이메일 확인 절차가 켜져 있는 경우 — 확인을 먼저 받아야 신청을 저장할 수 있습니다.
+        showErr('가입 확인 메일을 보냈습니다. 메일의 링크를 누르신 뒤 이 페이지에서 다시 신청해 주세요.');
+        resetBtn(); return;
+      }
+    }
+
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) { showErr('로그인 상태를 확인하지 못했습니다. 잠시 후 다시 시도해 주세요.'); resetBtn(); return; }
+
     const res = await fetch(`${SB_URL}/rest/v1/am_supporters`, {
       method: 'POST',
       headers: {
-        'apikey': SB_KEY,
-        'Authorization': `Bearer ${SB_KEY}`,
+        apikey: SB_KEY,
+        Authorization: `Bearer ${session.access_token}`,
         'Content-Type': 'application/json',
-        'Prefer': 'return=minimal'
+        Prefer: 'return=minimal'
       },
-      body: JSON.stringify({ name, phone, email, depositor, privacy_agree, news_agree })
+      body: JSON.stringify({
+        user_id: session.user.id,
+        name, phone, email, depositor, privacy_agree, news_agree
+      })
     });
-    if (!res.ok) {
-      const errBody = await res.text();
-      throw new Error(`${res.status}: ${errBody}`);
-    }
+    if (!res.ok) throw new Error(`${res.status}: ${await res.text()}`);
+
     document.getElementById('pageContent').style.display = 'none';
     document.getElementById('successMsg').classList.add('show');
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  } catch(err) {
-    const box = document.getElementById('errMsg');
-    box.textContent = '전송 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요. (' + err.message + ')';
-    box.classList.add('show');
+  } catch (err) {
+    showErr('전송 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요. (' + err.message + ')');
     btn.disabled = false; btn.textContent = '후원회원 신청하기';
   }
 }
@@ -389,20 +463,63 @@ document.getElementById('navHam').addEventListener('click', () => {
   document.getElementById('navLinks').classList.toggle('open');
 });
 
+// 로그인 상태에 따라 폼 모양을 바꿉니다.
 (async () => {
-  const _sbNav = supabase.createClient(SB_URL, SB_KEY);
-  const { data: { session } } = await _sbNav.auth.getSession();
-  if (!session) return;
-  const res = await fetch(
-    `${SB_URL}/rest/v1/site_users?user_id=eq.${session.user.id}&select=nickname`,
-    { headers: { apikey: SB_KEY, Authorization: `Bearer ${session.access_token}` } }
-  );
-  const [u] = res.ok ? await res.json() : [];
-  if (!u) return;
-  ['navLoginLink','navLoginMobile'].forEach(id => {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) return;   // 비로그인 — 전체 폼 그대로
+
+  // 별칭 체험계정인지 이메일 회원인지 판정합니다.
+  const { data: exp } = await sb
+    .from('site_users').select('nickname').eq('user_id', session.user.id).maybeSingle();
+
+  if (exp) {
+    ['navLoginLink', 'navLoginMobile'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) { el.textContent = exp.nickname + '님의 Life Style'; el.href = 'mypage.html'; }
+    });
+    const note = document.getElementById('loginNote');
+    note.style.display = 'block';
+    note.textContent = '지금 별칭 체험계정으로 로그인되어 있습니다. 후원회원은 이메일 회원계정으로 신청하며, '
+      + '아래에 이메일과 비밀번호를 새로 정하시면 별칭계정과 별개인 이메일계정이 함께 만들어집니다.';
+    return;
+  }
+
+  const { data: profile } = await sb
+    .from('site_profiles').select('display_name,nickname').eq('user_id', session.user.id).maybeSingle();
+  if (!profile) return;   // 프로필이 아직 없으면 전체 폼
+
+  // 이미 이메일 회원 — 이메일·비밀번호 칸을 감추고 간단 폼으로.
+  hasFormalSession = true;
+  ['navLoginLink', 'navLoginMobile'].forEach(id => {
     const el = document.getElementById(id);
-    if (el) { el.textContent = u.nickname + '님의 Life Style'; el.href = 'mypage.html'; }
+    if (el) { el.textContent = (profile.nickname || profile.display_name) + '님'; el.href = 'account-home.html'; }
   });
+  document.getElementById('grpEmail').style.display = 'none';
+  document.getElementById('grpPw').style.display = 'none';
+  document.getElementById('grpPw2').style.display = 'none';
+  document.getElementById('fEmail').required = false;
+  document.getElementById('fPw').removeAttribute('minlength');
+  if (profile.display_name) document.getElementById('fName').value = profile.display_name;
+  const note = document.getElementById('loginNote');
+  note.style.display = 'block';
+  note.textContent = session.user.email + ' 계정으로 로그인되어 있습니다. 이 계정에 후원회원 자격이 더해집니다.';
+
+  // 이미 신청·등록된 경우에는 폼 대신 안내를 보여줍니다.
+  const { data: existing } = await sb
+    .from('am_supporters').select('status')
+    .eq('user_id', session.user.id)
+    .order('joined_at', { ascending: false }).limit(1);
+  if (existing && existing.length) {
+    document.getElementById('supporterForm').style.display = 'none';
+    const box = document.createElement('div');
+    box.className = 'notice-box';
+    box.innerHTML = existing[0].status === 'active'
+      ? '이미 후원회원으로 등록되어 있습니다. 함께해 주셔서 고맙습니다.'
+      : '이미 후원 신청이 접수되어 <strong>입금 확인을 기다리는 중</strong>입니다. '
+        + '아래 계좌로 30,000원을 보내주시면 확인 후 등록해 드립니다.<br>'
+        + '농협 302-1317-6137-71 · 예금주 이경숙';
+    document.getElementById('pageContent').appendChild(box);
+  }
 })();
 </script>
 <script src="site-session.js"></script>
