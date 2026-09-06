@@ -700,7 +700,8 @@ function renderRecords(account, records) {
       <span class="detail-sub">${escapeHtml(typeText(account))}${
         account.email ? ' · ' + escapeHtml(account.email) : ''}</span>
     </div>
-    <p class="detail-sub">가입 ${formatDate(account.created_at)} · 체험 기록 ${records.length}건</p>`;
+    <p class="detail-sub">가입 ${formatDate(account.created_at)} · 체험 기록 ${records.length}건</p>`
+    + supporterControl(account);
 
   if (!records.length) {
     detail.innerHTML = head + '<div class="panel-empty" style="margin-top:15px">저장된 체험 기록이 없습니다.</div>';
@@ -726,6 +727,77 @@ function renderRecords(account, records) {
   }).join('');
 
   show('detail');
+}
+
+// 회원 상세 패널의 후원 관리 영역. pending 이면 입금 확인 후 등록, active 면 해지.
+// 상태 변경은 am_supporters 의 "관리자 UPDATE" 정책(setup_supporter_admin_update.sql)으로만 통과한다.
+function supporterControl(account) {
+  const today = new Date().toISOString().slice(0, 10);
+  if (account.supporter_status === 'pending') {
+    return `
+      <div class="record" style="border-color:#E0A96B">
+        <div class="record-head">후원회원 신청 · 입금 확인 대기</div>
+        <div class="record-block">
+          <div class="record-label">입금 확인일</div>
+          <input type="date" id="supPaidAt" value="${today}" style="font:inherit;padding:7px 9px;border:1px solid #e8e4e0">
+        </div>
+        <div class="record-block">
+          <button class="button" type="button" onclick="approveSupporter('${account.user_id}')">후원회원으로 등록</button>
+        </div>
+        <p class="hint" id="supMsg"></p>
+      </div>`;
+  }
+  if (account.supporter_status === 'active') {
+    return `
+      <div class="record">
+        <div class="record-head">후원회원 · 등록됨</div>
+        <div class="record-block">
+          <button class="button" type="button" onclick="revokeSupporter('${account.user_id}')">후원 해지</button>
+        </div>
+        <p class="hint" id="supMsg"></p>
+      </div>`;
+  }
+  return '';
+}
+
+async function patchSupporter(userId, matchStatus, body) {
+  const res = await fetch(
+    `${auth.SUPABASE_URL}/rest/v1/am_supporters?user_id=eq.${userId}&status=eq.${matchStatus}`,
+    {
+      method: 'PATCH',
+      headers: auth.restHeaders(session.access_token, { Prefer: 'return=representation' }),
+      body: JSON.stringify(body)
+    }
+  );
+  const rows = res.ok ? await res.json().catch(() => []) : null;
+  return { ok: res.ok && Array.isArray(rows) && rows.length > 0, status: res.status };
+}
+
+async function approveSupporter(userId) {
+  const msg = document.getElementById('supMsg');
+  const paidAt = document.getElementById('supPaidAt').value || new Date().toISOString().slice(0, 10);
+  msg.textContent = '처리 중...';
+  const r = await patchSupporter(userId, 'pending', { status: 'active', paid_at: paidAt });
+  if (!r.ok) {
+    msg.textContent = `변경하지 못했습니다. (${r.status}) setup_supporter_admin_update.sql 실행 여부를 확인해 주세요.`;
+    return;
+  }
+  const acc = accounts.find(a => a.user_id === userId);
+  if (acc) { acc.supporter_status = 'active'; acc.is_supporter = true; }
+  renderTable();
+  openAccount(userId);
+}
+
+async function revokeSupporter(userId) {
+  if (!confirm('이 회원의 후원회원 자격을 해지합니다. 계속할까요?')) return;
+  const msg = document.getElementById('supMsg');
+  msg.textContent = '처리 중...';
+  const r = await patchSupporter(userId, 'active', { status: 'withdrawn' });
+  if (!r.ok) { msg.textContent = `변경하지 못했습니다. (${r.status})`; return; }
+  const acc = accounts.find(a => a.user_id === userId);
+  if (acc) { acc.supporter_status = 'withdrawn'; acc.is_supporter = false; }
+  renderTable();
+  openAccount(userId);
 }
 
 async function openAccount(userId) {
