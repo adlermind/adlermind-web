@@ -1001,6 +1001,31 @@ table.idea-matrix tbody th { background: #f4f2ee; font-size: 13px; font-weight: 
   </div>
 </div>
 
+<!-- 게시글 보기 페이지 (스크롤 없음) -->
+<div id="postViewPage" style="display:none;position:static;background:var(--am-bg);padding:20px 0 60px;width:100%;overflow:visible;">
+  <div style="max-width:1080px;margin:0 auto;padding:0 32px;">
+    <div style="display:flex;align-items:center;gap:6px;margin-bottom:20px;">
+      <button class="write-back-btn" onclick="closePostView()">
+        <i class="ti ti-arrow-left"></i>게시판으로
+      </button>
+    </div>
+
+    <div class="write-page-title" id="viewTitle"></div>
+    <div class="modal-cat-row" id="viewCatRow" style="margin:16px 0;"></div>
+    <div class="modal-meta" id="viewMeta" style="font-size: 13px;color:var(--am-muted);margin-bottom:20px;"></div>
+
+    <div id="viewBody" style="background:var(--am-white);padding:24px;border:0.5px solid var(--am-border);border-radius:8px;margin-bottom:20px;font-size:14px;color:var(--am-gray);line-height:1.9;"></div>
+
+    <div id="viewAttachments"></div>
+
+    <div id="viewConfirmations"></div>
+
+    <div class="modal-actions" id="viewActions" style="justify-content:flex-start;margin-bottom:20px;"></div>
+
+    <div id="viewComments" style="margin-top:40px;"></div>
+  </div>
+</div>
+
 <!-- Tab 1: 게시판 -->
 <div class="panel active" id="panelBoard">
   <div class="panel-hd">
@@ -1185,31 +1210,6 @@ table.idea-matrix tbody th { background: #f4f2ee; font-size: 13px; font-weight: 
     <button class="pdf-close-btn" onclick="closePdf()"><i class="ti ti-x"></i></button>
   </div>
   <iframe class="pdf-frame" id="pdfFrame" src=""></iframe>
-</div>
-
-<!-- 게시글 보기 페이지 (스크롤 없음) -->
-<div id="postViewPage" style="display:none;position:static;background:var(--am-bg);padding:20px 0 60px;width:100%;overflow:visible;">
-  <div style="max-width:1080px;margin:0 auto;padding:0 32px;">
-    <div style="display:flex;align-items:center;gap:6px;margin-bottom:20px;">
-      <button class="write-back-btn" onclick="closePostView()">
-        <i class="ti ti-arrow-left"></i>게시판으로
-      </button>
-    </div>
-
-    <div class="write-page-title" id="viewTitle"></div>
-    <div class="modal-cat-row" id="viewCatRow" style="margin:16px 0;"></div>
-    <div class="modal-meta" id="viewMeta" style="font-size: 13px;color:var(--am-muted);margin-bottom:20px;"></div>
-
-    <div id="viewBody" style="background:var(--am-white);padding:24px;border:0.5px solid var(--am-border);border-radius:8px;margin-bottom:20px;font-size:14px;color:var(--am-gray);line-height:1.9;"></div>
-
-    <div id="viewAttachments"></div>
-
-    <div id="viewConfirmations"></div>
-
-    <div class="modal-actions" id="viewActions" style="justify-content:flex-start;margin-bottom:20px;"></div>
-
-    <div id="viewComments" style="margin-top:40px;"></div>
-  </div>
 </div>
 
 <!-- 관리자 자료 추가 페이지 -->
@@ -1949,7 +1949,15 @@ async function openView(id) {
 
   loadComments(p.id);
   document.getElementById('postViewPage').classList.add('open');
-  document.getElementById('postViewPage').scrollTop = 0;
+  scrollToPostView();
+}
+// 게시물 보기 칸이 목록 위에 있으므로, 열 때 화면을 본문 맨 위로 옮긴다.
+// 위에 붙어 있는 헤더(.app-header)에 제목이 가려지지 않게 그 높이만큼 덜 내려간다.
+function scrollToPostView() {
+  const pv = document.getElementById('postViewPage');
+  const header = document.querySelector('.app-header');
+  const offset = header ? header.offsetHeight : 0;
+  window.scrollTo({ top: pv.getBoundingClientRect().top + window.scrollY - offset, behavior: 'auto' });
 }
 function closePostView() {
   document.getElementById('postViewPage').classList.remove('open');
@@ -2206,7 +2214,7 @@ function openContact(id) {
   document.getElementById('contactAssignee').value = r.assigned_to || '';
 
   document.getElementById('postViewPage').classList.add('open');
-  document.getElementById('postViewPage').scrollTop = 0;
+  scrollToPostView();
 }
 
 // 상태와 담당자를 함께 저장한다. 고칠 수 있는 칸은 DB 에서 이 둘로 좁혀 두었다.
@@ -3041,7 +3049,7 @@ function openTextResourceModal(title, content) {
   document.getElementById('viewAttachments').innerHTML = '';
   document.getElementById('viewActions').innerHTML = '';
   document.getElementById('postViewPage').classList.add('open');
-  document.getElementById('postViewPage').scrollTop = 0;
+  scrollToPostView();
 }
 
 function renderIdeaForm() {
