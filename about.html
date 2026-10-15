@@ -95,7 +95,27 @@ main { flex: 1; background: var(--am-white); }
 #promise { background: var(--rb-green); }
 #people { background: var(--rb-blue); }
 #work { background: var(--rb-indigo); }
+#history { background: #F2EFF8; }
 #location { background: var(--rb-violet); }
+
+/* 걸어온 길 — 날짜순 활동 기록 (새 기록이 위) */
+.ab-history { max-width: 65%; margin: 0 auto; list-style: none; text-align: left; word-break: keep-all; overflow-wrap: break-word; text-wrap: pretty; }
+.ab-history li { position: relative; padding: 0 0 30px 26px; border-left: 1px solid var(--am-border); }
+.ab-history li:last-child { padding-bottom: 0; }
+.ab-history li::before {
+  content: ''; position: absolute; left: -5px; top: 7px;
+  width: 9px; height: 9px; border-radius: 50%; background: var(--am-sage);
+}
+.ab-history time {
+  display: block; margin-bottom: 4px;
+  font-family: 'Raleway', sans-serif; font-size: 13px; font-weight: 500;
+  letter-spacing: 0.08em; color: var(--am-sage);
+}
+.ab-history h3 { font-family: 'Noto Serif KR', serif; font-size: 16px; font-weight: 500; color: #4a4a4a; margin-bottom: 6px; }
+.ab-history p { font-size: 14px; line-height: 1.9; color: #4a4a4a; }
+.ab-history .ab-history-photos { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.ab-history .ab-history-photos a { display: block; width: 120px; border-radius: 6px; overflow: hidden; border: 0.5px solid var(--am-border); }
+.ab-history .ab-history-photos img { display: block; width: 100%; height: 90px; object-fit: cover; }
 
 /* 협동조합은 — 인용 */
 .ab-quote {
@@ -223,6 +243,7 @@ main { flex: 1; background: var(--am-white); }
   .ab-hero { padding: 64px 20px; }
   .ab-greeting { max-width: 100%; }
   .ab-work { max-width: 100%; }
+  .ab-history { max-width: 100%; }
   .ab-transit { max-width: 100%; }
   .ab-transit-row { flex-direction: column; gap: 4px; }
   .ab-transit-row dt { width: auto; padding-top: 0; }
@@ -256,6 +277,7 @@ main { flex: 1; background: var(--am-white); }
   <a href="#promise">아들러마인드의 약속</a>
   <a href="#people">아들러마인드의 사람들</a>
   <a href="#work">하는 일</a>
+  <a href="#history">걸어온 길</a>
   <a href="#location">오시는 길</a>
 </nav>
 
@@ -461,6 +483,31 @@ main { flex: 1; background: var(--am-white); }
         누구에게도 권할 수 없다고 생각하기 때문입니다.
       </p>
     </div>
+   </div>
+  </section>
+
+  <section id="history" class="ab-section">
+   <div class="ab-inner">
+    <span class="ab-eyebrow">OUR STEPS</span>
+    <h2>걸어온 길</h2>
+    <div class="ab-divider"></div>
+    <ol class="ab-history">
+      <li>
+        <time datetime="2026-10-15">2026. 10. 15.</time>
+        <h3>「모두의 창업」 1라운드 진출</h3>
+        <p>아들러 개인심리학을 바탕으로 한 자기성장 웹앱 아이디어로 「모두의 창업」 프로젝트 1라운드에 진출했습니다.</p>
+      </li>
+      <li>
+        <time datetime="2026-10-12">2026. 10. 12.</time>
+        <h3>성남노회 워크숍 심리 프로그램</h3>
+        <p>성남노회 워크숍에서 심리 프로그램을 진행했습니다.</p>
+      </li>
+      <li>
+        <time datetime="2026-10-04">2026. 10. 4.</time>
+        <h3>광주시 나눔장터 「아들러 상담놀이터」</h3>
+        <p>광주시청 나눔장터에서 아들러 상담놀이터 부스를 열었습니다. 지나가던 시민들이 잠시 앉아 자기 마음을 들여다보는 자리였습니다.</p>
+      </li>
+    </ol>
    </div>
   </section>
 
