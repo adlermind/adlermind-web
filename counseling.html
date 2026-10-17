@@ -88,11 +88,11 @@ nav {
 }
 
 /* 아들러 상담은 이런 상담입니다 · 2026-10-18
-   그림 바탕(크림)에 맞춘 색입니다. 브랜드 팔레트를 억지로 맞추지 않았습니다. */
+   그림 바탕(크림)에 맞춘 색입니다. 브랜드 팔레트를 억지로 맞추지 않았습니다.
+   상담의 방 큰 그림은 같은 날 대문 첫 화면으로 옮겼습니다. 여기는 글과 카드만 둡니다. */
 .ac-intro { background: #FBF6EC; word-break: keep-all; overflow-wrap: break-word; }
-.ac-hero { position: relative; max-width: 1600px; margin: 0 auto; }
-.ac-hero-img { display: block; width: 100%; height: auto; aspect-ratio: 1672 / 941; }
-.ac-hero-text { padding: 32px 24px 8px; max-width: 640px; margin: 0 auto; }
+.ac-hero { max-width: 1600px; margin: 0 auto; }
+.ac-hero-text { padding: 64px 24px 8px; max-width: 640px; margin: 0 auto; text-align: center; }
 .ac-label {
   font-family: 'Raleway', sans-serif; font-size: 13px; font-weight: 400;
   letter-spacing: 0.3em; color: #6F9468; text-transform: uppercase;
@@ -110,15 +110,6 @@ nav {
 }
 .ac-btn:hover { background: #6B8C66; }
 .ac-btn:focus-visible { outline: 2px solid #4A4038; outline-offset: 3px; }
-/* 넓은 화면에서는 그림 왼쪽 빈 벽에 글을 얹습니다. 문틀(그림 폭 25%)보다 안쪽에 둡니다. */
-@media (min-width: 1200px) {
-  .ac-hero-text {
-    position: absolute; top: 50%; left: 3.5%; transform: translateY(-50%);
-    width: 21%; max-width: none; padding: 0; margin: 0;
-  }
-  .ac-title { font-size: clamp(24px, 2vw, 32px); }
-  .ac-lead { font-size: 14px; }
-}
 .ac-features { max-width: 1120px; margin: 0 auto; padding: 56px 24px 24px; }
 .ac-features-head { text-align: center; margin-bottom: 32px; }
 .ac-features-title { font-family: 'Noto Serif KR', serif; font-weight: 400; font-size: 22px; color: #4A4038; margin-top: 12px; }
@@ -169,12 +160,6 @@ nav {
      분야 하나를 열면 이 구역도 숨습니다. 캐릭터 기준은 adlermind-characters 스킬. -->
 <section class="ac-intro" id="adlerIntro">
   <div class="ac-hero">
-    <img class="ac-hero-img"
-         src="image/room/room_hero.webp"
-         srcset="image/room/room_hero-900.webp 900w, image/room/room_hero.webp 1672w"
-         sizes="(max-width: 1600px) 100vw, 1600px"
-         width="1672" height="941"
-         alt="햇살이 드는 상담의 방. 창가에 마주 보는 의자 두 개가 놓여 있고, 문 앞에서 두더지 마인이 손을 흔들며 맞이합니다. 다람쥐 아리, 기린 루미, 사슴 단이, 거북이 토토가 방 안에 있습니다.">
     <div class="ac-hero-text">
       <div class="ac-label">Adlerian Counseling</div>
       <h1 class="ac-title">아들러 상담은<br>이런 상담입니다</h1>

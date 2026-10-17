@@ -111,6 +111,40 @@ nav {
   margin: 0;
 }
 
+/* ── 첫 화면 · 상담의 방 그림 (2026-10-18) ──
+   조합의 얼굴이 되는 자리입니다. 그림 바로 아래에 체험 띠가 이어집니다.
+   1200px 이상에서만 글을 그림 왼쪽 빈 벽(문틀 25%보다 안쪽)에 얹고, 좁으면 그림 아래로 내립니다. */
+.welcome { background: #FBF6EC; padding: 0; word-break: keep-all; overflow-wrap: break-word; }
+.welcome-inner { position: relative; max-width: 1600px; margin: 0 auto; }
+.welcome-img { display: block; width: 100%; height: auto; aspect-ratio: 1672 / 941; }
+.welcome-text { padding: 32px 24px 40px; max-width: 640px; margin: 0 auto; text-align: center; }
+.welcome-label {
+  font-family: 'Raleway', sans-serif; font-size: 13px; font-weight: 400;
+  letter-spacing: 0.3em; color: #6F9468; text-transform: uppercase;
+}
+.welcome-title {
+  font-family: 'Noto Serif KR', serif; font-weight: 400; color: #4A4038;
+  font-size: 26px; line-height: 1.55; margin: 14px 0 24px;
+}
+.welcome-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.welcome-btn {
+  display: inline-block; padding: 11px 24px; border-radius: 999px; font-size: 14px;
+  text-decoration: none; transition: background 0.15s, color 0.15s;
+}
+.welcome-btn.primary { background: #7FA07A; color: #fff; }
+.welcome-btn.primary:hover { background: #6B8C66; }
+.welcome-btn.ghost { border: 1px solid #7FA07A; color: #4A4038; background: rgba(255,255,255,0.6); }
+.welcome-btn.ghost:hover { background: #fff; }
+.welcome-btn:focus-visible { outline: 2px solid #4A4038; outline-offset: 3px; }
+@media (min-width: 1200px) {
+  .welcome-text {
+    position: absolute; top: 50%; left: 3.5%; transform: translateY(-50%);
+    width: 21%; max-width: none; padding: 0; margin: 0; text-align: left;
+  }
+  .welcome-title { font-size: clamp(24px, 1.9vw, 30px); }
+  .welcome-btns { justify-content: flex-start; }
+}
+
 /* ── 마음을 알아가는 창 ── */
 /* 체험 띠는 히어로 안에 있지만 바탕색을 화면 끝까지 깔아 "여기부터는 해보는 자리"임을 눈에 보이게 나눕니다.
    그래서 .hero 의 좌우 여백을 0으로 두고 글자 요소에만 좌우 여백을 줍니다. */
@@ -161,15 +195,27 @@ section { padding: 88px 32px; }
 
 /* ── 아들러 섹션 ── */
 #adler { background: var(--rb-yellow); }
+/* 4장을 한 줄에 놓기 위해 이 구역만 넓힙니다. 캐릭터 짝은 adlermind-characters 스킬 4절 (2026-10-18). */
+#adler .section-inner { max-width: 1120px; }
 .adler-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 24px;
+  grid-template-columns: 1fr;
+  gap: 20px;
   margin-top: 8px;
+  word-break: keep-all; overflow-wrap: break-word;
 }
+@media (min-width: 600px) { .adler-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1000px) { .adler-grid { grid-template-columns: repeat(4, 1fr); } }
 .adler-card {
   border: 0.5px solid var(--am-border);
-  padding: 28px 24px;
+  background: rgba(255,255,255,0.55);
+  border-radius: 20px;
+  padding: 18px 22px 28px;
+}
+/* width·height 속성이 있으므로 height:auto 를 꼭 둡니다. 없으면 600px 높이로 늘어납니다. */
+.adler-card-img {
+  display: block; width: 100%; max-width: 220px; height: auto; aspect-ratio: 1;
+  margin: 0 auto 16px; border-radius: 14px;
 }
 .adler-card-num {
   font-family: 'Raleway', sans-serif;
@@ -273,6 +319,28 @@ footer {
   <button class="nav-ham" id="navHam" aria-label="메뉴">&#9776;</button>
 </nav>
 
+<!-- 첫 화면 · 상담의 방 그림 (2026-10-18)
+     문 앞에서 두더지 마인이 맞이하는 장면이 조합의 첫인사입니다. 캐릭터 기준은 adlermind-characters 스킬.
+     처음 오시는 분께 낯선 낱말(생활양식·사회적 관심)은 첫인사에 쓰지 않습니다. -->
+<section class="welcome" id="welcome">
+  <div class="welcome-inner">
+    <img class="welcome-img"
+         src="image/room/room_hero.webp"
+         srcset="image/room/room_hero-900.webp 900w, image/room/room_hero.webp 1672w"
+         sizes="(max-width: 1600px) 100vw, 1600px"
+         width="1672" height="941"
+         alt="햇살이 드는 따뜻한 방. 창가에 마주 보는 의자 두 개가 놓여 있고, 문 앞에서 두더지 마인이 손을 흔들며 맞이합니다. 다람쥐 아리, 기린 루미, 사슴 단이, 거북이 토토가 방 안에 있습니다.">
+    <div class="welcome-text">
+      <div class="welcome-label">ADLER MIND</div>
+      <h1 class="welcome-title">서로 다른 우리가 만나,<br>더 아름다운 공동체를<br>이룹니다.</h1>
+      <div class="welcome-btns">
+        <a class="welcome-btn primary" href="counseling.html">상담의 방</a>
+        <a class="welcome-btn ghost" href="education.html">배움의 방</a>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- SECTION 01: 마음을 알아가는 창 (2026-08-16 · 대문 맨 위로 올림)
      조합 소개글은 조합 소식 아래(SECTION 05)로 내렸습니다. 들어오자마자 해볼 것이
      먼저 보이고, 조합이 어떤 곳인지는 둘러본 뒤에 읽는 순서입니다. -->
@@ -308,6 +376,7 @@ footer {
     </p>
     <div class="adler-grid">
       <div class="adler-card">
+        <img class="adler-card-img" src="image/room/why_dani.webp" width="600" height="600" loading="lazy" alt="파랑새에게 꽃을 건네는 사슴 단이">
         <div class="adler-card-num">01</div>
         <div class="adler-card-title">사회적 관심</div>
         <div class="adler-card-desc">
@@ -315,6 +384,7 @@ footer {
         </div>
       </div>
       <div class="adler-card">
+        <img class="adler-card-img" src="image/room/why_mine.webp" width="600" height="600" loading="lazy" alt="돋보기로 새싹을 들여다보는 두더지 마인">
         <div class="adler-card-num">02</div>
         <div class="adler-card-title">생활양식 이해</div>
         <div class="adler-card-desc">
@@ -322,6 +392,7 @@ footer {
         </div>
       </div>
       <div class="adler-card">
+        <img class="adler-card-img" src="image/room/why_ari.webp" width="600" height="600" loading="lazy" alt="도토리를 심는 다람쥐 아리 곁에 새싹이 돋아난 모습">
         <div class="adler-card-num">03</div>
         <div class="adler-card-title">격려와 성장</div>
         <div class="adler-card-desc">
@@ -329,6 +400,7 @@ footer {
         </div>
       </div>
       <div class="adler-card">
+        <img class="adler-card-img" src="image/room/why_toto.webp" width="600" height="600" loading="lazy" alt="둥글게 놓인 돌 곁에 선 거북이 토토">
         <div class="adler-card-num">04</div>
         <div class="adler-card-title">협동조합 방식</div>
         <div class="adler-card-desc">
@@ -358,13 +430,13 @@ footer {
      체험과 소식을 둘러본 뒤 읽는 맺음말 자리입니다. -->
 <section class="intro">
   <div class="intro-sub">ADLER MIND COOPERATIVE · 2026</div>
-  <h1 class="intro-statement">
+  <h2 class="intro-statement">
     ADLER MIND 협동조합은<br>
     아들러 개인심리학의 가치를 실천하는<br>
     아들러리안 심리전문가들의 협동조합입니다.<br>
     사회적 관심과 공동체 감각을 바탕으로<br>
     심리상담과 교육을 함께 만들어갑니다.
-  </h1>
+  </h2>
 </section>
 
 <!-- 푸터 -->

@@ -237,17 +237,19 @@
 
       if (field.closing) box.appendChild(element('p', 'amr-closing', field.closing));
 
-      if (field.note) {
+      // note 는 하나(객체)이거나 여럿(배열)일 수 있습니다. 옛 원고는 고치지 않아도 됩니다 (2026-10-18).
+      const notes = !field.note ? [] : Array.isArray(field.note) ? field.note : [field.note];
+      notes.forEach(item => {
         const note = element('div', 'amr-note');
-        note.appendChild(element('div', 'amr-note-t', field.note.title));
-        note.appendChild(element('p', null, field.note.text));
-        if (field.note.link) {
-          const link = element('a', null, field.note.link.label + ' →');
-          link.href = field.note.link.href;
+        note.appendChild(element('div', 'amr-note-t', item.title));
+        note.appendChild(element('p', null, item.text));
+        if (item.link) {
+          const link = element('a', null, item.link.label + ' →');
+          link.href = item.link.href;
           note.appendChild(link);
         }
         box.appendChild(note);
-      }
+      });
 
       box.appendChild(element('p', 'amr-online',
         '온라인으로도 만납니다. Zoom 화상상담으로 진행할 수 있으며, ' +
