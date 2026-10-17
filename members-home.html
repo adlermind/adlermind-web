@@ -3757,6 +3757,19 @@ function modooGroupSum(r) {
     .reduce((s, x) => s + (x.amount || 0), 0);
 }
 
+// 있어야 할 증빙 종류. 자산성 물품은 금액이 작아도 증빙과 서약서를 낸다 (지원안내책자 14·31쪽)
+function modooNeedKinds(r) {
+  const R = MODOO_RULES;
+  const group = modooGroupSum(r);
+  const need = [];
+  if (r.is_online) need.push('주문내역', '사진');
+  else if (group >= R.evidenceOver || r.is_asset) need.push('영수증', '사진');
+  if (r.budget_item === '외주용역비') need.push('계약서·견적서');
+  if (group > R.preapprovalOver) need.push('승인서');
+  if (r.is_asset) need.push('서약서');
+  return need;
+}
+
 // 증빙 딱지 · 표에 저장하지 않고 규칙으로 계산한다. 「결제함」 행에만 붙인다.
 function modooBadges(r) {
   if (r.status !== '결제함') return [];
@@ -3764,12 +3777,7 @@ function modooBadges(r) {
   const amount = r.amount || 0;
   const group = modooGroupSum(r);
   const have = new Set((r.evidence || []).map(e => e.kind));
-  const need = [];
-  if (r.is_online) need.push('주문내역', '사진');
-  else if (group >= R.evidenceOver) need.push('영수증', '사진');
-  if (r.budget_item === '외주용역비') need.push('계약서·견적서');
-  if (group > R.preapprovalOver) need.push('승인서');
-  if (r.is_asset) need.push('서약서');
+  const need = modooNeedKinds(r);
 
   const out = [];
   if (!need.length) out.push(['info', '승인내역으로 갈음']);
@@ -3787,14 +3795,7 @@ function modooBadges(r) {
 
 function modooMissingKinds(r) {
   const have = new Set((r.evidence || []).map(e => e.kind));
-  const group = modooGroupSum(r);
-  const need = [];
-  if (r.is_online) need.push('주문내역', '사진');
-  else if (group >= MODOO_RULES.evidenceOver) need.push('영수증', '사진');
-  if (r.budget_item === '외주용역비') need.push('계약서·견적서');
-  if (group > MODOO_RULES.preapprovalOver) need.push('승인서');
-  if (r.is_asset) need.push('서약서');
-  return need.filter(k => !have.has(k));
+  return modooNeedKinds(r).filter(k => !have.has(k));
 }
 
 function renderModooTable() {
@@ -3865,7 +3866,7 @@ function renderModooDetail(r) {
       ${line('취소·잔액보전', r.adjust !== '없음' ? r.adjust : '')}
       ${line('사전승인', r.preapproval !== '해당 없음' ? r.preapproval : '')}
       ${line('활용 결과', r.usage_result)}
-      ${line('목적·동석자', r.attendees)}
+      ${line('목적·장소·동석자', r.attendees)}
       ${line('안 하기로 한 이유', r.reject_reason)}
       ${line('비고', r.note)}
       ${line('결제 내용을 적은 사람', r.recorded_by)}
@@ -3979,8 +3980,9 @@ function openModooExpenseForm(mode, id) {
       <select class="form-select" id="mxPre">${modooOpt(['해당 없음','요청함','승인됨'], v('preapproval') || '해당 없음')}</select></div>
     <div class="form-group"><label class="form-label">활용 결과 (써 본 뒤 채워도 됩니다)</label>
       <textarea class="form-input" id="mxUsage" rows="3" placeholder="사서 무엇에 썼고 무엇이 나왔는지">${esc(v('usage_result'))}</textarea></div>
-    <div class="form-group"><label class="form-label">회의비일 때 목적·동석자</label>
-      <input class="form-input" type="text" id="mxAttendees" value="${modooAttr(v('attendees'))}" oninput="updateModooWarnings()"></div>
+    <div class="form-group"><label class="form-label">여비·회의비일 때 목적·장소 (회의비는 동석자)</label>
+      <input class="form-input" type="text" id="mxAttendees" value="${modooAttr(v('attendees'))}" oninput="updateModooWarnings()"
+        placeholder="예 · 멘토링 회의 · 판교 창업존 · 멘토 1명"></div>
     <div class="form-group"><label class="form-label">비고에 덧붙일 말</label>
       <input class="form-input" type="text" id="mxNote" value="${modooAttr(v('note'))}"></div>
     <div class="form-group"><label class="form-label">증빙 파일 (JPG·PNG·PDF)</label>
@@ -4074,7 +4076,7 @@ function updateModooWarnings() {
   const spent = g('mxSpentOn') ? g('mxSpentOn').value : '';
   if (spent && spent > R.cardDeadline) warns.push('카드 사용 기간이 지났습니다.');
   if (g('mxAttendees') && g('mxBudget').value === '여비·회의비' && !g('mxAttendees').value.trim())
-    warns.push('회의비는 목적과 동석자를 꼭 적어야 합니다.');
+    warns.push('여비·회의비는 금액과 관계없이 목적·장소(회의비는 동석자)를 꼭 적어야 합니다.');
   el.innerHTML = warns.map(w => '· ' + esc(w)).join('<br>');
 }
 
