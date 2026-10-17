@@ -816,7 +816,7 @@ body {
 /* ── 모두의 창업 (2026-10-17) ── */
 #panelModoo { max-width: 1040px; }   /* 표 칸이 8개라 기획마당처럼 넓힌다 */
 .modoo-notice {
-  border-left: 3px solid var(--am-rose); background: rgba(232,146,154,0.08);
+  border-left: 3px solid var(--am-sage); background: rgba(143,191,184,0.10);
   padding: 12px 16px; margin-bottom: 16px;
   font-size: 13px; color: var(--am-dark); line-height: 1.8;
 }
@@ -843,14 +843,19 @@ body {
   font-size: 13px; color: var(--am-dark); text-decoration: underline; font-family: 'Noto Sans KR', sans-serif; }
 .modoo-badge { display: inline-block; font-size: 13px; padding: 1px 6px; margin: 0 4px 4px 0; white-space: nowrap; }
 .modoo-badge.ok   { background: rgba(143,191,184,0.15); color: #3f7a72; }
-.modoo-badge.need { background: rgba(232,146,154,0.15); color: #a8505a; }
+.modoo-badge.need { background: rgba(242,196,184,0.35); color: #7a4a3c; }   /* 챙길 일 · 겁주지 않는 살구색 */
 .modoo-badge.info { background: rgba(143,175,212,0.15); color: #45658c; }
 .modoo-detail td { background: #f6f5f2; }
 .modoo-detail-grid { display: grid; grid-template-columns: 130px 1fr; gap: 6px 12px; font-size: 13px; line-height: 1.7; }
 .modoo-detail-grid dt { color: var(--am-muted); }
 .modoo-detail-grid dd { color: var(--am-dark); white-space: pre-wrap; }
 .modoo-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
-.modoo-warn { font-size: 13px; color: #a8505a; line-height: 1.8; margin: 6px 0 16px; }
+.modoo-tip { font-size: 13px; color: var(--am-dark); line-height: 1.8; margin: 6px 0 16px;
+  background: rgba(143,175,212,0.10); border-left: 3px solid var(--am-blue); padding: 10px 14px; }
+.modoo-tip:empty { display: none; }
+.modoo-tip-title { font-weight: 700; margin-bottom: 2px; }
+.modoo-box { border: 0.5px solid var(--am-border); background: var(--am-white); padding: 12px 14px; margin-bottom: 16px; font-size: 13px; line-height: 1.8; color: var(--am-dark); }
+.modoo-box a { color: var(--am-dark); }
 .modoo-guide { font-size: 13px; color: var(--am-muted); line-height: 1.9; margin-bottom: 16px; }
 .modoo-guide a { color: var(--am-dark); }
 .modoo-help { font-size: 13px; color: var(--am-muted); margin-top: 6px; }
@@ -1283,7 +1288,13 @@ table.idea-matrix tbody th { background: #f4f2ee; font-size: 13px; font-weight: 
 
   <div class="modoo-notice">
     이 기록은 조합 회계와 별개입니다. 모두의 창업 창업활동자금(이사장 명의 카드) 사용 내역이며, 조합 장부와 지출증빙으로 쓰지 않습니다.<br>
-    이 카드로 결제한 것만 적습니다. 개인 카드나 현금으로 먼저 산 것은 지원되지 않습니다. 필요한 물건은 「결제 요청」으로 올려 주세요.
+    이 카드로 결제한 것만 적습니다. 개인 카드나 현금으로 먼저 사면 돌려받을 수 없어서, 필요한 물건은 「결제 요청」으로 올려 주시면 됩니다.
+  </div>
+
+  <div class="modoo-guide">
+    <a href="docs/modoo/modoo_forms_byeolcheom1.hwp" download="별첨1_서약서·사전승인_양식.hwp"><i class="ti ti-download"></i> 지출 양식 내려받기 (별첨1 · 한글 파일)</a><br>
+    · 오래 두고 쓰는 물건(자산성 물품)을 샀다면 붙임3 「자산보유서약서」를 써서 서명해 주세요.<br>
+    · 50만 원이 넘는 건은 결제하기 전에 붙임4 「사전 승인요청서」를 멘토기관에 보내 주세요.
   </div>
 
   <div class="modoo-summary">
@@ -3652,7 +3663,7 @@ const MODOO_RULES = {
   blockedWords: ['노트북','데스크톱','태블릿','휴대폰','휴대전화','스마트워치','모니터','이어폰',
                  '카메라','상품권','기프트카드','포인트','주차'],
 };
-const MODOO_EVIDENCE_KINDS = ['영수증','주문내역','사진','승인서','서약서','계약서·견적서','기타'];
+const MODOO_EVIDENCE_KINDS = ['영수증','주문내역','사진','승인서','계약서·견적서','기타'];   // 서약서는 자산성 물품 칸에서 따로 올린다
 const MODOO_BUCKET = 'modoo-evidence';
 
 let modooLoaded = false;
@@ -3766,8 +3777,7 @@ function modooNeedKinds(r) {
   else if (group >= R.evidenceOver || r.is_asset) need.push('영수증', '사진');
   if (r.budget_item === '외주용역비') need.push('계약서·견적서');
   if (group > R.preapprovalOver) need.push('승인서');
-  if (r.is_asset) need.push('서약서');
-  return need;
+  return need;   // 자산보유서약서는 우리가 써서 내는 서류라 따로 안내한다 (modooBadges)
 }
 
 // 증빙 딱지 · 표에 저장하지 않고 규칙으로 계산한다. 「결제함」 행에만 붙인다.
@@ -3781,14 +3791,14 @@ function modooBadges(r) {
 
   const out = [];
   if (!need.length) out.push(['info', '승인내역으로 갈음']);
-  else out.push(need.every(k => have.has(k)) ? ['ok', '증빙 완료'] : ['need', '증빙 필요']);
+  else out.push(need.every(k => have.has(k)) ? ['ok', '증빙 완료'] : ['need', '증빙 챙기기']);
 
   if (r.preapproval !== '승인됨') {
-    if (amount > R.preapprovalOver) out.push(['need', '사전승인 필요']);
-    else if (group > R.preapprovalOver) out.push(['need', '합산 사전승인 필요']);
+    if (amount > R.preapprovalOver) out.push(['need', '사전승인 받기']);
+    else if (group > R.preapprovalOver) out.push(['need', '합산 사전승인 받기']);
   }
-  if (r.is_asset) out.push(['info', '자산보유서약서 · 5년 보관']);
-  if (!(r.usage_result || '').trim()) out.push(['need', '활용 결과 필요']);
+  if (r.is_asset) out.push(have.has('서약서') ? ['ok', '서약서 올림 · 5년 보관'] : ['info', '서약서 올리기 · 5년 보관']);
+  if (!(r.usage_result || '').trim()) out.push(['need', '활용 결과 적기']);
   if (r.adjust && r.adjust !== '없음') out.push(['info', r.adjust]);
   return out;
 }
@@ -3870,7 +3880,7 @@ function renderModooDetail(r) {
       ${line('안 하기로 한 이유', r.reject_reason)}
       ${line('비고', r.note)}
       ${line('결제 내용을 적은 사람', r.recorded_by)}
-      ${missing.length ? `<dt>더 있어야 할 증빙</dt><dd>${esc(missing.join(' · '))}</dd>` : ''}
+      ${missing.length ? `<dt>챙겨 둘 증빙</dt><dd>${esc(missing.join(' · '))}</dd>` : ''}
     </dl>
     ${files ? `<div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;">${files}</div>` : ''}
     ${btns.length ? `<div class="modoo-actions">${btns.join('')}</div>` : ''}
@@ -3905,7 +3915,7 @@ async function deleteModooExpense(id) {
   const r = modooRows.find(x => x.id === id);
   if (!r) return;
   const msg = r.status === '결제함'
-    ? '결제된 기록은 12. 1. 창업활동보고서의 근거입니다. 정말 지우시겠습니까?\n멘토기관이 인정하지 않은 건은 지우지 말고 「잔액보전」으로 고쳐 주세요.'
+    ? '결제된 기록은 12월 1일 활동보고서에 들어갑니다.\n멘토기관이 인정하지 않은 건이라면 지우지 않고 「잔액보전」으로 바꿔 두면 됩니다.\n그래도 지울까요?'
     : '이 요청을 지우시겠습니까?';
   if (!confirm(msg)) return;
   const paths = (r.evidence || []).map(e => e.path).filter(Boolean);
@@ -3957,9 +3967,18 @@ function openModooExpenseForm(mode, id) {
 
   const requestNotice = mode === 'request' ? `
     <div class="modoo-notice">
-      직접 결제하지 마시고 요청만 올려 주세요. 결제는 이사장님 카드로만 할 수 있습니다.<br>
-      50만 원이 넘는 건은 멘토기관 사전승인(3~4일)이 필요해 <strong>11월 20일까지</strong> 요청해 주세요.
+      필요한 것을 적어 올려 주시면 이사장님 카드로 결제합니다. 직접 사지 않으셔도 돼요.<br>
+      50만 원이 넘는 건은 멘토기관 사전승인에 3~4일이 걸려서, <strong>11월 20일까지</strong> 올려 주시면 넉넉합니다.
     </div>` : '';
+
+  // 자산성 물품 · 서약서는 우리가 써서 내는 서류라, 양식과 올리는 자리를 함께 둔다
+  const assetBox = `
+    <div class="modoo-box" id="mxAssetBox" style="display:none;">
+      <div class="modoo-tip-title">자산보유서약서</div>
+      오래 두고 쓰는 물건은 <a href="docs/modoo/modoo_forms_byeolcheom1.hwp" download="별첨1_서약서·사전승인_양식.hwp">별첨1 양식</a>의 붙임3 「자산보유서약서」를 써서 서명한 뒤 활동보고서와 함께 냅니다.
+      품명·모델명·일련번호·구매가·취득일을 적으면 되고, 물건은 산 날부터 5년간 잘 두고 쓰면 됩니다.
+      ${pay ? `<div style="margin-top:8px;"><button class="file-pick-btn" type="button" onclick="pickModooFile('서약서')"><i class="ti ti-paperclip"></i>서명한 서약서 올리기</button></div>` : ''}
+    </div>`;
 
   const payFields = pay ? `
     <div class="write-page-title" style="font-size:18px;margin:32px 0 16px;">결제한 내용</div>
@@ -3986,10 +4005,10 @@ function openModooExpenseForm(mode, id) {
     <div class="form-group"><label class="form-label">비고에 덧붙일 말</label>
       <input class="form-input" type="text" id="mxNote" value="${modooAttr(v('note'))}"></div>
     <div class="form-group"><label class="form-label">증빙 파일 (JPG·PNG·PDF)</label>
-      <div class="modoo-help" style="margin:0 0 8px;">영수증의 카드번호는 가리고 올려 주세요. 10만 원 미만이라도 거래처 이름만으로 무엇을 샀는지 알기 어려우면 증빙을 올려 주세요.</div>
+      <div class="modoo-help" style="margin:0 0 8px;">영수증의 카드번호는 가리고 올려 주세요. 10만 원 미만이라도 거래처 이름만으로 무엇을 샀는지 알기 어려우면 함께 올려 두시면 보고서 쓸 때 편합니다.</div>
       <div class="modoo-ev-row">
         <select class="form-select" id="mxEvKind" style="width:auto;">${modooOpt(MODOO_EVIDENCE_KINDS, '영수증')}</select>
-        <button class="file-pick-btn" type="button" onclick="document.getElementById('modooFileInput').click()"><i class="ti ti-paperclip"></i>파일 선택</button>
+        <button class="file-pick-btn" type="button" onclick="pickModooFile()"><i class="ti ti-paperclip"></i>파일 선택</button>
       </div>
       <div class="file-list" id="mxEvList"></div></div>` : '';
 
@@ -4009,11 +4028,12 @@ function openModooExpenseForm(mode, id) {
       <input class="form-input" type="date" id="mxNeeded" value="${modooAttr(v('needed_by'))}"></div>
     <label class="modoo-check"><input type="checkbox" id="mxOnline" ${r && r.is_online ? 'checked' : ''}> 온라인(PG·오픈마켓)으로 결제합니다</label>
     <label class="modoo-check"><input type="checkbox" id="mxAsset" ${r && r.is_asset ? 'checked' : ''} onchange="updateModooWarnings()"> 오래 두고 쓰는 물건입니다 (자산성 물품)</label>
+    ${assetBox}
     <div class="form-group"><label class="form-label">창업 아이템과의 연관성 *</label>
       <textarea class="form-input" id="mxRelevance" rows="3">${esc(v('relevance'))}</textarea>
       <div class="modoo-help">웹앱(창업 아이템)과 어떻게 직접 이어지는지 한두 문장으로 적어 주세요.</div></div>
     ${payFields}
-    <div class="modoo-warn" id="mxWarn"></div>
+    <div class="modoo-tip" id="mxWarn"></div>
     <div class="write-footer">
       <button class="write-back-btn" onclick="closeModooPage()"><i class="ti ti-arrow-left"></i>모두의 창업으로</button>
       <button class="write-submit-btn" id="mxSubmit" onclick="submitModooExpense()">${mode === 'request' ? '요청 올리기' : '저장'}</button>
@@ -4040,11 +4060,19 @@ function renderModooEvidenceList() {
 
 function removeModooEvidence(i) { modooEvidence.splice(i, 1); renderModooEvidenceList(); }
 
+// kind 를 주면 그 종류로 올린다 (서약서 버튼). 없으면 증빙 칸에서 고른 종류
+let modooPickKind = null;
+function pickModooFile(kind) {
+  modooPickKind = kind || null;
+  document.getElementById('modooFileInput').click();
+}
+
 document.getElementById('modooFileInput').addEventListener('change', async function () {
   const files = Array.from(this.files);
   this.value = '';
   if (!files.length || !modooForm) return;
-  const kind = document.getElementById('mxEvKind').value;
+  const kind = modooPickKind || document.getElementById('mxEvKind').value;
+  modooPickKind = null;
   for (const f of files) {
     if (f.size > 10 * 1024 * 1024) { showToast(`${f.name} · 10MB 이하만 올릴 수 있습니다.`); continue; }
     showToast(`${f.name} 올리는 중...`);
@@ -4059,7 +4087,7 @@ document.getElementById('modooFileInput').addEventListener('change', async funct
   renderModooEvidenceList();
 });
 
-// 입력할 때 보이는 경고 · 저장은 막지 않는다. 판단은 사람이 한다.
+// 입력할 때 보이는 안내 · 저장은 막지 않는다. 판단은 사람이 하고, 화면은 다음 걸음을 알려 준다.
 function updateModooWarnings() {
   const el = document.getElementById('mxWarn');
   if (!el) return;
@@ -4068,16 +4096,21 @@ function updateModooWarnings() {
   const amount = g('mxAmount') ? modooNum(g('mxAmount').value) : null;
   const money = amount != null ? amount : modooNum(g('mxExpected').value);
   const isAsset = g('mxAsset').checked;
-  const warns = [];
-  if (money != null && money > R.preapprovalOver) warns.push('멘토기관 사전승인 후 집행해야 합니다(승인까지 3~4일).');
-  if (isAsset && money != null && money > R.assetMax) warns.push('50만 원 초과 물품은 구입할 수 없습니다. 렌탈(지급수수료)을 검토해 주세요.');
+  if (g('mxAssetBox')) g('mxAssetBox').style.display = isAsset ? '' : 'none';
+  const tips = [];
+  if (money != null && money > R.preapprovalOver)
+    tips.push('50만 원이 넘는 건은 결제 전에 멘토기관 사전승인을 받습니다. 별첨1 양식의 붙임4 「사전 승인요청서」를 보내면 3~4일 안에 답이 옵니다.');
+  if (isAsset && money != null && money > R.assetMax)
+    tips.push('50만 원이 넘는 물건은 사는 대신 빌려 쓸 수 있습니다. 렌탈은 「지급수수료」로 올려 주세요.');
   if (modooForm && modooForm.mode === 'request' && money != null && money > R.preapprovalOver && modooTodayKst() > R.bigRequestBy)
-    warns.push('50만 원이 넘는 요청은 11월 20일까지 받습니다. 사전승인 기간이 모자랄 수 있습니다.');
+    tips.push('사전승인 기간이 빠듯할 수 있어요. 멘토기관에 먼저 여쭤보면 수월합니다.');
   const spent = g('mxSpentOn') ? g('mxSpentOn').value : '';
-  if (spent && spent > R.cardDeadline) warns.push('카드 사용 기간이 지났습니다.');
+  if (spent && spent > R.cardDeadline) tips.push('카드는 11월 30일까지 쓸 수 있어요. 날짜를 한 번 더 봐 주세요.');
   if (g('mxAttendees') && g('mxBudget').value === '여비·회의비' && !g('mxAttendees').value.trim())
-    warns.push('여비·회의비는 금액과 관계없이 목적·장소(회의비는 동석자)를 꼭 적어야 합니다.');
-  el.innerHTML = warns.map(w => '· ' + esc(w)).join('<br>');
+    tips.push('여비·회의비는 목적·장소(회의비는 함께한 분)를 적어 두면 활동보고서에 그대로 옮길 수 있습니다.');
+  el.innerHTML = tips.length
+    ? '<div class="modoo-tip-title">안내</div>' + tips.map(t => '· ' + esc(t)).join('<br>')
+    : '';
 }
 
 function modooHasBlockedWord(...texts) {
@@ -4122,7 +4155,7 @@ async function submitModooExpense() {
   }
 
   if (modooHasBlockedWord(body.item_name, body.buy_link || '', body.merchant || '')
-      && !confirm('개인용 전자기기·상품권·포인트·주차료는 쓸 수 없는 항목입니다. 카메라는 멘토기관 확인 전에는 사지 않습니다. 그래도 기록하시겠어요?')) return;
+      && !confirm('개인용 전자기기·상품권·포인트·주차료는 이 카드로 쓰지 않는 항목이에요. 카메라는 멘토기관에 먼저 여쭤본 뒤에 사면 됩니다.\n이대로 저장할까요?')) return;
 
   const btn = g('mxSubmit');
   btn.disabled = true;
