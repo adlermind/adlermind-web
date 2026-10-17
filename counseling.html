@@ -86,6 +86,64 @@ nav {
   .nav-login-link { display: none; }
   .nav-login-mobile { display: block !important; }
 }
+
+/* 아들러 상담은 이런 상담입니다 · 2026-10-18
+   그림 바탕(크림)에 맞춘 색입니다. 브랜드 팔레트를 억지로 맞추지 않았습니다. */
+.ac-intro { background: #FBF6EC; word-break: keep-all; overflow-wrap: break-word; }
+.ac-hero { position: relative; max-width: 1600px; margin: 0 auto; }
+.ac-hero-img { display: block; width: 100%; height: auto; aspect-ratio: 1672 / 941; }
+.ac-hero-text { padding: 32px 24px 8px; max-width: 640px; margin: 0 auto; }
+.ac-label {
+  font-family: 'Raleway', sans-serif; font-size: 13px; font-weight: 400;
+  letter-spacing: 0.3em; color: #6F9468; text-transform: uppercase;
+}
+.ac-title {
+  font-family: 'Noto Serif KR', serif; font-weight: 400; color: #4A4038;
+  font-size: 26px; line-height: 1.45; margin: 14px 0 18px;
+}
+.ac-lead { font-size: 15px; line-height: 1.9; color: #4A4038; text-wrap: pretty; }
+.ac-lead + .ac-lead { margin-top: 10px; }
+.ac-btn {
+  display: inline-block; margin-top: 24px; padding: 11px 26px; border-radius: 999px;
+  background: #7FA07A; color: #fff; font-size: 14px; text-decoration: none;
+  transition: background 0.15s;
+}
+.ac-btn:hover { background: #6B8C66; }
+.ac-btn:focus-visible { outline: 2px solid #4A4038; outline-offset: 3px; }
+/* 넓은 화면에서는 그림 왼쪽 빈 벽에 글을 얹습니다. 문틀(그림 폭 25%)보다 안쪽에 둡니다. */
+@media (min-width: 1200px) {
+  .ac-hero-text {
+    position: absolute; top: 50%; left: 3.5%; transform: translateY(-50%);
+    width: 21%; max-width: none; padding: 0; margin: 0;
+  }
+  .ac-title { font-size: clamp(24px, 2vw, 32px); }
+  .ac-lead { font-size: 14px; }
+}
+.ac-features { max-width: 1120px; margin: 0 auto; padding: 56px 24px 24px; }
+.ac-features-head { text-align: center; margin-bottom: 32px; }
+.ac-features-title { font-family: 'Noto Serif KR', serif; font-weight: 400; font-size: 22px; color: #4A4038; margin-top: 12px; }
+.ac-grid { display: grid; grid-template-columns: 1fr; gap: 20px; list-style: none; }
+@media (min-width: 600px) { .ac-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1000px) { .ac-grid { grid-template-columns: repeat(4, 1fr); } }
+.ac-card { border-radius: 20px; padding: 18px 22px 26px; }
+.ac-card.peach { background: #FCEDE4; }
+.ac-card.honey { background: #FBF1D6; }
+.ac-card.lilac { background: #F5ECF1; }
+.ac-card.sage  { background: #EAF1E6; }
+/* 그림은 크림 바탕 그대로 둥근 액자처럼 놓습니다. 카드 색은 액자 둘레가 됩니다.
+   width·height 속성이 있으므로 height:auto 를 꼭 둡니다. 없으면 600px 높이로 늘어납니다. */
+.ac-card img { display: block; width: 100%; max-width: 240px; height: auto; aspect-ratio: 1; margin: 0 auto 18px; border-radius: 14px; }
+.ac-card h3 { font-family: 'Noto Serif KR', serif; font-weight: 400; font-size: 19px; color: #4A4038; margin-bottom: 10px; }
+.ac-card .ac-sum { font-size: 15px; line-height: 1.75; color: #4A4038; margin-bottom: 10px; text-wrap: pretty; }
+.ac-card .ac-body { font-size: 14px; line-height: 1.85; color: #6E6763; text-wrap: pretty; }
+.ac-motto { text-align: center; padding: 48px 24px 64px; }
+.ac-motto blockquote { font-family: 'Noto Serif KR', serif; font-size: 24px; line-height: 1.6; color: #4A4038; }
+.ac-motto .ac-src { font-size: 13px; color: #6E6763; margin-top: 12px; }
+.ac-motto .ac-ref { font-size: 13px; color: #6E6763; margin-top: 28px; line-height: 1.7; }
+@media (max-width: 600px) {
+  .ac-title { font-size: 24px; }
+  .ac-motto blockquote { font-size: 20px; }
+}
 </style>
 </head>
 <body>
@@ -105,12 +163,72 @@ nav {
   <a class="nav-member-btn" href="members.html">조합원 마당</a>
   <button class="nav-ham" id="navHam">&#9776;</button>
 </nav>
+
+<!-- 아들러 상담은 이런 상담입니다 · 2026-10-18
+     상담의 방에 처음 들어온 분이 분야를 고르기 전에 상담이 어떤 것인지 먼저 보는 자리입니다.
+     분야 하나를 열면 이 구역도 숨습니다. 캐릭터 기준은 adlermind-characters 스킬. -->
+<section class="ac-intro" id="adlerIntro">
+  <div class="ac-hero">
+    <img class="ac-hero-img"
+         src="image/room/room_hero.webp"
+         srcset="image/room/room_hero-900.webp 900w, image/room/room_hero.webp 1672w"
+         sizes="(max-width: 1600px) 100vw, 1600px"
+         width="1672" height="941"
+         alt="햇살이 드는 상담의 방. 창가에 마주 보는 의자 두 개가 놓여 있고, 문 앞에서 두더지 마인이 손을 흔들며 맞이합니다. 다람쥐 아리, 기린 루미, 사슴 단이, 거북이 토토가 방 안에 있습니다.">
+    <div class="ac-hero-text">
+      <div class="ac-label">Adlerian Counseling</div>
+      <h1 class="ac-title">아들러 상담은<br>이런 상담입니다</h1>
+      <p class="ac-lead">상담이라고 하면 오래 다니며 지난 일을 하나하나 꺼내야 할 것 같아 망설여지기도 합니다. 아들러 상담은 조금 다릅니다.</p>
+      <p class="ac-lead">100년 전에 시작된 상담이지만, 오늘날 사람들이 상담에 바라는 모습과 놀라울 만큼 닮아 있습니다.</p>
+      <a class="ac-btn" href="#acFeatures">상담 방으로 들어가기</a>
+    </div>
+  </div>
+
+  <div class="ac-features" id="acFeatures">
+    <div class="ac-features-head">
+      <div class="ac-label">Four Features</div>
+      <h2 class="ac-features-title">네 가지 특징</h2>
+    </div>
+    <ul class="ac-grid">
+      <li class="ac-card peach">
+        <img src="image/room/card_ari.webp" width="600" height="600" loading="lazy" alt="도토리 세 개를 하나씩 모으는 다람쥐 아리">
+        <h3>짧고 분명하게</h3>
+        <p class="ac-sum">지금 필요한 변화에 집중합니다.</p>
+        <p class="ac-body">아들러는 처음부터 회기를 정해 두고 상담했습니다. 대개 스무 번 안쪽에서 마무리했습니다. 끝이 보이는 상담이라 시작하는 마음이 가볍고, 상담하는 동안 무엇을 바꾸고 싶은지 더 또렷해집니다.</p>
+      </li>
+      <li class="ac-card honey">
+        <img src="image/room/card_rumi.webp" width="600" height="600" loading="lazy" alt="노랑나비를 올려다보는 기린 루미">
+        <h3>지금, 그리고 앞으로</h3>
+        <p class="ac-sum">과거를 탓하기보다 지금의 나와 내가 바라는 내일을 함께 봅니다.</p>
+        <p class="ac-body">지나온 일은 분명 우리에게 영향을 줍니다. 그렇다고 과거가 나를 다 정해 버리지는 않습니다. 아들러는 사람이 앞으로 무엇을 바라느냐에 따라 지난 일을 기억하는 방식도, 지금 살아가는 방식도 달라진다고 보았습니다. 사람은 늘 새로 되어 가는 존재입니다.</p>
+      </li>
+      <li class="ac-card lilac">
+        <img src="image/room/card_dani.webp" width="600" height="600" loading="lazy" alt="파랑새와 함께 그림책을 보는 사슴 단이">
+        <h3>함께 배우고 실천하는 상담</h3>
+        <p class="ac-sum">필요한 정보와 방법을 나누고, 생활 속에서 해 볼 수 있게 돕습니다.</p>
+        <p class="ac-body">아들러 상담자는 이야기를 듣는 데서 멈추지 않습니다. 도움이 될 만한 생각과 방법을 함께 나누고, 집과 일터에서 직접 해 볼 수 있도록 곁에서 돕습니다. 아들러가 일찍부터 부모교육과 교사교육에 힘을 쏟은 것도 같은 까닭입니다.</p>
+      </li>
+      <li class="ac-card sage">
+        <img src="image/room/card_toto.webp" width="600" height="600" loading="lazy" alt="자신의 속도로 징검돌을 건너는 거북이 토토">
+        <h3>한 사람에게 꼭 맞게</h3>
+        <p class="ac-sum">정해진 틀에 사람을 맞추지 않고, 그 사람에게 맞는 방법을 찾습니다.</p>
+        <p class="ac-body">아들러 상담자가 늘 먼저 묻는 질문이 있습니다. "이 분에게는 무엇이 가장 잘 맞을까?" 사람을 이해하는 바탕은 굳게 지키면서, 방법은 그 사람에게 맞춰 자유롭게 고릅니다.</p>
+      </li>
+    </ul>
+  </div>
+
+  <div class="ac-motto">
+    <blockquote>이론은 단단하고, 방법은 다양하다.</blockquote>
+    <p class="ac-src">— 매너스터와 코르시니(Manaster &amp; Corsini, 1982)</p>
+    <p class="ac-ref">참고. Carlson, J., Watts, R. E., &amp; Maniacci, M. (2006). <i>Adlerian Therapy: Theory and Practice</i>. APA.</p>
+  </div>
+</section>
 <!-- 체험 목록. 관리자 페이지에서 상담의 방으로 걸어 둔 체험이 여기에 나타납니다.
      아직 걸린 체험이 없으면 아래 준비 중 안내가 그대로 보입니다. -->
 <section class="exp-section hidden" id="expSection">
   <div class="exp-inner">
     <div class="exp-section-label">COUNSELING</div>
-    <h1 class="exp-section-title">상담의 방</h1>
+    <h2 class="exp-section-title">상담의 방</h2>
     <p class="exp-section-desc">
       설명 대신 먼저 해보시는 자리입니다. 로그인 없이 해보실 수 있습니다.
     </p>
@@ -177,6 +295,7 @@ AMRoom.render({
   page: 'counseling.html',
   // 분야 하나를 열면 체험 카드와 머리글을 감춥니다. 그 이야기에 집중하는 자리입니다.
   onDetail: field => {
+    document.getElementById('adlerIntro').classList.toggle('hidden-by-detail', !!field);
     document.getElementById('expSection').classList.toggle('hidden-by-detail', !!field);
     document.getElementById('fieldHead').classList.toggle('hidden', !!field);
     document.title = (field ? field.name + ' · ' : '') + '심리상담 · ADLER MIND 협동조합';
