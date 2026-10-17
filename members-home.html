@@ -813,6 +813,65 @@ body {
   .acct-card-amount { font-size: 15px; }
 }
 
+/* ── 모두의 창업 (2026-10-17) ── */
+#panelModoo { max-width: 1040px; }   /* 표 칸이 8개라 기획마당처럼 넓힌다 */
+.modoo-notice {
+  border-left: 3px solid var(--am-rose); background: rgba(232,146,154,0.08);
+  padding: 12px 16px; margin-bottom: 16px;
+  font-size: 13px; color: var(--am-dark); line-height: 1.8;
+}
+.modoo-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 12px; }
+.modoo-card-sub { font-size: 13px; color: var(--am-muted); margin-top: 6px; }
+.modoo-items { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 12px; }
+.modoo-item { background: var(--am-white); border: 0.5px solid var(--am-border); padding: 10px 12px; }
+.modoo-item-name { font-size: 13px; color: var(--am-muted); }
+.modoo-item-sum { font-size: 14px; color: var(--am-gray); margin-top: 4px; }
+.modoo-pending {
+  display: block; width: 100%; text-align: left; margin-bottom: 16px;
+  padding: 10px 14px; background: rgba(143,175,212,0.10); border: 0.5px solid var(--am-blue);
+  font-size: 13px; color: var(--am-dark); cursor: pointer; font-family: 'Noto Sans KR', sans-serif;
+}
+.modoo-chips { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+.modoo-chip {
+  padding: 5px 12px; font-size: 13px; cursor: pointer;
+  border: 0.5px solid var(--am-border); background: var(--am-white); color: var(--am-gray);
+  font-family: 'Noto Sans KR', sans-serif;
+}
+.modoo-chip.active { background: var(--am-sage); color: #fff; border-color: var(--am-sage); }
+.modoo-table td { vertical-align: top; }
+.modoo-link { background: none; border: none; padding: 0; cursor: pointer; text-align: left;
+  font-size: 13px; color: var(--am-dark); text-decoration: underline; font-family: 'Noto Sans KR', sans-serif; }
+.modoo-badge { display: inline-block; font-size: 13px; padding: 1px 6px; margin: 0 4px 4px 0; white-space: nowrap; }
+.modoo-badge.ok   { background: rgba(143,191,184,0.15); color: #3f7a72; }
+.modoo-badge.need { background: rgba(232,146,154,0.15); color: #a8505a; }
+.modoo-badge.info { background: rgba(143,175,212,0.15); color: #45658c; }
+.modoo-detail td { background: #f6f5f2; }
+.modoo-detail-grid { display: grid; grid-template-columns: 130px 1fr; gap: 6px 12px; font-size: 13px; line-height: 1.7; }
+.modoo-detail-grid dt { color: var(--am-muted); }
+.modoo-detail-grid dd { color: var(--am-dark); white-space: pre-wrap; }
+.modoo-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
+.modoo-warn { font-size: 13px; color: #a8505a; line-height: 1.8; margin: 6px 0 16px; }
+.modoo-guide { font-size: 13px; color: var(--am-muted); line-height: 1.9; margin-bottom: 16px; }
+.modoo-guide a { color: var(--am-dark); }
+.modoo-help { font-size: 13px; color: var(--am-muted); margin-top: 6px; }
+.modoo-check { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--am-gray); margin-bottom: 10px; cursor: pointer; }
+.modoo-month { border: 0.5px solid var(--am-border); background: var(--am-white); padding: 16px 18px; margin-bottom: 16px; }
+.modoo-month-hd { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.modoo-month-title { font-size: 15px; font-weight: 700; color: var(--am-dark); }
+.modoo-month-sub { font-size: 13px; color: var(--am-muted); }
+.modoo-sol { border-top: 0.5px solid var(--am-pale); padding: 12px 0; }
+.modoo-sol-name { font-size: 14px; font-weight: 700; color: var(--am-dark); }
+.modoo-sol-meta { font-size: 13px; color: var(--am-muted); margin-top: 2px; }
+.modoo-sol-purpose { font-size: 13px; color: var(--am-dark); margin-top: 6px; white-space: pre-wrap; line-height: 1.7; }
+.modoo-note { background: #f6f5f2; padding: 10px 14px; margin-top: 8px; font-size: 13px; line-height: 1.8; color: var(--am-dark); }
+.modoo-note-meta { color: var(--am-muted); margin-bottom: 4px; }
+.modoo-ev-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; flex-wrap: wrap; }
+@media (max-width: 600px) {
+  .modoo-summary { grid-template-columns: 1fr 1fr; }
+  .modoo-items { grid-template-columns: 1fr 1fr; }
+  .modoo-detail-grid { grid-template-columns: 1fr; }
+}
+
 /* ── 공개 배지 ── */
 .pub-badge {
   font-size: 13px; color: var(--am-sage);
@@ -997,6 +1056,9 @@ table.idea-matrix tbody th { background: #f4f2ee; font-size: 13px; font-weight: 
     </button>
     <button class="htab" onclick="switchTab('accounting')" id="tabAccounting">
       <i class="ti ti-report-money"></i>회계장부
+    </button>
+    <button class="htab" onclick="switchTab('modoo')" id="tabModoo">
+      <i class="ti ti-rocket"></i>모두의 창업
     </button>
   </div>
 </div>
@@ -1199,6 +1261,109 @@ table.idea-matrix tbody th { background: #f4f2ee; font-size: 13px; font-weight: 
   </div>
   <button class="acct-more-btn" id="acctMoreBtn" onclick="loadMoreAcct()" style="display:none;">더보기</button>
 </div>
+
+<!-- Tab 6: 모두의 창업 (2026-10-17)
+     조합 회계장부와 표·버킷·합계를 하나도 같이 쓰지 않는다. 섞이면 환수 사유가 된다.
+     설계 · 계획서\02_홈페이지\인계_모두의창업_집행기록_20261017.md -->
+<div class="panel" id="panelModoo">
+  <div class="panel-hd">
+    <div class="panel-title">모두의 창업</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;">
+      <button class="btn-outline-sm" onclick="downloadModooCsv()">
+        <i class="ti ti-table-export"></i>집행 상세내역 내려받기
+      </button>
+      <button class="btn-outline-sm" style="display:none;" id="modooDirectBtn" onclick="openModooExpenseForm('direct')">
+        <i class="ti ti-credit-card"></i>직접 결제 기록
+      </button>
+      <button class="btn-sage" onclick="openModooExpenseForm('request')">
+        <i class="ti ti-plus"></i>결제 요청하기
+      </button>
+    </div>
+  </div>
+
+  <div class="modoo-notice">
+    이 기록은 조합 회계와 별개입니다. 모두의 창업 창업활동자금(이사장 명의 카드) 사용 내역이며, 조합 장부와 지출증빙으로 쓰지 않습니다.<br>
+    이 카드로 결제한 것만 적습니다. 개인 카드나 현금으로 먼저 산 것은 지원되지 않습니다. 필요한 물건은 「결제 요청」으로 올려 주세요.
+  </div>
+
+  <div class="modoo-summary">
+    <div class="acct-card">
+      <div class="acct-card-label">충전액</div>
+      <div class="acct-card-amount" id="modooTotal">—</div>
+    </div>
+    <div class="acct-card">
+      <div class="acct-card-label">사용한 금액</div>
+      <div class="acct-card-amount expense" id="modooUsed">—</div>
+    </div>
+    <div class="acct-card">
+      <div class="acct-card-label">남은 금액</div>
+      <div class="acct-card-amount income" id="modooLeft">—</div>
+      <div class="modoo-card-sub" id="modooPendingSum"></div>
+    </div>
+    <div class="acct-card">
+      <div class="acct-card-label">사용 마감까지</div>
+      <div class="acct-card-amount" id="modooDays">—</div>
+      <div class="modoo-card-sub">2026. 11. 30.(월)까지</div>
+    </div>
+  </div>
+
+  <div class="modoo-items" id="modooItems"></div>
+  <div id="modooPendingLine"></div>
+
+  <div class="modoo-chips" id="modooChips"></div>
+  <div class="acct-table-wrap">
+    <table class="acct-table modoo-table">
+      <thead>
+        <tr>
+          <th>상태</th>
+          <th>날짜</th>
+          <th>가맹점</th>
+          <th>품목</th>
+          <th>비목</th>
+          <th style="text-align:right;">금액</th>
+          <th>증빙</th>
+          <th>요청자</th>
+        </tr>
+      </thead>
+      <tbody id="modooTableBody">
+        <tr><td colspan="8" style="text-align:center;padding:32px;color:var(--am-muted);">불러오는 중...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- AI 솔루션 함께 쓰기 · 허브기관이 사후 정산하므로 카드 금액과 합치지 않는다 -->
+  <div class="panel-hd" style="margin-top:40px;">
+    <div class="panel-title">AI 솔루션 함께 쓰기</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;">
+      <button class="btn-outline-sm" onclick="downloadModooNotesCsv()">
+        <i class="ti ti-table-export"></i>솔루션별 내려받기
+      </button>
+      <button class="btn-sage" onclick="openModooAiForm()">
+        <i class="ti ti-plus"></i>써 보고 싶은 솔루션 제안
+      </button>
+    </div>
+  </div>
+  <div class="modoo-guide">
+    · 두 달 합계 1,000,000원까지 신청할 수 있습니다. 합계에는 「신청함」·「계정 받음」만 넣습니다.<br>
+    · 솔루션 목록 · <a href="https://www.modoo.or.kr/ai-solution/list" target="_blank" rel="noopener">modoo.or.kr/ai-solution/list</a> (로그인 없이 볼 수 있습니다)<br>
+    · 계정은 이사장님께 따로 받으세요. 아이디·비밀번호는 이 화면에 적지 않습니다.<br>
+    · 공급회사 홈페이지에서 따로 결제하거나 할인·페이백 제안을 받지 않습니다.
+  </div>
+  <div id="modooAiArea"></div>
+</div>
+
+<!-- 모두의 창업 입력 페이지 · 결제 요청·결제 기록·솔루션 제안·사용 기록이 같은 틀을 쓴다 -->
+<div class="write-page" id="modooPage">
+  <div class="write-page-inner">
+    <div class="write-page-nav">
+      <button class="write-back-btn" onclick="closeModooPage()">
+        <i class="ti ti-arrow-left"></i>모두의 창업으로
+      </button>
+    </div>
+    <div id="modooPageBody"></div>
+  </div>
+</div>
+<input type="file" id="modooFileInput" style="display:none" multiple accept="image/jpeg,image/png,image/webp,application/pdf">
 
 <!-- PDF 뷰어 모달 -->
 <div class="pdf-overlay" id="pdfOverlay">
@@ -1571,6 +1736,7 @@ function switchAmMode(mode) {
   // 모드에 따라 수정·삭제 버튼이 달라지므로 열려 있는 안건 게시판도 다시 그린다.
   if (agendaLoaded) { agendaEditingId = null; agendaFiles = []; renderAgenda(); }
   renderAcctTable();
+  if (modooLoaded) renderModoo();
 
   showToast(`${mode === 'member' ? '조합원' : '관리자'} 모드로 전환했습니다.`);
 }
@@ -1719,7 +1885,7 @@ async function uploadToStorage(file, folder, asUrl) {
 // ── 탭 전환 ──
 function switchTab(tab) {
   closePostView();
-  ['board','schedule','ideas','contact','accounting'].forEach(t => {
+  ['board','schedule','ideas','contact','accounting','modoo'].forEach(t => {
     document.getElementById('tab' + cap(t)).classList.remove('active');
     document.getElementById('panel' + cap(t)).classList.remove('active');
   });
@@ -1728,6 +1894,7 @@ function switchTab(tab) {
   if (tab === 'contact') loadContacts();
   if (tab === 'accounting') loadAccounting();
   if (tab === 'ideas') loadIdeas();
+  if (tab === 'modoo') loadModoo();
 }
 function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
 
@@ -3467,6 +3634,874 @@ async function deleteAgenda(id) {
   if (!res.ok) { showToast(`삭제하지 못했습니다. (${res.status})`); return; }
   showToast('삭제되었습니다.');
   await loadAgenda();
+}
+
+// ── 모두의 창업 (2026-10-17) ──
+// 조합 회계장부(accounting_records · receipts)와 표·버킷·합계를 하나도 같이 쓰지 않는다.
+// 규칙 값은 이 상수 한 곳에만 둔다. 일정이 바뀌면 여기만 고친다.
+const MODOO_RULES = {
+  cardTotal: 2000000,           // [확인 필요] 실제 충전액
+  cardDeadline: '2026-11-30',
+  bigRequestBy: '2026-11-20',    // 50만 원 초과 요청을 받는 마지막 날 (사전승인 3~4일)
+  evidenceOver: 100000,          // 이 금액 이상이면 건별 증빙
+  preapprovalOver: 500000,       // 이 금액을 넘으면 사전승인
+  assetMax: 500000,              // 자산성 물품 구입 한도
+  aiTotal: 1000000,
+  aiApply: { '2026-11': ['2026-10-16','2026-10-25'], '2026-12': ['2026-11-20','2026-11-25'] },
+  budgetItems: ['재료구입비','외주용역비','문헌구입비','지급수수료','여비·회의비'],
+  blockedWords: ['노트북','데스크톱','태블릿','휴대폰','휴대전화','스마트워치','모니터','이어폰',
+                 '카메라','상품권','기프트카드','포인트','주차'],
+};
+const MODOO_EVIDENCE_KINDS = ['영수증','주문내역','사진','승인서','서약서','계약서·견적서','기타'];
+const MODOO_BUCKET = 'modoo-evidence';
+
+let modooLoaded = false;
+let modooIsManager = null;     // rpc/is_modoo_manager 결과. 탭을 처음 열 때 한 번 묻는다
+let modooUid = null;
+let modooRows = [];
+let modooAi = [];
+let modooNotes = [];
+let modooFilter = '전체';
+let modooOpenRow = null;       // 펼친 집행 행 id
+let modooOpenSol = new Set();  // 사용 기록을 펼친 솔루션 id
+let modooForm = null;          // 열려 있는 입력 페이지의 상태
+let modooEvidence = [];        // 입력 페이지에서 다루는 증빙 목록 [{kind,name,size,path}]
+let modooUploaded = [];        // 이번에 올렸지만 아직 저장하지 않은 파일 경로 (취소하면 치운다)
+
+// 관리 담당이거나, 관리자 권한을 가진 사람이 관리자 모드로 볼 때. DB에서도 같은 기준으로 막는다.
+function modooCanManage() { return !!modooIsManager || (amHasAdminRole && amAdminMode); }
+function modooMyName() { return currentMember ? currentMember.display_name : ''; }
+function modooAttr(s) { return esc(s).replace(/"/g, '&quot;'); }
+function modooWon(n) { return (n || 0).toLocaleString() + '원'; }
+function modooNum(v) { const n = parseInt(String(v || '').replace(/[^\d]/g, ''), 10); return isNaN(n) ? null : n; }
+function modooTodayKst() { return new Date(Date.now() + 9 * 3600 * 1000).toISOString().slice(0, 10); }
+function modooDot(d) { return d ? d.replace(/-/g, '.') : ''; }
+
+async function modooFail(res, what) {
+  showToast(`${what} 못했습니다. (${res.status}) ${(await res.text()).slice(0, 120)}`);
+}
+
+async function loadModoo() {
+  document.getElementById('modooTableBody').innerHTML =
+    '<tr><td colspan="8" style="text-align:center;padding:32px;color:var(--am-muted);">불러오는 중...</td></tr>';
+  try {
+    if (modooUid === null) {
+      const { data: { session } } = await memberAuth.client.auth.getSession();
+      modooUid = session ? session.user.id : '';
+    }
+    if (modooIsManager === null) {
+      const r = await fetch(`${SB_URL}/rest/v1/rpc/is_modoo_manager`, { method: 'POST', headers: hdrs, body: '{}' });
+      modooIsManager = r.ok ? (await r.json()) === true : false;
+    }
+    const [r1, r2, r3] = await Promise.all([
+      fetch(`${SB_URL}/rest/v1/modoo_expenses?order=created_at.desc`, { headers: hdrs }),
+      fetch(`${SB_URL}/rest/v1/modoo_ai_solutions?order=created_at.asc`, { headers: hdrs }),
+      fetch(`${SB_URL}/rest/v1/modoo_ai_notes?order=created_at.desc`, { headers: hdrs }),
+    ]);
+    if (!r1.ok || !r2.ok || !r3.ok) {
+      const bad = [r1, r2, r3].find(r => !r.ok);
+      document.getElementById('modooTableBody').innerHTML =
+        `<tr><td colspan="8" style="text-align:center;padding:32px;color:var(--am-muted);">불러오지 못했습니다. (${bad.status})</td></tr>`;
+      return;
+    }
+    modooRows = await r1.json();
+    modooAi = await r2.json();
+    modooNotes = await r3.json();
+    modooLoaded = true;
+    renderModoo();
+  } catch (e) {
+    document.getElementById('modooTableBody').innerHTML =
+      '<tr><td colspan="8" style="text-align:center;padding:32px;color:var(--am-muted);">불러오지 못했습니다. 연결을 확인해 주세요.</td></tr>';
+  }
+}
+
+function renderModoo() {
+  document.getElementById('modooDirectBtn').style.display = modooCanManage() ? '' : 'none';
+  renderModooSummary();
+  renderModooTable();
+  renderModooAi();
+}
+
+function renderModooSummary() {
+  const R = MODOO_RULES;
+  const paid = modooRows.filter(r => r.status === '결제함');
+  const used = paid.reduce((s, r) => s + (r.amount || 0), 0);
+  const waiting = modooRows.filter(r => r.status === '요청');
+  const waitingSum = waiting.reduce((s, r) => s + (r.expected_amount || 0), 0);
+
+  document.getElementById('modooTotal').textContent = modooWon(R.cardTotal);
+  document.getElementById('modooUsed').textContent = modooWon(used);
+  document.getElementById('modooLeft').textContent = modooWon(R.cardTotal - used);
+  document.getElementById('modooPendingSum').textContent =
+    waiting.length ? `결제 기다리는 요청 예상액 ${modooWon(waitingSum)}` : '';
+
+  const days = Math.round((Date.parse(R.cardDeadline) - Date.parse(modooTodayKst())) / 86400000);
+  document.getElementById('modooDays').textContent = days >= 0 ? `${days}일` : '사용 기간 끝남';
+
+  document.getElementById('modooItems').innerHTML = R.budgetItems.map(item => {
+    const sum = paid.filter(r => r.budget_item === item).reduce((s, r) => s + (r.amount || 0), 0);
+    return `<div class="modoo-item"><div class="modoo-item-name">${esc(item)}</div><div class="modoo-item-sum">${modooWon(sum)}</div></div>`;
+  }).join('');
+
+  document.getElementById('modooPendingLine').innerHTML = waiting.length
+    ? `<button class="modoo-pending" onclick="setModooFilter('요청')">결제 요청 ${waiting.length}건 대기 중 · 눌러서 요청만 보기</button>`
+    : '';
+}
+
+function setModooFilter(f) { modooFilter = f; renderModooTable(); }
+
+// 같은 날·같은 거래처 결제는 합산해서 10만·50만 원 기준을 본다 (별첨2 작성 요령)
+function modooGroupSum(r) {
+  return modooRows.filter(x => x.status === '결제함' && x.spent_on === r.spent_on
+    && (x.merchant || '').trim() === (r.merchant || '').trim())
+    .reduce((s, x) => s + (x.amount || 0), 0);
+}
+
+// 증빙 딱지 · 표에 저장하지 않고 규칙으로 계산한다. 「결제함」 행에만 붙인다.
+function modooBadges(r) {
+  if (r.status !== '결제함') return [];
+  const R = MODOO_RULES;
+  const amount = r.amount || 0;
+  const group = modooGroupSum(r);
+  const have = new Set((r.evidence || []).map(e => e.kind));
+  const need = [];
+  if (r.is_online) need.push('주문내역', '사진');
+  else if (group >= R.evidenceOver) need.push('영수증', '사진');
+  if (r.budget_item === '외주용역비') need.push('계약서·견적서');
+  if (group > R.preapprovalOver) need.push('승인서');
+  if (r.is_asset) need.push('서약서');
+
+  const out = [];
+  if (!need.length) out.push(['info', '승인내역으로 갈음']);
+  else out.push(need.every(k => have.has(k)) ? ['ok', '증빙 완료'] : ['need', '증빙 필요']);
+
+  if (r.preapproval !== '승인됨') {
+    if (amount > R.preapprovalOver) out.push(['need', '사전승인 필요']);
+    else if (group > R.preapprovalOver) out.push(['need', '합산 사전승인 필요']);
+  }
+  if (r.is_asset) out.push(['info', '자산보유서약서 · 5년 보관']);
+  if (!(r.usage_result || '').trim()) out.push(['need', '활용 결과 필요']);
+  if (r.adjust && r.adjust !== '없음') out.push(['info', r.adjust]);
+  return out;
+}
+
+function modooMissingKinds(r) {
+  const have = new Set((r.evidence || []).map(e => e.kind));
+  const group = modooGroupSum(r);
+  const need = [];
+  if (r.is_online) need.push('주문내역', '사진');
+  else if (group >= MODOO_RULES.evidenceOver) need.push('영수증', '사진');
+  if (r.budget_item === '외주용역비') need.push('계약서·견적서');
+  if (group > MODOO_RULES.preapprovalOver) need.push('승인서');
+  if (r.is_asset) need.push('서약서');
+  return need.filter(k => !have.has(k));
+}
+
+function renderModooTable() {
+  const chips = ['전체', '요청', '결제함', '안 하기로 함'];
+  document.getElementById('modooChips').innerHTML = chips.map(c =>
+    `<button class="modoo-chip ${modooFilter === c ? 'active' : ''}" onclick="setModooFilter('${c}')">${c}</button>`).join('');
+
+  const rows = modooRows.filter(r => modooFilter === '전체' || r.status === modooFilter);
+  const body = document.getElementById('modooTableBody');
+  if (!rows.length) {
+    body.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:32px;color:var(--am-muted);">기록이 없습니다.</td></tr>';
+    return;
+  }
+  body.innerHTML = rows.map(r => {
+    const date = modooDot(r.spent_on || (r.created_at || '').slice(0, 10));
+    const amount = r.amount != null ? modooWon(r.amount)
+      : (r.expected_amount != null ? `예상 ${modooWon(r.expected_amount)}` : '—');
+    const stateCls = r.status === '결제함' ? 'ok' : (r.status === '요청' ? 'info' : 'need');
+    const badges = modooBadges(r).map(([c, t]) => `<span class="modoo-badge ${c}">${esc(t)}</span>`).join('');
+    const main = `<tr>
+      <td><span class="modoo-badge ${stateCls}">${esc(r.status)}</span></td>
+      <td style="white-space:nowrap;">${esc(date)}</td>
+      <td>${esc(r.merchant || '—')}</td>
+      <td><button class="modoo-link" onclick="toggleModooRow('${r.id}')">${esc(r.item_name)}</button></td>
+      <td style="white-space:nowrap;">${esc(r.budget_item)}</td>
+      <td style="text-align:right;white-space:nowrap;">${amount}</td>
+      <td>${badges || '—'}</td>
+      <td>${esc(r.requested_by)}</td>
+    </tr>`;
+    return main + (modooOpenRow === r.id ? renderModooDetail(r) : '');
+  }).join('');
+}
+
+function toggleModooRow(id) { modooOpenRow = modooOpenRow === id ? null : id; renderModooTable(); }
+
+function renderModooDetail(r) {
+  const manage = modooCanManage();
+  const mine = r.user_id && r.user_id === modooUid;
+  const line = (k, v) => (v === null || v === undefined || v === '') ? '' : `<dt>${k}</dt><dd>${esc(v)}</dd>`;
+  const files = (r.evidence || []).map((e, i) =>
+    `<button class="btn-outline-sm" onclick="openModooEvidence('${r.id}', ${i})"><i class="ti ti-paperclip"></i>${esc(e.kind)} · ${esc(e.name)}</button>`).join(' ');
+  const missing = r.status === '결제함' ? modooMissingKinds(r) : [];
+
+  const btns = [];
+  if (r.status === '요청' && manage) {
+    btns.push(`<button class="btn-sage" onclick="openModooExpenseForm('pay', '${r.id}')"><i class="ti ti-check"></i>결제함</button>`);
+    btns.push(`<button class="btn-outline-sm" onclick="rejectModooExpense('${r.id}')">안 하기로 함</button>`);
+  }
+  if (manage || (mine && r.status === '요청')) {
+    const mode = r.status === '결제함' ? 'pay' : 'request';
+    btns.push(`<button class="btn-outline-sm" onclick="openModooExpenseForm('${mode}', '${r.id}')"><i class="ti ti-pencil"></i>고치기</button>`);
+    btns.push(`<button class="btn-danger" style="margin-left:auto;" onclick="deleteModooExpense('${r.id}')"><i class="ti ti-trash"></i>지우기</button>`);
+  }
+
+  return `<tr class="modoo-detail"><td colspan="8">
+    <dl class="modoo-detail-grid">
+      ${line('창업 아이템과의 연관성', r.relevance)}
+      ${line('예상 금액', r.expected_amount != null ? modooWon(r.expected_amount) : '')}
+      ${line('구입처·링크', r.buy_link)}
+      ${line('언제까지 필요', modooDot(r.needed_by))}
+      ${line('결제 방식', r.is_online ? '온라인(PG·오픈마켓) 결제' : '')}
+      ${line('자산성 물품', r.is_asset ? '예 · 자산보유서약서, 5년 보관' : '')}
+      ${line('집행일자', modooDot(r.spent_on))}
+      ${line('거래처명', r.merchant)}
+      ${line('산출근거', r.calc_basis)}
+      ${line('수량', r.quantity)}
+      ${line('금액', r.amount != null ? modooWon(r.amount) : '')}
+      ${line('취소·잔액보전', r.adjust !== '없음' ? r.adjust : '')}
+      ${line('사전승인', r.preapproval !== '해당 없음' ? r.preapproval : '')}
+      ${line('활용 결과', r.usage_result)}
+      ${line('목적·동석자', r.attendees)}
+      ${line('안 하기로 한 이유', r.reject_reason)}
+      ${line('비고', r.note)}
+      ${line('결제 내용을 적은 사람', r.recorded_by)}
+      ${missing.length ? `<dt>더 있어야 할 증빙</dt><dd>${esc(missing.join(' · '))}</dd>` : ''}
+    </dl>
+    ${files ? `<div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;">${files}</div>` : ''}
+    ${btns.length ? `<div class="modoo-actions">${btns.join('')}</div>` : ''}
+  </td></tr>`;
+}
+
+async function openModooEvidence(rowId, index) {
+  const r = modooRows.find(x => x.id === rowId);
+  const e = r && (r.evidence || [])[index];
+  if (!e) return;
+  const win = window.open('', '_blank');
+  const { data, error } = await memberAuth.client.storage.from(MODOO_BUCKET).createSignedUrl(e.path, 3600);
+  if (error || !data) { if (win) win.close(); showToast('파일을 열지 못했습니다.'); return; }
+  if (win) win.location = data.signedUrl; else window.location.href = data.signedUrl;
+}
+
+async function rejectModooExpense(id) {
+  const reason = prompt('안 하기로 한 이유를 한 줄로 적어 주세요. 요청한 조합원이 목록에서 봅니다.');
+  if (reason === null) return;
+  if (!reason.trim()) { showToast('이유를 적어 주세요.'); return; }
+  const res = await fetch(`${SB_URL}/rest/v1/modoo_expenses?id=eq.${id}`, {
+    method: 'PATCH', headers: { ...hdrs, 'Prefer': 'return=representation' },
+    body: JSON.stringify({ status: '안 하기로 함', reject_reason: reason.trim(), recorded_by: modooMyName() }) });
+  if (!res.ok) { await modooFail(res, '저장하지'); return; }
+  if (!(await res.json()).length) { showToast('바꿀 권한이 없어 저장되지 않았습니다.'); return; }
+  showToast('안 하기로 함으로 바꿨습니다.');
+  await loadModoo();
+}
+
+// 지우기 · 경로를 먼저 모은 뒤 행을 지우고, 그다음 파일을 치운다 (갤러리 관리와 같은 순서)
+async function deleteModooExpense(id) {
+  const r = modooRows.find(x => x.id === id);
+  if (!r) return;
+  const msg = r.status === '결제함'
+    ? '결제된 기록은 12. 1. 창업활동보고서의 근거입니다. 정말 지우시겠습니까?\n멘토기관이 인정하지 않은 건은 지우지 말고 「잔액보전」으로 고쳐 주세요.'
+    : '이 요청을 지우시겠습니까?';
+  if (!confirm(msg)) return;
+  const paths = (r.evidence || []).map(e => e.path).filter(Boolean);
+  const res = await fetch(`${SB_URL}/rest/v1/modoo_expenses?id=eq.${id}`, {
+    method: 'DELETE', headers: { ...hdrs, 'Prefer': 'return=representation' } });
+  if (!res.ok) { await modooFail(res, '지우지'); return; }
+  if (!(await res.json()).length) { showToast('지울 권한이 없어 지워지지 않았습니다.'); return; }
+  if (paths.length) await memberAuth.client.storage.from(MODOO_BUCKET).remove(paths);
+  modooOpenRow = null;
+  showToast('지웠습니다.');
+  await loadModoo();
+}
+
+// ── 입력 페이지 ──
+function openModooPage(html) {
+  document.getElementById('modooPageBody').innerHTML = html;
+  document.getElementById('modooPage').classList.add('open');
+  document.getElementById('modooPage').scrollTop = 0;
+}
+
+async function closeModooPage() {
+  // 올렸지만 저장하지 않은 증빙은 남겨 두지 않는다
+  if (modooUploaded.length) {
+    await memberAuth.client.storage.from(MODOO_BUCKET).remove(modooUploaded);
+  }
+  modooUploaded = [];
+  modooEvidence = [];
+  modooForm = null;
+  document.getElementById('modooPage').classList.remove('open');
+}
+
+function modooOpt(list, value) {
+  return list.map(v => `<option value="${modooAttr(v)}" ${v === value ? 'selected' : ''}>${esc(v)}</option>`).join('');
+}
+
+// mode · 'request' 결제 요청(새로·고치기) / 'pay' 요청을 결제함으로, 또는 결제된 행 고치기 / 'direct' 요청 없이 직접 결제 기록
+function openModooExpenseForm(mode, id) {
+  const r = id ? modooRows.find(x => x.id === id) : null;
+  if (id && !r) return;
+  const pay = mode === 'pay' || mode === 'direct';
+  modooForm = { kind: 'expense', mode, id: r ? r.id : crypto.randomUUID(), isNew: !r, wasStatus: r ? r.status : null };
+  modooEvidence = r ? (r.evidence || []).map(e => ({ ...e })) : [];
+  modooForm.originalPaths = modooEvidence.map(e => e.path);
+  modooUploaded = [];
+  const v = k => r && r[k] != null ? r[k] : '';
+
+  const title = mode === 'request' ? (r ? '결제 요청 고치기' : '결제 요청하기')
+    : mode === 'direct' ? '직접 결제 기록' : (r && r.status === '결제함' ? '결제 기록 고치기' : '결제함으로 기록');
+
+  const requestNotice = mode === 'request' ? `
+    <div class="modoo-notice">
+      직접 결제하지 마시고 요청만 올려 주세요. 결제는 이사장님 카드로만 할 수 있습니다.<br>
+      50만 원이 넘는 건은 멘토기관 사전승인(3~4일)이 필요해 <strong>11월 20일까지</strong> 요청해 주세요.
+    </div>` : '';
+
+  const payFields = pay ? `
+    <div class="write-page-title" style="font-size:18px;margin:32px 0 16px;">결제한 내용</div>
+    <div class="form-group"><label class="form-label">집행일자 *</label>
+      <input class="form-input" type="date" id="mxSpentOn" value="${modooAttr(v('spent_on'))}" oninput="updateModooWarnings()"></div>
+    <div class="form-group"><label class="form-label">거래처명 (가맹점) *</label>
+      <input class="form-input" type="text" id="mxMerchant" value="${modooAttr(v('merchant'))}" oninput="updateModooWarnings()"></div>
+    <div class="form-group"><label class="form-label">산출근거</label>
+      <input class="form-input" type="text" id="mxCalc" value="${modooAttr(v('calc_basis'))}" placeholder="예 · 272,000원 x 1대"></div>
+    <div class="form-group"><label class="form-label">수량</label>
+      <input class="form-input" type="text" id="mxQty" value="${modooAttr(v('quantity'))}" placeholder="예 · 1대, 5병"></div>
+    <div class="form-group"><label class="form-label">실제 금액 (원 · 부가세 포함, 취소 뒤 최종 금액) *</label>
+      <input class="form-input" type="text" inputmode="numeric" id="mxAmount" value="${modooAttr(v('amount'))}" oninput="updateModooWarnings()"></div>
+    <div class="form-group"><label class="form-label">취소·잔액보전</label>
+      <select class="form-select" id="mxAdjust">${modooOpt(['없음','취소','부분취소','잔액보전'], v('adjust') || '없음')}</select>
+      <div class="modoo-help">멘토기관이 인정하지 않은 건은 지우지 말고 「잔액보전」으로 둡니다.</div></div>
+    <div class="form-group"><label class="form-label">사전승인</label>
+      <select class="form-select" id="mxPre">${modooOpt(['해당 없음','요청함','승인됨'], v('preapproval') || '해당 없음')}</select></div>
+    <div class="form-group"><label class="form-label">활용 결과 (써 본 뒤 채워도 됩니다)</label>
+      <textarea class="form-input" id="mxUsage" rows="3" placeholder="사서 무엇에 썼고 무엇이 나왔는지">${esc(v('usage_result'))}</textarea></div>
+    <div class="form-group"><label class="form-label">회의비일 때 목적·동석자</label>
+      <input class="form-input" type="text" id="mxAttendees" value="${modooAttr(v('attendees'))}" oninput="updateModooWarnings()"></div>
+    <div class="form-group"><label class="form-label">비고에 덧붙일 말</label>
+      <input class="form-input" type="text" id="mxNote" value="${modooAttr(v('note'))}"></div>
+    <div class="form-group"><label class="form-label">증빙 파일 (JPG·PNG·PDF)</label>
+      <div class="modoo-help" style="margin:0 0 8px;">영수증의 카드번호는 가리고 올려 주세요. 10만 원 미만이라도 거래처 이름만으로 무엇을 샀는지 알기 어려우면 증빙을 올려 주세요.</div>
+      <div class="modoo-ev-row">
+        <select class="form-select" id="mxEvKind" style="width:auto;">${modooOpt(MODOO_EVIDENCE_KINDS, '영수증')}</select>
+        <button class="file-pick-btn" type="button" onclick="document.getElementById('modooFileInput').click()"><i class="ti ti-paperclip"></i>파일 선택</button>
+      </div>
+      <div class="file-list" id="mxEvList"></div></div>` : '';
+
+  openModooPage(`
+    <div class="write-page-title">${title}</div>
+    <div class="write-page-sub">모두의 창업 창업활동자금 · 조합 회계와 별개</div>
+    ${requestNotice}
+    <div class="form-group"><label class="form-label">품목·내용 *</label>
+      <input class="form-input" type="text" id="mxItem" value="${modooAttr(v('item_name'))}" placeholder="예 · 라벤더 오일 10ml 5병"></div>
+    <div class="form-group"><label class="form-label">비목 *</label>
+      <select class="form-select" id="mxBudget" onchange="updateModooWarnings()">${modooOpt(MODOO_RULES.budgetItems, v('budget_item') || MODOO_RULES.budgetItems[0])}</select></div>
+    <div class="form-group"><label class="form-label">예상 금액 (원)</label>
+      <input class="form-input" type="text" inputmode="numeric" id="mxExpected" value="${modooAttr(v('expected_amount'))}" oninput="updateModooWarnings()"></div>
+    <div class="form-group"><label class="form-label">구입처나 링크</label>
+      <input class="form-input" type="text" id="mxLink" value="${modooAttr(v('buy_link'))}"></div>
+    <div class="form-group"><label class="form-label">언제까지 필요한지</label>
+      <input class="form-input" type="date" id="mxNeeded" value="${modooAttr(v('needed_by'))}"></div>
+    <label class="modoo-check"><input type="checkbox" id="mxOnline" ${r && r.is_online ? 'checked' : ''}> 온라인(PG·오픈마켓)으로 결제합니다</label>
+    <label class="modoo-check"><input type="checkbox" id="mxAsset" ${r && r.is_asset ? 'checked' : ''} onchange="updateModooWarnings()"> 오래 두고 쓰는 물건입니다 (자산성 물품)</label>
+    <div class="form-group"><label class="form-label">창업 아이템과의 연관성 *</label>
+      <textarea class="form-input" id="mxRelevance" rows="3">${esc(v('relevance'))}</textarea>
+      <div class="modoo-help">웹앱(창업 아이템)과 어떻게 직접 이어지는지 한두 문장으로 적어 주세요.</div></div>
+    ${payFields}
+    <div class="modoo-warn" id="mxWarn"></div>
+    <div class="write-footer">
+      <button class="write-back-btn" onclick="closeModooPage()"><i class="ti ti-arrow-left"></i>모두의 창업으로</button>
+      <button class="write-submit-btn" id="mxSubmit" onclick="submitModooExpense()">${mode === 'request' ? '요청 올리기' : '저장'}</button>
+    </div>`);
+  renderModooEvidenceList();
+  updateModooWarnings();
+}
+
+function renderModooEvidenceList() {
+  const el = document.getElementById('mxEvList');
+  if (!el) return;
+  if (!modooEvidence.length) {
+    el.innerHTML = '<div style="font-size:13px;color:var(--am-muted);padding:6px 0;">올린 증빙이 없습니다.</div>';
+    return;
+  }
+  el.innerHTML = modooEvidence.map((e, i) => `
+    <div class="file-list-item">
+      <i class="ti ti-paperclip" style="font-size:13px;color:var(--am-muted);flex-shrink:0;"></i>
+      <span class="file-list-item-name">${esc(e.kind)} · ${esc(e.name)}</span>
+      <span class="file-list-item-size">${formatSize(e.size || 0)}</span>
+      <button class="file-remove-btn" onclick="removeModooEvidence(${i})"><i class="ti ti-x"></i></button>
+    </div>`).join('');
+}
+
+function removeModooEvidence(i) { modooEvidence.splice(i, 1); renderModooEvidenceList(); }
+
+document.getElementById('modooFileInput').addEventListener('change', async function () {
+  const files = Array.from(this.files);
+  this.value = '';
+  if (!files.length || !modooForm) return;
+  const kind = document.getElementById('mxEvKind').value;
+  for (const f of files) {
+    if (f.size > 10 * 1024 * 1024) { showToast(`${f.name} · 10MB 이하만 올릴 수 있습니다.`); continue; }
+    showToast(`${f.name} 올리는 중...`);
+    const file = await shrinkImage(f);
+    const ext = (file.type === 'image/jpeg') ? 'jpg' : (f.name.split('.').pop() || 'bin').toLowerCase();
+    const path = `modoo/${modooForm.id}/${crypto.randomUUID()}.${ext}`;
+    const { error } = await memberAuth.client.storage.from(MODOO_BUCKET).upload(path, file);
+    if (error) { showToast(`올리지 못했습니다 · ${f.name}`); continue; }
+    modooUploaded.push(path);
+    modooEvidence.push({ kind, name: f.name, size: file.size, path });
+  }
+  renderModooEvidenceList();
+});
+
+// 입력할 때 보이는 경고 · 저장은 막지 않는다. 판단은 사람이 한다.
+function updateModooWarnings() {
+  const el = document.getElementById('mxWarn');
+  if (!el) return;
+  const R = MODOO_RULES;
+  const g = id => document.getElementById(id);
+  const amount = g('mxAmount') ? modooNum(g('mxAmount').value) : null;
+  const money = amount != null ? amount : modooNum(g('mxExpected').value);
+  const isAsset = g('mxAsset').checked;
+  const warns = [];
+  if (money != null && money > R.preapprovalOver) warns.push('멘토기관 사전승인 후 집행해야 합니다(승인까지 3~4일).');
+  if (isAsset && money != null && money > R.assetMax) warns.push('50만 원 초과 물품은 구입할 수 없습니다. 렌탈(지급수수료)을 검토해 주세요.');
+  if (modooForm && modooForm.mode === 'request' && money != null && money > R.preapprovalOver && modooTodayKst() > R.bigRequestBy)
+    warns.push('50만 원이 넘는 요청은 11월 20일까지 받습니다. 사전승인 기간이 모자랄 수 있습니다.');
+  const spent = g('mxSpentOn') ? g('mxSpentOn').value : '';
+  if (spent && spent > R.cardDeadline) warns.push('카드 사용 기간이 지났습니다.');
+  if (g('mxAttendees') && g('mxBudget').value === '여비·회의비' && !g('mxAttendees').value.trim())
+    warns.push('회의비는 목적과 동석자를 꼭 적어야 합니다.');
+  el.innerHTML = warns.map(w => '· ' + esc(w)).join('<br>');
+}
+
+function modooHasBlockedWord(...texts) {
+  const all = texts.join(' ');
+  return MODOO_RULES.blockedWords.some(w => all.includes(w));
+}
+
+async function submitModooExpense() {
+  const f = modooForm;
+  if (!f) return;
+  const g = id => document.getElementById(id);
+  const pay = f.mode === 'pay' || f.mode === 'direct';
+  const body = {
+    item_name: g('mxItem').value.trim(),
+    budget_item: g('mxBudget').value,
+    relevance: g('mxRelevance').value.trim(),
+    expected_amount: modooNum(g('mxExpected').value),
+    buy_link: g('mxLink').value.trim() || null,
+    needed_by: g('mxNeeded').value || null,
+    is_online: g('mxOnline').checked,
+    is_asset: g('mxAsset').checked,
+  };
+  if (!body.item_name || !body.relevance) { showToast('품목과 창업 아이템과의 연관성은 꼭 적어 주세요.'); return; }
+
+  if (pay) {
+    Object.assign(body, {
+      status: '결제함',
+      spent_on: g('mxSpentOn').value || null,
+      merchant: g('mxMerchant').value.trim() || null,
+      calc_basis: g('mxCalc').value.trim() || null,
+      quantity: g('mxQty').value.trim() || null,
+      amount: modooNum(g('mxAmount').value),
+      adjust: g('mxAdjust').value,
+      preapproval: g('mxPre').value,
+      usage_result: g('mxUsage').value.trim() || null,
+      attendees: g('mxAttendees').value.trim() || null,
+      note: g('mxNote').value.trim() || null,
+      evidence: modooEvidence,
+      recorded_by: modooMyName(),
+    });
+    if (!body.spent_on || !body.merchant || !body.amount) { showToast('집행일자·거래처명·실제 금액은 꼭 적어 주세요.'); return; }
+  }
+
+  if (modooHasBlockedWord(body.item_name, body.buy_link || '', body.merchant || '')
+      && !confirm('개인용 전자기기·상품권·포인트·주차료는 쓸 수 없는 항목입니다. 카메라는 멘토기관 확인 전에는 사지 않습니다. 그래도 기록하시겠어요?')) return;
+
+  const btn = g('mxSubmit');
+  btn.disabled = true;
+  try {
+    let res;
+    if (f.isNew) {
+      Object.assign(body, { id: f.id, requested_by: modooMyName(), user_id: modooUid });
+      if (!pay) body.status = '요청';
+      res = await fetch(`${SB_URL}/rest/v1/modoo_expenses`, {
+        method: 'POST', headers: { ...hdrs, 'Prefer': 'return=representation' }, body: JSON.stringify(body) });
+    } else {
+      res = await fetch(`${SB_URL}/rest/v1/modoo_expenses?id=eq.${f.id}`, {
+        method: 'PATCH', headers: { ...hdrs, 'Prefer': 'return=representation' }, body: JSON.stringify(body) });
+    }
+    if (!res.ok) { await modooFail(res, '저장하지'); return; }
+    if (!(await res.json()).length) { showToast('바꿀 권한이 없어 저장되지 않았습니다.'); return; }
+
+    // 저장이 끝난 뒤에 목록에서 뺀 증빙 파일을 치운다
+    const keep = new Set(modooEvidence.map(e => e.path));
+    const dropped = (f.originalPaths || []).filter(p => !keep.has(p));
+    if (pay && dropped.length) await memberAuth.client.storage.from(MODOO_BUCKET).remove(dropped);
+    modooUploaded = [];
+    showToast(f.mode === 'request' ? (f.isNew ? '결제 요청을 올렸습니다.' : '고쳤습니다.') : '결제 기록을 저장했습니다.');
+    await closeModooPage();
+    await loadModoo();
+  } catch (e) {
+    showToast('저장 오류가 발생했습니다. 연결을 확인해 주세요.');
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
+
+// 붙임1 「집행 상세내역」 모양 그대로 · 결제함 행만, 10만 원 미만 건도 모두
+function downloadModooCsv() {
+  const R = MODOO_RULES;
+  const paid = modooRows.filter(r => r.status === '결제함');
+  if (!paid.length) { showToast('내려받을 결제 기록이 없습니다.'); return; }
+  const q = s => `"${String(s == null ? '' : s).replace(/"/g, '""')}"`;
+  const counted = paid.filter(r => r.adjust !== '잔액보전');
+  const total = counted.reduce((s, r) => s + (r.amount || 0), 0);
+  const lines = [
+    ['배정금액', R.cardTotal].join(','),
+    ['집행총액', total].join(','),
+    ['집행잔액', R.cardTotal - total].join(','),
+    '',
+    ['집행비목','순번','집행일자','거래처명','세부 품목·내용','산출근거','금액(원)','건별증빙','비고'].map(q).join(','),
+  ];
+  R.budgetItems.forEach(item => {
+    const rows = paid.filter(r => r.budget_item === item)
+      .sort((a, b) => (a.spent_on || '').localeCompare(b.spent_on || '') || (a.created_at || '').localeCompare(b.created_at || ''));
+    rows.forEach((r, i) => {
+      const [, m, d] = (r.spent_on || '--').split('-');
+      const memo = [];
+      if (r.adjust && r.adjust !== '없음') memo.push(r.adjust);
+      if (r.preapproval === '승인됨') memo.push('사전 승인확인서');
+      if (r.is_asset) memo.push('자산보유서약서');
+      if (r.budget_item === '외주용역비') memo.push('계약서');
+      if (r.note) memo.push(r.note);
+      lines.push([item, i + 1, `${m}.${d}`, r.merchant, r.item_name, r.calc_basis, r.amount,
+        (r.evidence || []).length ? '있음' : '-', memo.join(' · ')].map(q).join(','));
+    });
+    const sub = rows.filter(r => r.adjust !== '잔액보전').reduce((s, r) => s + (r.amount || 0), 0);
+    const excluded = rows.some(r => r.adjust === '잔액보전');
+    lines.push([`${item} 소계`, '', '', '', '', '', sub, '', excluded ? '잔액보전 제외' : ''].map(q).join(','));
+  });
+  modooSaveCsv(lines.join('\n'), `모두의창업_집행상세내역_${modooTodayKst().replace(/-/g, '')}.csv`);
+}
+
+function modooSaveCsv(text, filename) {
+  const blob = new Blob(['﻿' + text], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  a.click(); URL.revokeObjectURL(url);
+}
+
+// ── AI 솔루션 함께 쓰기 ──
+function modooUsersOf(s) { return (s.users || '').split(',').map(x => x.trim()).filter(Boolean); }
+
+function renderModooAi() {
+  const R = MODOO_RULES;
+  const today = modooTodayKst();
+  const counted = s => s.status === '신청함' || s.status === '계정 받음';
+  const totalUsed = modooAi.filter(counted).reduce((s, x) => s + (x.monthly_fee || 0), 0);
+  const manage = modooCanManage();
+  const me = modooMyName();
+
+  const months = Object.keys(R.aiApply).map(month => {
+    const [from, to] = R.aiApply[month];
+    const list = modooAi.filter(s => s.use_month === month);
+    const sum = list.filter(counted).reduce((s, x) => s + (x.monthly_fee || 0), 0);
+    const closed = today > to;
+    const mm = Number(month.slice(5));
+    const period = `${Number(from.slice(5, 7))}. ${Number(from.slice(8))}.~${Number(to.slice(5, 7))}. ${Number(to.slice(8))}.`;
+
+    const sols = list.map(s => {
+      const mine = s.user_id && s.user_id === modooUid;
+      const users = modooUsersOf(s);
+      const notes = modooNotes.filter(n => n.solution_id === s.id);
+      const open = modooOpenSol.has(s.id);
+      const stCls = s.status === '계정 받음' ? 'ok' : (s.status === '안 하기로 함' ? 'need' : 'info');
+      const btns = [];
+      if (s.status !== '안 하기로 함' && amHasMemberRole && !users.includes(me))
+        btns.push(`<button class="btn-outline-sm" onclick="joinModooSolution('${s.id}')"><i class="ti ti-users"></i>함께 쓰기</button>`);
+      btns.push(`<button class="btn-outline-sm" onclick="toggleModooSol('${s.id}')"><i class="ti ti-notes"></i>사용 기록 ${notes.length}건</button>`);
+      if (manage) {
+        ['신청함', '계정 받음', '안 하기로 함'].filter(t => t !== s.status).forEach(t =>
+          btns.push(`<button class="btn-outline-sm" onclick="setModooSolStatus('${s.id}', '${t}')">${t}</button>`));
+      }
+      if (manage || (mine && s.status === '제안')) {
+        btns.push(`<button class="btn-outline-sm" onclick="openModooAiForm('${s.id}')"><i class="ti ti-pencil"></i>고치기</button>`);
+        btns.push(`<button class="btn-danger" onclick="deleteModooSolution('${s.id}')"><i class="ti ti-trash"></i>지우기</button>`);
+      }
+      const noteHtml = open ? `
+        <div style="margin-top:10px;">
+          <button class="btn-sage" onclick="openModooNoteForm('${s.id}')"><i class="ti ti-pencil"></i>사용 기록 남기기</button>
+          ${notes.length ? notes.map(renderModooNote).join('') : '<div class="modoo-help">아직 사용 기록이 없습니다.</div>'}
+        </div>` : '';
+      return `<div class="modoo-sol">
+        <div class="modoo-sol-name">${esc(s.name)} <span class="modoo-badge ${stCls}" style="font-weight:400;">${esc(s.status)}</span></div>
+        <div class="modoo-sol-meta">월 ${modooWon(s.monthly_fee)}${s.supplier ? ' · ' + esc(s.supplier) : ''} · 제안 ${esc(s.proposed_by)}${s.applied_on ? ' · 신청일 ' + esc(modooDot(s.applied_on)) : ''}</div>
+        <div class="modoo-sol-purpose">${esc(s.purpose)}</div>
+        <div class="modoo-sol-meta">함께 쓰는 사람 · ${users.length ? esc(users.join(', ')) : '아직 없음'}</div>
+        <div class="modoo-actions">${btns.join('')}</div>
+        ${noteHtml}
+      </div>`;
+    }).join('');
+
+    return `<div class="modoo-month">
+      <div class="modoo-month-hd">
+        <div class="modoo-month-title">${mm}월분 <span class="modoo-month-sub">사용 ${mm}. 1.~${mm}. ${mm === 11 ? 30 : 31}.</span></div>
+        <div class="modoo-month-sub">신청 기간 ${period} ${closed ? '<span class="modoo-badge need">신청 마감</span>' : ''} · 합계 ${modooWon(sum)}</div>
+      </div>
+      ${sols || '<div class="modoo-help">아직 올라온 솔루션이 없습니다.</div>'}
+    </div>`;
+  }).join('');
+
+  document.getElementById('modooAiArea').innerHTML =
+    `<div class="modoo-guide" style="color:var(--am-dark);">두 달 합계 ${modooWon(totalUsed)} · 남은 몫 ${modooWon(R.aiTotal - totalUsed)}</div>` + months;
+}
+
+function renderModooNote(n) {
+  const mine = n.user_id && n.user_id === modooUid;
+  const canEdit = modooCanManage() || mine;
+  return `<div class="modoo-note">
+    <div class="modoo-note-meta">${esc(modooDot((n.created_at || '').slice(0, 10)))} · ${esc(n.written_by)}</div>
+    <div><strong>무엇에 써 봤나요</strong> · ${esc(n.used_for)}</div>
+    <div><strong>알게 된 것</strong> · ${esc(n.learned)}</div>
+    ${n.changed ? `<div><strong>웹앱에 달라진 것</strong> · ${esc(n.changed)}</div>` : ''}
+    ${canEdit ? `<div class="modoo-actions">
+      <button class="btn-outline-sm" onclick="openModooNoteForm('${n.solution_id}', '${n.id}')"><i class="ti ti-pencil"></i>고치기</button>
+      <button class="btn-danger" onclick="deleteModooNote('${n.id}')"><i class="ti ti-trash"></i>지우기</button>
+    </div>` : ''}
+  </div>`;
+}
+
+function toggleModooSol(id) {
+  if (modooOpenSol.has(id)) modooOpenSol.delete(id); else modooOpenSol.add(id);
+  renderModooAi();
+}
+
+// 함께 쓰기는 표를 직접 고치지 않는다. 로그인한 조합원 본인 이름만 더하는 함수를 부른다.
+async function joinModooSolution(id) {
+  const res = await fetch(`${SB_URL}/rest/v1/rpc/modoo_join_solution`, {
+    method: 'POST', headers: hdrs, body: JSON.stringify({ p_solution_id: id }) });
+  if (!res.ok) { await modooFail(res, '함께 쓰기에 이름을 넣지'); return; }
+  showToast('함께 쓰는 사람에 이름을 넣었습니다. 계정은 이사장님께 따로 받으세요.');
+  await loadModoo();
+}
+
+async function setModooSolStatus(id, status) {
+  const body = { status };
+  const s = modooAi.find(x => x.id === id);
+  if (status === '신청함' && s && !s.applied_on) body.applied_on = modooTodayKst();
+  const res = await fetch(`${SB_URL}/rest/v1/modoo_ai_solutions?id=eq.${id}`, {
+    method: 'PATCH', headers: { ...hdrs, 'Prefer': 'return=representation' }, body: JSON.stringify(body) });
+  if (!res.ok) { await modooFail(res, '저장하지'); return; }
+  if (!(await res.json()).length) { showToast('바꿀 권한이 없어 저장되지 않았습니다.'); return; }
+  showToast(`「${status}」으로 바꿨습니다.`);
+  await loadModoo();
+}
+
+async function deleteModooSolution(id) {
+  const s = modooAi.find(x => x.id === id);
+  if (!s) return;
+  const n = modooNotes.filter(x => x.solution_id === id).length;
+  const msg = (s.status !== '제안' ? '신청한 뒤의 솔루션은 지우지 말고 「안 하기로 함」으로 두는 것이 좋습니다.\n' : '')
+    + (n ? `딸린 사용 기록 ${n}건도 함께 지워집니다.\n` : '') + '이 솔루션을 지우시겠습니까?';
+  if (!confirm(msg)) return;
+  const res = await fetch(`${SB_URL}/rest/v1/modoo_ai_solutions?id=eq.${id}`, {
+    method: 'DELETE', headers: { ...hdrs, 'Prefer': 'return=representation' } });
+  if (!res.ok) { await modooFail(res, '지우지'); return; }
+  if (!(await res.json()).length) { showToast('지울 권한이 없어 지워지지 않았습니다.'); return; }
+  showToast('지웠습니다.');
+  await loadModoo();
+}
+
+function openModooAiForm(id) {
+  const s = id ? modooAi.find(x => x.id === id) : null;
+  if (id && !s) return;
+  const manage = modooCanManage();
+  modooForm = { kind: 'ai', id: s ? s.id : null };
+  const v = k => s && s[k] != null ? s[k] : '';
+  const today = modooTodayKst();
+  const months = Object.keys(MODOO_RULES.aiApply);
+  const defMonth = v('use_month') || months.find(m => today <= MODOO_RULES.aiApply[m][1]) || months[months.length - 1];
+  const manageFields = manage && s ? `
+    <div class="form-group"><label class="form-label">상태</label>
+      <select class="form-select" id="maStatus">${modooOpt(['제안','신청함','계정 받음','안 하기로 함'], s.status)}</select></div>
+    <div class="form-group"><label class="form-label">플랫폼에서 신청한 날</label>
+      <input class="form-input" type="date" id="maApplied" value="${modooAttr(v('applied_on'))}"></div>
+    <div class="form-group"><label class="form-label">함께 쓰는 사람 (쉼표로)</label>
+      <input class="form-input" type="text" id="maUsers" value="${modooAttr(v('users'))}"></div>` : '';
+  openModooPage(`
+    <div class="write-page-title">${s ? '솔루션 고치기' : '써 보고 싶은 솔루션 제안'}</div>
+    <div class="write-page-sub">플랫폼에 등록된 솔루션만 신청할 수 있습니다 · 신청은 이사장님이 합니다</div>
+    <div class="form-group"><label class="form-label">사용할 달 *</label>
+      <select class="form-select" id="maMonth">${months.map(m => `<option value="${m}" ${m === defMonth ? 'selected' : ''}>${Number(m.slice(5))}월분</option>`).join('')}</select></div>
+    <div class="form-group"><label class="form-label">솔루션 이름 *</label>
+      <input class="form-input" type="text" id="maName" value="${modooAttr(v('name'))}" placeholder="예 · 캐치시큐 처리방침 관리"></div>
+    <div class="form-group"><label class="form-label">공급사</label>
+      <input class="form-input" type="text" id="maSupplier" value="${modooAttr(v('supplier'))}"></div>
+    <div class="form-group"><label class="form-label">월 사용료 (원) *</label>
+      <input class="form-input" type="text" inputmode="numeric" id="maFee" value="${modooAttr(v('monthly_fee'))}"></div>
+    <div class="form-group"><label class="form-label">웹앱 프로젝트에서 무엇에 쓰는지 *</label>
+      <textarea class="form-input" id="maPurpose" rows="3">${esc(v('purpose'))}</textarea></div>
+    ${manageFields}
+    <div class="write-footer">
+      <button class="write-back-btn" onclick="closeModooPage()"><i class="ti ti-arrow-left"></i>모두의 창업으로</button>
+      <button class="write-submit-btn" id="maSubmit" onclick="submitModooAi()">${s ? '저장' : '제안 올리기'}</button>
+    </div>`);
+}
+
+async function submitModooAi() {
+  const f = modooForm;
+  if (!f) return;
+  const g = id => document.getElementById(id);
+  const body = {
+    use_month: g('maMonth').value,
+    name: g('maName').value.trim(),
+    supplier: g('maSupplier').value.trim() || null,
+    monthly_fee: modooNum(g('maFee').value),
+    purpose: g('maPurpose').value.trim(),
+  };
+  if (!body.name || body.monthly_fee == null || !body.purpose) { showToast('이름·월 사용료·용도는 꼭 적어 주세요.'); return; }
+  if (g('maStatus')) {
+    body.status = g('maStatus').value;
+    body.applied_on = g('maApplied').value || null;
+    body.users = g('maUsers').value.trim() || null;
+  }
+  const btn = g('maSubmit');
+  btn.disabled = true;
+  try {
+    let res;
+    if (f.id) {
+      res = await fetch(`${SB_URL}/rest/v1/modoo_ai_solutions?id=eq.${f.id}`, {
+        method: 'PATCH', headers: { ...hdrs, 'Prefer': 'return=representation' }, body: JSON.stringify(body) });
+    } else {
+      Object.assign(body, { status: '제안', proposed_by: modooMyName(), user_id: modooUid });
+      res = await fetch(`${SB_URL}/rest/v1/modoo_ai_solutions`, {
+        method: 'POST', headers: { ...hdrs, 'Prefer': 'return=representation' }, body: JSON.stringify(body) });
+    }
+    if (!res.ok) { await modooFail(res, '저장하지'); return; }
+    if (!(await res.json()).length) { showToast('바꿀 권한이 없어 저장되지 않았습니다.'); return; }
+    showToast(f.id ? '고쳤습니다.' : '솔루션을 제안했습니다.');
+    await closeModooPage();
+    await loadModoo();
+  } catch (e) {
+    showToast('저장 오류가 발생했습니다. 연결을 확인해 주세요.');
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
+
+// ── AI 솔루션 사용 기록 (세 줄) ──
+function openModooNoteForm(solutionId, noteId) {
+  const s = modooAi.find(x => x.id === solutionId);
+  const n = noteId ? modooNotes.find(x => x.id === noteId) : null;
+  if (!s || (noteId && !n)) return;
+  modooForm = { kind: 'note', solutionId, id: n ? n.id : null };
+  const v = k => n && n[k] != null ? n[k] : '';
+  openModooPage(`
+    <div class="write-page-title">${n ? '사용 기록 고치기' : '사용 기록 남기기'}</div>
+    <div class="write-page-sub">${esc(s.name)}</div>
+    <div class="modoo-notice">내담자 이름이나 상담 내용은 적지 않습니다. AI 솔루션에도 상담 자료를 넣지 않습니다.</div>
+    <div class="form-group"><label class="form-label">1. 무엇에 써 봤나요? *</label>
+      <textarea class="form-input" id="mnUsed" rows="2" placeholder="예 · 개인정보 처리방침 초안 만들기">${esc(v('used_for'))}</textarea></div>
+    <div class="form-group"><label class="form-label">2. 써 보니 무엇을 알게 됐나요? *</label>
+      <textarea class="form-input" id="mnLearned" rows="3">${esc(v('learned'))}</textarea></div>
+    <div class="form-group"><label class="form-label">3. 우리 웹앱에 무엇이 달라졌나요? (없으면 비워 두셔도 됩니다)</label>
+      <textarea class="form-input" id="mnChanged" rows="3">${esc(v('changed'))}</textarea></div>
+    <div class="write-footer">
+      <button class="write-back-btn" onclick="closeModooPage()"><i class="ti ti-arrow-left"></i>모두의 창업으로</button>
+      <button class="write-submit-btn" id="mnSubmit" onclick="submitModooNote()">저장</button>
+    </div>`);
+}
+
+async function submitModooNote() {
+  const f = modooForm;
+  if (!f) return;
+  const g = id => document.getElementById(id);
+  const body = {
+    used_for: g('mnUsed').value.trim(),
+    learned: g('mnLearned').value.trim(),
+    changed: g('mnChanged').value.trim() || null,
+  };
+  if (!body.used_for || !body.learned) { showToast('1번과 2번은 꼭 적어 주세요.'); return; }
+  const btn = g('mnSubmit');
+  btn.disabled = true;
+  try {
+    let res;
+    if (f.id) {
+      res = await fetch(`${SB_URL}/rest/v1/modoo_ai_notes?id=eq.${f.id}`, {
+        method: 'PATCH', headers: { ...hdrs, 'Prefer': 'return=representation' }, body: JSON.stringify(body) });
+    } else {
+      Object.assign(body, { solution_id: f.solutionId, written_by: modooMyName(), user_id: modooUid });
+      res = await fetch(`${SB_URL}/rest/v1/modoo_ai_notes`, {
+        method: 'POST', headers: { ...hdrs, 'Prefer': 'return=representation' }, body: JSON.stringify(body) });
+    }
+    if (!res.ok) { await modooFail(res, '저장하지'); return; }
+    if (!(await res.json()).length) { showToast('바꿀 권한이 없어 저장되지 않았습니다.'); return; }
+    modooOpenSol.add(f.solutionId);
+    showToast('사용 기록을 저장했습니다.');
+    await closeModooPage();
+    await loadModoo();
+  } catch (e) {
+    showToast('저장 오류가 발생했습니다. 연결을 확인해 주세요.');
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
+
+async function deleteModooNote(id) {
+  if (!confirm('이 사용 기록을 지우시겠습니까?')) return;
+  const res = await fetch(`${SB_URL}/rest/v1/modoo_ai_notes?id=eq.${id}`, {
+    method: 'DELETE', headers: { ...hdrs, 'Prefer': 'return=representation' } });
+  if (!res.ok) { await modooFail(res, '지우지'); return; }
+  if (!(await res.json()).length) { showToast('지울 권한이 없어 지워지지 않았습니다.'); return; }
+  showToast('지웠습니다.');
+  await loadModoo();
+}
+
+// 솔루션 이름 → 날짜 순으로 묶어 세 칸을 그대로 담는다 (12. 1. 활동보고서용)
+function downloadModooNotesCsv() {
+  if (!modooNotes.length) { showToast('내려받을 사용 기록이 없습니다.'); return; }
+  const q = s => `"${String(s == null ? '' : s).replace(/"/g, '""')}"`;
+  const solOf = id => modooAi.find(s => s.id === id) || { name: '', use_month: '' };
+  const rows = modooNotes.slice().sort((a, b) =>
+    solOf(a.solution_id).name.localeCompare(solOf(b.solution_id).name, 'ko')
+    || (a.created_at || '').localeCompare(b.created_at || ''));
+  const lines = [['솔루션','사용할 달','날짜','쓴 사람','무엇에 써 봤나요','알게 된 것','웹앱에 달라진 것'].map(q).join(',')];
+  rows.forEach(n => {
+    const s = solOf(n.solution_id);
+    lines.push([s.name, s.use_month, (n.created_at || '').slice(0, 10), n.written_by, n.used_for, n.learned, n.changed].map(q).join(','));
+  });
+  modooSaveCsv(lines.join('\n'), `모두의창업_AI솔루션_사용기록_${modooTodayKst().replace(/-/g, '')}.csv`);
+}
+
+// admin.html shrinkImage와 같은 내용 (긴 변 1600px, JPEG). 증빙 사진을 줄여 올린다.
+const MAX_EDGE = 1600;        // 사진 긴 변의 최대 픽셀
+const JPEG_QUALITY = 0.85;
+async function shrinkImage(file, maxEdge) {
+  if (!/^image\/(jpeg|png|webp)$/.test(file.type)) return file;   // GIF 등은 건드리지 않습니다.
+
+  try {
+    // 휴대폰 사진이 눕지 않도록 EXIF 회전을 반영해 읽습니다.
+    const bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' });
+    const scale = Math.min(1, (maxEdge || MAX_EDGE) / Math.max(bitmap.width, bitmap.height));
+    if (scale === 1) { bitmap.close(); return file; }
+
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.round(bitmap.width * scale);
+    canvas.height = Math.round(bitmap.height * scale);
+    canvas.getContext('2d').drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    bitmap.close();
+
+    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', JPEG_QUALITY));
+    return blob ? new File([blob], file.name, { type: 'image/jpeg' }) : file;
+  } catch (error) {
+    return file;   // 줄이지 못하면 원본을 그대로 올립니다.
+  }
 }
 </script>
 </body>
