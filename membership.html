@@ -337,7 +337,7 @@ footer {
       <div class="footer-info">
         ADLER MIND 협동조합 (일반협동조합)<br>
         경기도 광주시 남종면 산수로 1652-16<br>
-        adlermindcoop@gmail.com<br>
+        adlermind@naver.com<br>
         <a href="privacy.html">개인정보처리방침</a>
       </div>
     </div>
@@ -411,12 +411,12 @@ async function handleSubmit(e) {
     title.textContent = '신청이 접수되었습니다';
     msg.innerHTML = payload.name + ' 님의 가입 신청을 받았습니다.<br>'
       + '이사회 검토 후 2주 이내에 서면 또는 전화로 결과를 안내드립니다.<br><br>'
-      + '문의: adlermindcoop@gmail.com / 010-3456-4948';
+      + '문의: adlermind@naver.com / 010-3456-4948';
     window.scrollTo({ top: 0, behavior: 'smooth' });
   } catch (err) {
     box.classList.add('show', 'error');
     title.textContent = '제출 중 오류가 발생했습니다';
-    msg.textContent = '잠시 후 다시 시도하거나 adlermindcoop@gmail.com 으로 문의해 주세요. ('
+    msg.textContent = '잠시 후 다시 시도하거나 adlermind@naver.com 으로 문의해 주세요. ('
       + err.message + ')';
     btn.disabled = false;
     btn.textContent = '신청서 제출';
