@@ -467,7 +467,8 @@ const hdrs = { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` };
 async function loadNews() {
   const el = document.getElementById('newsList');
   try {
-    const res = await fetch(`${SB_URL}/rest/v1/board_posts?category=eq.공지&order=created_at.desc&limit=5`, { headers: hdrs });
+    // 카테고리와 상관없이 공개 글 최신 5건 (2026-10-27 트리님 지시)
+    const res = await fetch(`${SB_URL}/rest/v1/board_posts?visibility=eq.public&order=created_at.desc&limit=5`, { headers: hdrs });
     const rows = await res.json();
     if (!Array.isArray(rows) || rows.length === 0) {
       el.innerHTML = '<p class="news-empty">아직 등록된 소식이 없습니다.</p>'; return;
