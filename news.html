@@ -94,6 +94,7 @@ nav {
 .cat-공지 { background: rgba(232,146,154,0.1); color: var(--am-rose); }
 .cat-회의록 { background: rgba(143,191,184,0.12); color: #5a9990; }
 .cat-서류 { background: rgba(143,175,212,0.12); color: var(--am-blue); }
+.cat-모두의창업 { background: rgba(196,141,160,0.12); color: #A8687F; }
 .board-title { flex: 1; font-size: 14px; color: var(--am-gray); }
 .board-meta { font-size: 13px; color: var(--am-muted); white-space: nowrap; font-family: 'Raleway', sans-serif; }
 .board-empty { text-align: center; padding: 56px 0; color: var(--am-muted); font-size: 13px; }
@@ -204,6 +205,7 @@ footer {
       <button class="cat-tab" onclick="filterCat('공지', this)">공지</button>
       <button class="cat-tab" onclick="filterCat('회의록', this)">회의록</button>
       <button class="cat-tab" onclick="filterCat('서류', this)">서류</button>
+      <button class="cat-tab" onclick="filterCat('모두의 창업', this)">모두의 창업</button>
     </div>
     <div class="board-list" id="boardList">
       <div class="board-empty">불러오는 중...</div>
@@ -266,12 +268,15 @@ function render() {
   el.innerHTML = list.map(p => {
     const date = new Date(p.created_at).toLocaleDateString('ko-KR', { year:'numeric', month:'long', day:'numeric' });
     return `<div class="board-item" onclick="openDetail('${p.id}')">
-      <span class="board-cat cat-${esc(p.category)}">${esc(p.category)}</span>
+      <span class="board-cat ${catClass(p.category)}">${esc(p.category)}</span>
       <div class="board-title">${esc(p.title)}</div>
       <div class="board-meta">${date}</div>
     </div>`;
   }).join('');
 }
+
+// 카테고리 이름에 빈칸이 있어도 class 하나가 되게 빈칸을 뺀다 (모두의 창업 → cat-모두의창업)
+function catClass(cat) { return 'cat-' + String(cat || '').replace(/\s/g, ''); }
 
 function filterCat(cat, btn) {
   currentCat = cat;
@@ -285,7 +290,7 @@ function openDetail(id) {
   history.pushState({ postId: id }, '', `news.html?post=${id}`);
   const catEl = document.getElementById('dCat');
   catEl.textContent = p.category;
-  catEl.className = `detail-cat cat-${esc(p.category)}`;
+  catEl.className = `detail-cat ${catClass(p.category)}`;
   document.getElementById('dTitle').textContent = p.title;
   const date = new Date(p.created_at).toLocaleDateString('ko-KR', { year:'numeric', month:'long', day:'numeric' });
   document.getElementById('dMeta').textContent = `${p.author} · ${date}`;

@@ -220,6 +220,7 @@ body {
 .badge-공지 { background: rgba(232,146,154,0.1); color: var(--am-rose); }
 .badge-회의록 { background: rgba(143,191,184,0.12); color: #5a9990; }
 .badge-서류 { background: rgba(143,175,212,0.12); color: var(--am-blue); }
+.badge-모두의창업 { background: rgba(196,141,160,0.12); color: #A8687F; }
 .board-title { flex: 1; font-size: 13.5px; color: var(--am-gray); }
 .board-title-attach { font-size: 13px; color: var(--am-muted); margin-left: 6px; }
 .board-meta {
@@ -1342,6 +1343,22 @@ table.idea-matrix tbody th { background: #f4f2ee; font-size: 13px; font-weight: 
     </table>
   </div>
 
+  <!-- 서류 게시판 · 2026-10-27
+       board_posts 의 '모두의 창업' 카테고리만 모아 보인다. 게시판 탭 목록에는 섞지 않는다. -->
+  <div class="panel-hd" style="margin-top:40px;">
+    <div class="panel-title">서류 게시판</div>
+    <button class="btn-sage" onclick="openWritePage(MODOO_CAT)">
+      <i class="ti ti-pencil"></i>글쓰기
+    </button>
+  </div>
+  <div class="modoo-guide">
+    · 모두의 창업 과정의 서류를 여기에 모읍니다. 글을 열면 첨부파일을 바로 보거나 내려받을 수 있습니다.<br>
+    · 시험판 참여자 모집처럼 밖에 알릴 글은 글쓰기 화면에서 「공개」를 켜 주세요. 소식 페이지에도 함께 실립니다.
+  </div>
+  <div class="board-list" id="modooBoardList">
+    <div class="board-empty"><i class="ti ti-loader-2"></i>불러오는 중...</div>
+  </div>
+
   <!-- AI 솔루션 함께 쓰기 · 허브기관이 사후 정산하므로 카드 금액과 합치지 않는다 -->
   <div class="panel-hd" style="margin-top:40px;">
     <div class="panel-title">AI 솔루션 함께 쓰기</div>
@@ -1450,6 +1467,7 @@ table.idea-matrix tbody th { background: #f4f2ee; font-size: 13px; font-weight: 
         <option value="공지">알림글 (공지사항)</option>
         <option value="회의록">회의록</option>
         <option value="서류">서류</option>
+        <option value="모두의 창업">모두의 창업</option>
       </select>
     </div>
 
@@ -1924,20 +1942,37 @@ async function loadBoard() {
   }
 }
 
+// 모두의 창업 서류는 그 탭의 서류 게시판에만 보인다. 게시판 탭 목록에는 섞지 않는다.
+const MODOO_CAT = '모두의 창업';
+
 function renderBoard() {
+  renderModooBoard();
   const el = document.getElementById('boardList');
-  const filtered = currentCat === '전체' ? allPosts : allPosts.filter(p => p.category === currentCat);
+  const boardPosts = allPosts.filter(p => p.category !== MODOO_CAT);
+  const filtered = currentCat === '전체' ? boardPosts : boardPosts.filter(p => p.category === currentCat);
+  el.innerHTML = boardItemsHtml(filtered);
+}
+
+function renderModooBoard() {
+  document.getElementById('modooBoardList').innerHTML =
+    boardItemsHtml(allPosts.filter(p => p.category === MODOO_CAT));
+}
+
+// 카테고리 이름에 빈칸이 있어도 class 하나가 되게 빈칸을 뺀다 (모두의 창업 → badge-모두의창업)
+function badgeClass(cat) { return 'badge-' + String(cat || '').replace(/\s/g, ''); }
+
+function boardItemsHtml(filtered) {
   if (!filtered.length) {
-    el.innerHTML = '<div class="board-empty"><i class="ti ti-inbox"></i>게시물이 없습니다.</div>'; return;
+    return '<div class="board-empty"><i class="ti ti-inbox"></i>게시물이 없습니다.</div>';
   }
-  el.innerHTML = filtered.map(p => {
+  return filtered.map(p => {
     const date = new Date(p.created_at).toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' });
     const hasAttach = p.attachments && p.attachments.length > 0;
     const pinHtml = p.is_pinned ? '<i class="ti ti-pin pin-icon"></i>' : '';
     const pubBadge = p.visibility === 'public' ? '<span class="pub-badge">공개</span>' : '';
     return `<div class="board-item${p.is_pinned ? ' pinned' : ''}" onclick="openView('${p.id}')">
       ${pinHtml}
-      <span class="board-cat-badge badge-${p.category}">${esc(p.category)}</span>
+      <span class="board-cat-badge ${badgeClass(p.category)}">${esc(p.category)}</span>
       <div class="board-title">${esc(p.title)}${hasAttach ? '<i class="ti ti-paperclip board-title-attach"></i>' : ''}</div>
       ${pubBadge}
       <div class="board-meta">${esc(p.author)} · ${date}</div>
@@ -2070,10 +2105,9 @@ async function openView(id) {
   history.pushState({}, '', `members-home.html?post=${id}`);
   document.getElementById('viewTitle').textContent = p.title;
 
-  const catMap = { '공지':'badge-공지', '회의록':'badge-회의록', '서류':'badge-서류' };
   const pinBadge = p.is_pinned ? '<span class="modal-pin-badge"><i class="ti ti-pin"></i>공지 고정</span>' : '';
   document.getElementById('viewCatRow').innerHTML =
-    `<span class="modal-cat-badge ${catMap[p.category]||''}">${esc(p.category)}</span>${pinBadge}`;
+    `<span class="modal-cat-badge ${badgeClass(p.category)}">${esc(p.category)}</span>${pinBadge}`;
 
   document.getElementById('viewMeta').textContent =
     `${p.author} · ` + new Date(p.created_at).toLocaleDateString('ko-KR', { year:'numeric', month:'long', day:'numeric', hour:'2-digit', minute:'2-digit' });
@@ -2151,12 +2185,13 @@ function copyPostLink(id) {
 }
 
 // ── 글쓰기 페이지 ──
-function openWritePage() {
+function openWritePage(cat) {
   editingId = null;
   editingConfirmers = [];
   document.getElementById('writePageTitle').textContent = '새 글 작성';
   document.getElementById('writeSubmitBtn').textContent = '따뜻하게 등록하기';
-  document.getElementById('wCat').value = '공지';
+  document.getElementById('wCat').value = cat || '공지';
+  document.getElementById('wPublic').checked = false;
   document.getElementById('wTitle').value = '';
   document.getElementById('wAuthor').value = '';
   document.getElementById('wLink').value = '';
@@ -2239,16 +2274,18 @@ async function submitPost() {
     let postId = editingId;
 
     if (editingId) {
-      await fetch(`${SB_URL}/rest/v1/board_posts?id=eq.${editingId}`, {
+      const res = await fetch(`${SB_URL}/rest/v1/board_posts?id=eq.${editingId}`, {
         method: 'PATCH', headers: { ...hdrs, 'Prefer': 'return=minimal' },
         body: JSON.stringify(body)
       });
+      if (!res.ok) { showToast(`저장되지 않았습니다 (${res.status}). 다시 한 번 눌러 주세요.`); return; }
       showToast('수정되었습니다.');
     } else {
       const res = await fetch(`${SB_URL}/rest/v1/board_posts`, {
         method: 'POST', headers: { ...hdrs, 'Prefer': 'return=representation' },
         body: JSON.stringify(body)
       });
+      if (!res.ok) { showToast(`저장되지 않았습니다 (${res.status}). 다시 한 번 눌러 주세요.`); return; }
       const rows = await res.json();
       postId = rows && rows[0] && rows[0].id;
       showToast('등록되었습니다.');
