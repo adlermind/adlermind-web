@@ -815,6 +815,19 @@ body {
 }
 
 /* ── 모두의 창업 (2026-10-17) ── */
+/* 모두의 창업 세 칸 단추 (2026-10-27) · 탭 아래 바로 보이는 길이라 조금 크게 둔다.
+   ⚠ .cat-tab 을 쓰지 않는다 — filterCat 이 .cat-tab 전부에서 active 를 걷어낸다 */
+.mo-tabs { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+.mo-tab {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 18px;
+  border: 0.5px solid var(--am-border); background: var(--am-white);
+  font-size: 15px; color: var(--am-dark);
+  cursor: pointer; transition: all 0.15s;
+  font-family: 'Noto Sans KR', sans-serif; font-weight: 400;
+}
+.mo-tab:hover { border-color: var(--am-sage); color: var(--am-sage); }
+.mo-tab.active { background: var(--am-sage); color: #fff; border-color: var(--am-sage); }
 #panelModoo { max-width: 1040px; }   /* 표 칸이 8개라 기획마당처럼 넓힌다 */
 .modoo-notice {
   border-left: 3px solid var(--am-sage); background: rgba(143,191,184,0.10);
@@ -1274,6 +1287,18 @@ table.idea-matrix tbody th { background: #f4f2ee; font-size: 13px; font-weight: 
 <div class="panel" id="panelModoo">
   <div class="panel-hd">
     <div class="panel-title">모두의 창업</div>
+  </div>
+
+  <!-- 세 칸 단추 · 2026-10-27 트리님 요청. 누른 칸만 보인다. 처음 열면 회계 -->
+  <div class="mo-tabs">
+    <button class="mo-tab active" onclick="showModooSec('Money', this)"><i class="ti ti-credit-card"></i>회계</button>
+    <button class="mo-tab" onclick="showModooSec('Docs', this)"><i class="ti ti-files"></i>서류</button>
+    <button class="mo-tab" onclick="showModooSec('Ai', this)"><i class="ti ti-sparkles"></i>AI 솔루션</button>
+  </div>
+
+  <div id="modooSecMoney">
+  <div class="panel-hd">
+    <div class="panel-title">창업활동자금</div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;">
       <button class="btn-outline-sm" onclick="downloadModooCsv()">
         <i class="ti ti-table-export"></i>집행 상세내역 내려받기
@@ -1342,10 +1367,12 @@ table.idea-matrix tbody th { background: #f4f2ee; font-size: 13px; font-weight: 
       </tbody>
     </table>
   </div>
+  </div>
 
   <!-- 서류 게시판 · 2026-10-27
        board_posts 의 '모두의 창업' 카테고리만 모아 보인다. 게시판 탭 목록에는 섞지 않는다. -->
-  <div class="panel-hd" style="margin-top:40px;">
+  <div id="modooSecDocs" hidden>
+  <div class="panel-hd">
     <div class="panel-title">서류 게시판</div>
     <button class="btn-sage" onclick="openWritePage(MODOO_CAT)">
       <i class="ti ti-pencil"></i>글쓰기
@@ -1358,9 +1385,11 @@ table.idea-matrix tbody th { background: #f4f2ee; font-size: 13px; font-weight: 
   <div class="board-list" id="modooBoardList">
     <div class="board-empty"><i class="ti ti-loader-2"></i>불러오는 중...</div>
   </div>
+  </div>
 
   <!-- AI 솔루션 함께 쓰기 · 허브기관이 사후 정산하므로 카드 금액과 합치지 않는다 -->
-  <div class="panel-hd" style="margin-top:40px;">
+  <div id="modooSecAi" hidden>
+  <div class="panel-hd">
     <div class="panel-title">AI 솔루션 함께 쓰기</div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;">
       <button class="btn-outline-sm" onclick="downloadModooNotesCsv()">
@@ -1378,6 +1407,7 @@ table.idea-matrix tbody th { background: #f4f2ee; font-size: 13px; font-weight: 
     · 공급회사 홈페이지에서 따로 결제하거나 할인·페이백 제안을 받지 않습니다.
   </div>
   <div id="modooAiArea"></div>
+  </div>
 </div>
 
 <!-- 모두의 창업 입력 페이지 · 결제 요청·결제 기록·솔루션 제안·사용 기록이 같은 틀을 쓴다 -->
@@ -4267,6 +4297,12 @@ function modooSaveCsv(text, filename) {
   const a = document.createElement('a');
   a.href = url; a.download = filename;
   a.click(); URL.revokeObjectURL(url);
+}
+
+// 세 칸 단추 · 누른 칸만 보인다
+function showModooSec(key, btn) {
+  ['Money', 'Docs', 'Ai'].forEach(k => { document.getElementById('modooSec' + k).hidden = k !== key; });
+  document.querySelectorAll('.mo-tab').forEach(b => b.classList.toggle('active', b === btn));
 }
 
 // ── AI 솔루션 함께 쓰기 ──
