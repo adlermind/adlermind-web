@@ -4313,8 +4313,8 @@ function renderModooAi() {
         </div>` : '';
       return `<div class="modoo-sol">
         <div class="modoo-sol-name">${esc(s.name)} <span class="modoo-badge ${stCls}" style="font-weight:400;">${esc(s.status)}</span></div>
-        <div class="modoo-sol-meta">월 ${modooWon(s.monthly_fee)}${s.supplier ? ' · ' + esc(s.supplier) : ''} · 제안 ${esc(s.proposed_by)}${s.applied_on ? ' · 신청일 ' + esc(modooDot(s.applied_on)) : ''}</div>
-        <div class="modoo-sol-purpose">${esc(s.purpose)}</div>
+        <div class="modoo-sol-meta">월 ${modooWon(s.monthly_fee)}${s.supplier ? ' · ' + esc(s.supplier) : ''}${s.proposed_by ? ' · 제안 ' + esc(s.proposed_by) : ''}${s.applied_on ? ' · 신청일 ' + esc(modooDot(s.applied_on)) : ''}</div>
+        ${s.purpose ? `<div class="modoo-sol-purpose">${esc(s.purpose)}</div>` : ''}
         <div class="modoo-sol-meta">함께 쓰는 사람 · ${users.length ? esc(users.join(', ')) : '아직 없음'}</div>
         <div class="modoo-actions">${btns.join('')}</div>
         ${noteHtml}
